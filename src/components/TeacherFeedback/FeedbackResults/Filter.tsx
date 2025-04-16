@@ -41,7 +41,7 @@ const Filter = ({ filterData, setTeachers }: IFilter) => {
     const fetchFilteredTeachers = async () => {
         setLoading(true);
         const response = await feedbackProvider.getTeachers({
-            pageSize: -1,
+            pageSize: 0,
             ...(selectedTeacher?.id && { teacherId: String(selectedTeacher.id) }),
             ...(selectedCourse?.subtitle && { courseCode: selectedCourse.subtitle })
         });

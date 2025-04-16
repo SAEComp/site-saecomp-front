@@ -35,8 +35,8 @@ const Form = () => {
 
     const fetchDropdownData = async () => {
         const [teacherResult, courseResult] = await Promise.all([
-            feedbackProvider.getTeachers({ pageSize: -1 }),
-            feedbackProvider.getCourses({ pageSize: -1 })
+            feedbackProvider.getTeachers({ pageSize: 30 }),
+            feedbackProvider.getCourses({ pageSize: 30 })
         ]);
         if (teacherResult) setTeachers(teacherResult.data.map((teacher) => ({ id: teacher.teacherId, label: teacher.teacherName })));
         if (courseResult) setCourses(courseResult.data.map((course) => ({ id: course.courseId, label: course.courseName, subtitle: course.courseCode })));
