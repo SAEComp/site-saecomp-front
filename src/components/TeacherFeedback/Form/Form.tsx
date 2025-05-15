@@ -7,9 +7,6 @@ import TextInput from "../../Inputs/TextInput";
 import { TAutocompleteOptions } from "./types";
 import feedbackProvider from "../../../services/TeacherFeedback/feedback.provider";
 
-
-
-
 const useIsMobile = () => {
     const [isMobile, setIsMobile] = useState(false);
   
