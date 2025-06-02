@@ -1,13 +1,10 @@
 import Form from "../../components/TeacherFeedback/Form/Form";
-import NavBar from "../../components/TeacherFeedback/NavBar/NavBar";
-import Footer from "../../components/TeacherFeedback/NavBar/Footer";
 
 const TeacherFeedback = () => {
     return (
         <div
-            className="h-screen w-screen font-inter"
+            className="w-screen font-inter"
         >
-            <NavBar/>
             <div
                 className="pt-1"
             >
@@ -28,7 +25,6 @@ const TeacherFeedback = () => {
                 </div>
                 <Form/>
             </div>
-            <Footer/>
         </div>
     )
 }

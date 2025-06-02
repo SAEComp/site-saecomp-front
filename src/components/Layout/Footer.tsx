@@ -1,7 +1,7 @@
-import logo from '../../../assets/svg/logo.svg'
-import facebook_icon from '../../../assets/svg/facebook_icon.svg'
-import instagram_icon from '../../../assets/svg/instagram_icon.svg'
-import youtube_icon from '../../../assets/svg/youtube_icon.svg'
+import logo from '../../assets/svg/logo.svg'
+import facebook_icon from '../../assets/svg/facebook_icon.svg'
+import instagram_icon from '../../assets/svg/instagram_icon.svg'
+import youtube_icon from '../../assets/svg/youtube_icon.svg'
 
 const Footer = () => {
     return (
@@ -35,7 +35,7 @@ const Footer = () => {
                 </div>
             </div>
 
-            <span className="text-[#757575] font-inter text-[0.8rem] md:text-[0.85rem] w-[90%] -mt-12 text-center md:text-start">
+            <span className="text-[#757575] font-inter text-[0.8rem] md:text-[0.85rem] w-[90%] text-center md:text-start">
                 Nosso principal objetivo é representar os alunos perante a<br />Universidade de São Paulo.
             </span>
 

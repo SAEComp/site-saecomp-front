@@ -1,14 +1,11 @@
 import ResultsContainer from "../../components/TeacherFeedback/FeedbackResults/ResultsContainer";
-import NavBar from "../../components/TeacherFeedback/NavBar/NavBar";
-import Footer from "../../components/TeacherFeedback/NavBar/Footer";
 
 const TeacherFeedbackResults = () => {
 
     return (
         <div
-        className="h-screen w-screen font-inter"
+        className="w-screen font-inter"
     >
-        <NavBar/>
         <div
             className="pt-1"
         >
@@ -29,7 +26,6 @@ const TeacherFeedbackResults = () => {
             </div>
             <ResultsContainer/>
         </div>
-        <Footer/>
     </div>
     );
 }

@@ -29,7 +29,7 @@ const rotate = keyframes`
 
 export const HeaderTopic = styled.div`
     width : 100%;
-    height: 100vh;
+    height: calc(100vh - 100px);
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
