@@ -26,6 +26,7 @@ const NavBar = () => {
 
   useEffect(() => {
     const savedUser = localStorage.getItem("token");
+    // const savedUser = localStorage.setItem("token", JSON.stringify(user));
     if (savedUser) {
       setUser(JSON.parse(savedUser));
     }

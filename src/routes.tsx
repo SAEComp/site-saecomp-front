@@ -13,6 +13,7 @@ import TeacherFeedback from "./pages/TeacherFeedback";
 import TeacherFeedbackResults from "./pages/TeacherFeedbackResults";
 import Default from "./pages/Default";
 import Test from "./pages/Test/Test";
+import TeacherFeedbackAdmin from "./pages/TeacherFeedbackAdmin";
 
 const AppRoutes = () => {
     return (
@@ -31,6 +32,7 @@ const AppRoutes = () => {
                 <Route element={<TeacherFeedbackResults />} path="/Resultados" />
                 <Route element={<Default />} path="/Default" />
                 <Route element={<Test />} path="/test" />
+                <Route element={<TeacherFeedbackAdmin/>} path="/TeacherFeedbackAdmin" />
             </Routes>
 
         </BrowserRouter>
