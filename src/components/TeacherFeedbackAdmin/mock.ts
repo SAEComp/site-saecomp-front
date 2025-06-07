@@ -187,7 +187,7 @@ export const avaliacoes = [
     semester: "2025.1",
   },
   {
-    evaluationId: 1,
+    evaluationId: 5,
     teacherName: "Thiago Alexandre S. Pardo",
     courseName: "Processamento de Linguagem Natural",
     courseCode: "PRG0018",
@@ -195,7 +195,7 @@ export const avaliacoes = [
     semester: "2024.1",
   },
   {
-    evaluationId: 2,
+    evaluationId: 6,
     teacherName: "André de Freitas Smaira",
     courseName: " Estrutura de Dados",
     courseCode: " SCC0122",
@@ -203,7 +203,7 @@ export const avaliacoes = [
     semester: "2024.2",
   },
   {
-    evaluationId: 3,
+    evaluationId: 7,
     teacherName: "Diego Raphael Amancio",
     courseName: "Introdução à Ciência de Computação II",
     courseCode: "SCC0201",
@@ -211,7 +211,7 @@ export const avaliacoes = [
     semester: "2025.1",
   },
   {
-    evaluationId: 4,
+    evaluationId: 8,
     teacherName: "Marcelo Garcia Manzato",
     courseName: "Algoritmos e Estruturas de Dados I",
     courseCode: " SCC0202",
@@ -219,7 +219,7 @@ export const avaliacoes = [
     semester: "2025.1",
   },
   {
-    evaluationId: 1,
+    evaluationId: 9,
     teacherName: "Thiago Alexandre S. Pardo",
     courseName: "Processamento de Linguagem Natural",
     courseCode: "PRG0018",
@@ -227,7 +227,7 @@ export const avaliacoes = [
     semester: "2024.1",
   },
   {
-    evaluationId: 2,
+    evaluationId: 10,
     teacherName: "André de Freitas Smaira",
     courseName: " Estrutura de Dados",
     courseCode: " SCC0122",
@@ -235,7 +235,7 @@ export const avaliacoes = [
     semester: "2024.2",
   },
   {
-    evaluationId: 3,
+    evaluationId: 11,
     teacherName: "Diego Raphael Amancio",
     courseName: "Introdução à Ciência de Computação II",
     courseCode: "SCC0201",
@@ -243,39 +243,7 @@ export const avaliacoes = [
     semester: "2025.1",
   },
   {
-    evaluationId: 4,
-    teacherName: "Marcelo Garcia Manzato",
-    courseName: "Algoritmos e Estruturas de Dados I",
-    courseCode: " SCC0202",
-    status: "Em revisão",
-    semester: "2025.1",
-  },
-    {
-    evaluationId: 1,
-    teacherName: "Thiago Alexandre S. Pardo",
-    courseName: "Processamento de Linguagem Natural",
-    courseCode: "PRG0018",
-    status: "Pendente",
-    semester: "2024.1",
-  },
-  {
-    evaluationId: 2,
-    teacherName: "André de Freitas Smaira",
-    courseName: " Estrutura de Dados",
-    courseCode: " SCC0122",
-    status: "Aprovado",
-    semester: "2024.2",
-  },
-  {
-    evaluationId: 3,
-    teacherName: "Diego Raphael Amancio",
-    courseName: "Introdução à Ciência de Computação II",
-    courseCode: "SCC0201",
-    status: "Reprovado",
-    semester: "2025.1",
-  },
-  {
-    evaluationId: 4,
+    evaluationId: 12,
     teacherName: "Marcelo Garcia Manzato",
     courseName: "Algoritmos e Estruturas de Dados I",
     courseCode: " SCC0202",
@@ -283,7 +251,7 @@ export const avaliacoes = [
     semester: "2025.1",
   },
   {
-    evaluationId: 1,
+    evaluationId: 13,
     teacherName: "Thiago Alexandre S. Pardo",
     courseName: "Processamento de Linguagem Natural",
     courseCode: "PRG0018",
@@ -291,7 +259,7 @@ export const avaliacoes = [
     semester: "2024.1",
   },
   {
-    evaluationId: 2,
+    evaluationId: 14,
     teacherName: "André de Freitas Smaira",
     courseName: " Estrutura de Dados",
     courseCode: " SCC0122",
@@ -299,7 +267,7 @@ export const avaliacoes = [
     semester: "2024.2",
   },
   {
-    evaluationId: 3,
+    evaluationId: 15,
     teacherName: "Diego Raphael Amancio",
     courseName: "Introdução à Ciência de Computação II",
     courseCode: "SCC0201",
@@ -307,7 +275,7 @@ export const avaliacoes = [
     semester: "2025.1",
   },
   {
-    evaluationId: 4,
+    evaluationId: 16,
     teacherName: "Marcelo Garcia Manzato",
     courseName: "Algoritmos e Estruturas de Dados I",
     courseCode: " SCC0202",
@@ -315,7 +283,7 @@ export const avaliacoes = [
     semester: "2025.1",
   },
   {
-    evaluationId: 1,
+    evaluationId: 17,
     teacherName: "Thiago Alexandre S. Pardo",
     courseName: "Processamento de Linguagem Natural",
     courseCode: "PRG0018",
@@ -323,7 +291,7 @@ export const avaliacoes = [
     semester: "2024.1",
   },
   {
-    evaluationId: 2,
+    evaluationId: 18,
     teacherName: "André de Freitas Smaira",
     courseName: " Estrutura de Dados",
     courseCode: " SCC0122",
@@ -331,7 +299,7 @@ export const avaliacoes = [
     semester: "2024.2",
   },
   {
-    evaluationId: 3,
+    evaluationId: 19,
     teacherName: "Diego Raphael Amancio",
     courseName: "Introdução à Ciência de Computação II",
     courseCode: "SCC0201",
@@ -339,7 +307,39 @@ export const avaliacoes = [
     semester: "2025.1",
   },
   {
-    evaluationId: 4,
+    evaluationId: 20,
+    teacherName: "Marcelo Garcia Manzato",
+    courseName: "Algoritmos e Estruturas de Dados I",
+    courseCode: " SCC0202",
+    status: "Em revisão",
+    semester: "2025.1",
+  },
+  {
+    evaluationId: 21,
+    teacherName: "Thiago Alexandre S. Pardo",
+    courseName: "Processamento de Linguagem Natural",
+    courseCode: "PRG0018",
+    status: "Pendente",
+    semester: "2024.1",
+  },
+  {
+    evaluationId: 22,
+    teacherName: "André de Freitas Smaira",
+    courseName: " Estrutura de Dados",
+    courseCode: " SCC0122",
+    status: "Aprovado",
+    semester: "2024.2",
+  },
+  {
+    evaluationId: 23,
+    teacherName: "Diego Raphael Amancio",
+    courseName: "Introdução à Ciência de Computação II",
+    courseCode: "SCC0201",
+    status: "Reprovado",
+    semester: "2025.1",
+  },
+  {
+    evaluationId: 24,
     teacherName: "Marcelo Garcia Manzato",
     courseName: "Algoritmos e Estruturas de Dados I",
     courseCode: " SCC0202",
@@ -347,3 +347,130 @@ export const avaliacoes = [
     semester: "2025.1",
   },
 ];
+
+export const questions = [
+  {
+    questionId: 1,
+    questionText: "Como você avalia a clareza das explicações do professor?",
+    questionType: "rating",
+    order: 1,
+  },
+  {
+    questionId: 2,
+    questionText: "O professor está disponível para tirar dúvidas?",
+    questionType: "yesno",
+    order: 2,
+  },
+  {
+    questionId: 3,
+    questionText: "Quais aspectos positivos você destacaria na aula?",
+    questionType: "text",
+    order: 3,
+  },
+  {
+    questionId: 4,
+    questionText:
+      "Quais aspectos negativos você destacaria na aula e que poderiam ser melhorados?",
+    questionType: "text",
+    order: 4,
+  },
+];
+
+export const answer1 = {
+  evaluationId: 1,
+  userName: "Pedrão da silva",
+  userEmail: "pedraodasilva@gmail.com",
+  userNusp: "123456789",
+  status: "Pendente",
+  approvedBy: null,
+  answers: [
+    {
+      questionId: 1,
+      questionType: "text",
+      question: "Como você avalia a clareza das explicações do professor?",
+      order: 1,
+      answer: "As explicações do professor foram muito claras e objetivas.",
+      editedAnswer:
+        "As explicações do professor foram muito claras e objetivas.",
+      editedBy: "Ademiro",
+    },
+    {
+      questionId: 2,
+      questionType: "yesno",
+      question: "O professor está disponível para tirar dúvidas?",
+      order: 2,
+      answer: "Sim",
+      editedAnswer: "Sim",
+      editedBy: "Ademiro",
+    },
+    {
+      questionId: 3,
+      questionType: "text",
+      question: "Quais aspectos positivos você destacaria na aula?",
+      order: 3,
+      answer: "A aula foi muito interessante e o professor é muito bom.",
+      editedAnswer: "A aula foi muito interessante e o professor é muito bom.",
+      editedBy: null,
+    },
+    {
+      questionId: 4,
+      questionType: "text",
+      question:
+        "Quais aspectos negativos você destacaria na aula e que poderiam ser melhorados?",
+      order: 4,
+      answer: "",
+      editedAnswer: "",
+      editedBy: null,
+    },
+  ],
+};
+
+export const answer2 = {
+  evaluationId: 2,
+  userName: "Matheus poncicicicio",
+  userEmail: "poncianoceara@gmail.com",
+  userNusp: "987654321",
+  status: "Aprovado",
+  approvedBy: "pedrão ademiro",
+  answers: [
+    {
+      questionId: 1,
+      questionType: "text",
+      question: "Como você avalia a clareza das explicações do professor?",
+      order: 1,
+      answer: "As explicações do professor foram HORRIVEIS.",
+      editedAnswer:
+        "As explicações do professor foram ruins.",
+      editedBy: "Ademiro",
+    },
+    {
+      questionId: 2,
+      questionType: "yesno",
+      question: "O professor está disponível para tirar dúvidas?",
+      order: 2,
+      answer: "NAOPOOOOOOO",
+      editedAnswer: "nao",
+      editedBy: "Ademiro",
+    },
+    {
+      questionId: 3,
+      questionType: "text",
+      question: "Quais aspectos positivos você destacaria na aula?",
+      order: 3,
+      answer: "A aula foi muito interessante e o professor é feio horroso.",
+      editedAnswer: "A aula foi muito interessante e o professor é desprovido de inteligência.",
+      editedBy: null,
+    },
+    {
+      questionId: 4,
+      questionType: "text",
+      question:
+        "Quais aspectos negativos você destacaria na aula e que poderiam ser melhorados?",
+      order: 4,
+      answer: "didática, explicação, carisma, inteligencia, beleza, simpatia, compreensão, etc.",
+      editedAnswer: "",
+      editedBy: null,
+    },
+  ],
+};
+

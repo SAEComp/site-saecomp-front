@@ -1,5 +1,5 @@
 import DropDown from "../Inputs/DropDown";
-import {docentes, disciplinas, status, semestre} from "./mock";
+import { docentes, disciplinas, status, semestre } from "./mock";
 import SearchIcon from "@mui/icons-material/Search";
 
 const DropdownFilters = () => {
@@ -113,8 +113,8 @@ const DropdownFilters = () => {
         }}
         onChange={() => {}}
       />
-      <div className="w-full md:w-[108px]  bg-black text-center flex items-center justify-center h-12 rounded-md">
-        <SearchIcon htmlColor="white"/>
+      <div className="active:scale-95 transition duration-150 ease-in-out shadow-md active:shadow-lg w-full md:w-[108px]  bg-black text-center flex items-center justify-center h-12 rounded-md">
+        <SearchIcon htmlColor="white" />
       </div>
     </div>
   );
