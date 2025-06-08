@@ -90,7 +90,7 @@ const QuestionsContainer: React.FC<IQuestionProps> = ({ setCurrentQuestion, upda
 
     return (
         <div
-            className="flex flex-col bg-white w-full rounded-xl p-5 md:p-12 gap-5 relative overflow-hidden"
+            className="flex flex-col bg-white w-full rounded-xl p-5 md:p-12 gap-5 relative"
         >
             <Counter
                 setCurrentQuestion={setCurrentQuestion}
@@ -99,7 +99,7 @@ const QuestionsContainer: React.FC<IQuestionProps> = ({ setCurrentQuestion, upda
             />
 
             <div
-                className="relative w-full overflow-hidden"
+                className="relative w-full"
                 style={{ height: `${questionsHeight}px` }}
                 {...bind()}
             >

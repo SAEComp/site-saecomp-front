@@ -3,6 +3,12 @@
 
 
 ## Como rodar para desenvolvimento
+Adicionar .env com:
+```ini
+VITE_TEACHER_EVALUATION_API_URL=
+VITE_AUTH_API_URL=
+VITE_GOOGLE_CLIENT_ID=
+```
 
 `npm install`
 
