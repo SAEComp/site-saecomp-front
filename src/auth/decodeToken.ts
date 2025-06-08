@@ -50,10 +50,8 @@ export const decodeRefreshToken = (token: string): IDecodedRefreshToken => {
 export const isTokenExpired = (token: string): boolean => {
     try {
         const decoded: { exp: number } = jwtDecode(token);
-        console.log(decoded.exp,  Date.now() / 1000, (decoded.exp + 30) * 1000 < Date.now())
         return (decoded.exp - 30) * 1000 < Date.now();
     } catch (error) {
-        console.error("Error decoding token:", error);
         return true;
     }
 }

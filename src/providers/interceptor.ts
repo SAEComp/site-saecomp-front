@@ -13,7 +13,6 @@ const interceptor = (publicRoutes: string[]): (config: InternalAxiosRequestConfi
         if (isPublic) return config;
 
         try {
-            console.log("Verifying login for request:", config.url);
             const user = await verifyLogin();
             config.headers.Authorization = `Bearer ${user.accessToken}`;
             return config;

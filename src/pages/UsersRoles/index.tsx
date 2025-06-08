@@ -22,13 +22,11 @@ const UsersRoles = () => {
 
     useEffect(() => {
         authService.listUsers().then((result) => {
-            console.log(result)
             if (result) setTableData(result.map(el => ({
                 ...el,
                 created_at: new Date(el.created_at).toLocaleDateString("pt-BR"),
                 nusp: el.nusp ?? '-'
             })));
-            console.log(result)
         })
     }, []);
 

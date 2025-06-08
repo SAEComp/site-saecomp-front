@@ -4,19 +4,19 @@ import { decodeGoogleToken, decodeAccessToken } from './decodeToken';
 import { verifyLogin } from './verifyLogin';
 import { IUser, IAuthContext } from './auth.interface';
 import { saveUser } from './userService';
+import useGoogle from './useGoogle';
 
 
 const AuthContext = createContext<IAuthContext | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+    const google = useGoogle();
     const [user, setUser] = useState<IUser | null>(null);
     const silentCallback = useRef<boolean>(false);
 
     const logout = async () => {
-        console.log("logout func")
         const resp = await authService.logout();
         if (!resp) {
-            console.error("Failed to logout");
             throw new Error("Failed to logout");
         }
         saveUser(null);
@@ -25,9 +25,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const checkLogin = async () => {
         try {
-            console.log('check login provider:')
             const nUser = await verifyLogin();
-            console.log('check login provider new user:', nUser)
             setUser(nUser);
         } catch (error) {
             setUser(null);
@@ -39,17 +37,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         try {
             await checkLogin();
         } catch (error) {
-            console.log('effect check error', error)
             setUser(null);
         }
     }
 
     const login = async (googleCredential: google.accounts.id.CredentialResponse) => {
-        console.log('login func');
-
         const accessToken = await authService.googleLogin(googleCredential.credential);
         if (!accessToken) {
-            console.error("Failed to login with Google");
             throw new Error("Failed to login with Google");
         }
         const googleUser = decodeGoogleToken(googleCredential);
@@ -70,7 +64,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const handleCallbackResponse = useCallback(async (response: google.accounts.id.CredentialResponse) => {
         silentCallback.current = true;
-        console.log('initialized google callback function');
 
         try {
             const newUser = await verifyLogin();
@@ -79,19 +72,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             setUser(newUser);
             return;
         } catch (error) {
-            console.log('refreshToken expired, trying to login with google');
         }
         
         try {
             await login(response);
 
         } catch (error) {
-            console.error("Login failed:", error);
             return;
         }
     }, []);
 
     useEffect(() => {
+        if (!google) return;
         google.accounts!.id.initialize({
             client_id:
                 import.meta.env.VITE_GOOGLE_CLIENT_ID || '',
@@ -101,7 +93,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             if (!silentCallback.current) effectCheck();
         }, 500);
         return () => clearTimeout(timer);
-    }, []);
+    }, [google]);
 
     return (
         <AuthContext.Provider value={{ user, login, checkLogin, logout, isAuthenticated: !!user }}>

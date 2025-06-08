@@ -17,7 +17,6 @@ export const getUser = (): IUser | null => {
         const user: IUser = JSON.parse(jsonUser);
         return user;
     } catch (error) {
-        console.error("Error parsing user from localStorage:", error);
         return null;
     }
 }
