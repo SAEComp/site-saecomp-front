@@ -4,14 +4,12 @@ import { IUserData } from "../interfaces/authService.interface";
 class AuthService {
     async googleLogin(googleToken: string): Promise<string | null> {
         try {
-            console.log("Attempting Google login with token:", googleToken);
             const response = await authProvider.post('/google-login', { idToken: googleToken });
             if (response.status !== 200) return null;
             const { accessToken } = response.data;
             return accessToken;
         }
         catch (error) {
-            console.error("Google login failed:", error);
             return null;
         }
     }
@@ -23,7 +21,6 @@ class AuthService {
             return accessToken;
         }
         catch (error) {
-            console.error("Token refresh failed:", error);
             return null;
         }
     }
@@ -34,7 +31,6 @@ class AuthService {
             return true;
         }
         catch (error) {
-            console.error("Logout failed:", error);
             return false;
         }
     }
@@ -45,7 +41,6 @@ class AuthService {
             return true;
         }
         catch (error) {
-            console.error("Change role failed:", error);
             return false;
         }
     }
@@ -56,7 +51,6 @@ class AuthService {
             return response.data.result as IUserData[];
         }
         catch (error) {
-            console.error("List users failed:", error);
             return null;
         }
     }

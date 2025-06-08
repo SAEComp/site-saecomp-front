@@ -1,9 +1,11 @@
 import { useEffect, useRef } from "react";
 import { useAuth } from "../../auth/AuthContext";
 import { useLocation, useNavigate } from "react-router";
+import useGoogle from "../../auth/useGoogle";
 
 
 const Login = () => {
+    const google = useGoogle();
     const navigate = useNavigate();
     const location = useLocation();
     const { logout, isAuthenticated, user } = useAuth();
@@ -19,12 +21,11 @@ const Login = () => {
             await logout();
 
         } catch (error) {
-            console.error("Logout failed:", error);
         }
     }
 
     useEffect(() => {
-        console.log(user, isAuthenticated)
+        if (!google) return;
         if (isAuthenticated) return;
 
         const docGetId = signInDiv.current;
@@ -36,7 +37,7 @@ const Login = () => {
             type: "standard"
         });
 
-    }, [isAuthenticated]);
+    }, [google, isAuthenticated]);
 
     return (
         <div className="flex flex-1 items-center justify-center bg-gray-100 py-12 px-4">

@@ -22,50 +22,50 @@ const routes = createBrowserRouter([
         errorElement: <Error />,
         children: [
             {
-                path: "/",
+                index: true,
                 element: <Home />
             },
             {
-                path: "/saecomp",
+                path: "saecomp",
                 element: <SAEcomp />
             },
             {
-                path: "/enfases",
+                path: "enfases",
                 element: <Enfases />
             },
             {
-                path: "/manual",
+                path: "manual",
                 element: <Manual />
             },
             {
-                path: "/login",
+                path: "login",
                 element: <Login />
             },
             {
-                path: "/avaliacoes",
+                path: "avaliacoes",
                 element: <RequireAuth />,
                 children: [
                     {
-                        path: "/avaliacoes",
+                        index: true,
                         element: <TeacherEvaluationMenu />
                     },
                     {
-                        path: "/avaliacoes/resultados",
+                        path: "resultados",
                         element: <TeacherFeedbackResults />
                         
                     },
                     {
-                        path: "/avaliacoes/avaliacao",
+                        path: "avaliacao",
                         element: <TeacherFeedback />
                     }
                 ]
             },
             {
-                path: "/admin",
+                path: "admin",
                 element: <RequireAuth role="admin" />,
                 children: [
                     {
-                        path: "/admin/usuarios",
+                        path: "usuarios",
                         element: <UsersRoles />
                     }
                 ]

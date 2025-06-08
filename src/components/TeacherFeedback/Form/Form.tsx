@@ -100,16 +100,6 @@ const Form = () => {
         setTotalQuestions(newValue);
     }
 
-    const [user, setUser] = useState<any | null>(null);
-
-    useEffect(() => {
-        const savedUser = localStorage.getItem("token");
-        if (savedUser) {
-            setUser(JSON.parse(savedUser));
-        }
-    }, []);
-
-    const isUspEmail = user?.email?.endsWith("usp.br");
 
 
     return (
@@ -157,23 +147,14 @@ const Form = () => {
                 />
             </div>
             <button
-                className={`bg-[#101010] text-white font-inter font-medium h-12 w-[80%] md:w-[30%] rounded-lg ${
-                    !user || !isUspEmail ? "opacity-50 cursor-not-allowed" : ""
-                }`}
-                disabled={!user || !isUspEmail}
+                className={`bg-[#101010] text-white font-inter font-medium h-12 w-[80%] md:w-[30%] rounded-lg`}
+
                 onClick={() => {
-                    if (!user) {
-                        alert("Você precisa estar logado para enviar uma avaliação.");
-                        return;
-                    }
-                    if (!isUspEmail) {
-                        alert("Somente alunos USP podem enviar avaliações.");
-                        return;
-                    }
+
                     createFeedback();
                 }}
             >
-                {user ? (isUspEmail ? "Enviar" : "Acesso restrito a alunos USP") : "Faça login para enviar"}
+                Enviar
             </button>
 
         </div>
