@@ -40,24 +40,6 @@ export const HamburgerButton = styled.button`
     }
 `;
 
-export const SideMenu = styled.div`
-    position: fixed;
-    top: 0;
-    right: 0;
-    height: auto;
-    width: 250px;
-    background-color: #03B04B;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding-top: 70px;
-    padding-bottom: 30px;
-    border-radius: 10px;
-    transform: ${({ isOpen }) => (isOpen ? "translateX(0)" : "translateX(100%)")};
-    transition: transform 0.3s ease-in-out;
-    z-index: 1;
-    box-shadow: -2px 2px 6px rgba(0, 0, 0, 0.4);
-`;
 
 export const SideMenuButton = styled.button`
     position: relative;

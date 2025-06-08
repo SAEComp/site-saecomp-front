@@ -12,13 +12,14 @@ interface IDropDown {
     showSubtitle?: boolean;
     placeholder?: string;
     searchable?: boolean;
+    clearable?: boolean;
     searchFilter?: (search: string, option: IOption) => boolean;
     value: IOption | null;
     onChange: (option: IOption | null) => void;
     className?: React.HTMLProps<HTMLElement>["className"];
 };
 
-const DropDown = ({ options, showSubtitle = false, placeholder, searchable = true, searchFilter, value, onChange, className="" }: IDropDown) => {
+const DropDown = ({ options, showSubtitle = false, placeholder, searchable = true, clearable = true, searchFilter, value, onChange, className="" }: IDropDown) => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [search, setSearch] = useState<IOption[]>([]);
     const [searchValue, setSearchValue] = useState<string>('');
@@ -113,7 +114,7 @@ const DropDown = ({ options, showSubtitle = false, placeholder, searchable = tru
                 autoCorrect="off"
                 spellCheck={false}
             />
-            {searchValue && (
+            {searchValue && clearable && (
                 <div
                     className="absolute inset-y-0 right-8 h-full flex items-center pr-3 cursor-pointer"
                     onMouseDown={clearSelection}
@@ -171,7 +172,7 @@ const DropDown = ({ options, showSubtitle = false, placeholder, searchable = tru
                 </svg>
             </div>
             {isOpen && (
-                <div className="absolute z-10 w-full mt-1 bg-white rounded-lg shadow-sm py-2">
+                <div className="absolute z-50 w-full mt-1 bg-white rounded-lg shadow-sm py-2">
                     <List
                         height={Math.min(search.length * 60, 240)}
                         itemCount={search.length}

@@ -5,7 +5,8 @@ import { formReducer, initialState } from "./reducer";
 import NumberInput from "../../Inputs/NumberInput";
 import TextInput from "../../Inputs/TextInput";
 import { TAutocompleteOptions } from "./types";
-import feedbackProvider from "../../../services/TeacherFeedback/feedback.provider";
+// import feedbackProvider from "../../../services/TeacherFeedback/feedback.provider";
+import { teacherEvalService } from "../../../services/teacherEval.service";
 
 const useIsMobile = () => {
     const [isMobile, setIsMobile] = useState(false);
@@ -31,13 +32,14 @@ const Form = () => {
     const isMobile = useIsMobile();
 
     const fetchDropdownData = async () => {
-        const [teacherResult, courseResult] = await Promise.all([
-            feedbackProvider.getTeachers({ pageSize: 30 }),
-            feedbackProvider.getCourses({ pageSize: 30 })
-        ]);
-        if (teacherResult) setTeachers(teacherResult.data.map((teacher) => ({ id: teacher.teacherId, label: teacher.teacherName })));
-        if (courseResult) setCourses(courseResult.data.map((course) => ({ id: course.courseId, label: course.courseName, subtitle: course.courseCode })));
-        console.log(teacherResult, courseResult);
+        await teacherEvalService.getTeachersCourses();
+        // const [teacherResult, courseResult] = await Promise.all([
+        //     feedbackProvider.getTeachers({ pageSize: 30 }),
+        //     feedbackProvider.getCourses({ pageSize: 30 })
+        // ]);
+        // if (teacherResult) setTeachers(teacherResult.data.map((teacher) => ({ id: teacher.teacherId, label: teacher.teacherName })));
+        // if (courseResult) setCourses(courseResult.data.map((course) => ({ id: course.courseId, label: course.courseName, subtitle: course.courseCode })));
+        // console.log(teacherResult, courseResult);
     }
 
     useEffect(() => {
@@ -53,16 +55,16 @@ const Form = () => {
             }
         }
         for (const question of formState.questions) {
-            const response = await feedbackProvider.createFeedback({
-                userId: user.email,
-                teacherId: question.teacherId as string,
-                courseId: question.subjectId as string,
-                positiveAspects: question.positiveAspects,
-                negativeAspects: question.negativeAspects,
-                rating: question.rating,
-                additionalComments: question.additionalComments
-            });
-            console.log(response);
+            // const response = await feedbackProvider.createFeedback({
+            //     userId: user.email,
+            //     teacherId: question.teacherId as string,
+            //     courseId: question.subjectId as string,
+            //     positiveAspects: question.positiveAspects,
+            //     negativeAspects: question.negativeAspects,
+            //     rating: question.rating,
+            //     additionalComments: question.additionalComments
+            // });
+            // console.log(response);
         }
     };
 

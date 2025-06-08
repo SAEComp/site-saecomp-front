@@ -2,7 +2,7 @@ import DropDown from "../../Inputs/DropDown";
 import { IFilterData, ITeacher, IPagination } from "../../../interfaces/TeacherFeedback/feedback.interface";
 import { useState, useEffect } from "react";
 import { TAutocompleteOptions } from "../Form/types";
-import feedbackProvider from "../../../services/TeacherFeedback/feedback.provider";
+// import feedbackProvider from "../../../services/TeacherFeedback/feedback.provider";
 import Spinner from "../../Spinner/Spinner";
 
 interface IFilter {
@@ -40,14 +40,14 @@ const Filter = ({ filterData, setTeachers }: IFilter) => {
 
     const fetchFilteredTeachers = async () => {
         setLoading(true);
-        const response = await feedbackProvider.getTeachers({
-            pageSize: 0,
-            ...(selectedTeacher?.id && { teacherId: String(selectedTeacher.id) }),
-            ...(selectedCourse?.subtitle && { courseCode: selectedCourse.subtitle })
-        });
-        if (response) {
-            setTeachers(response);
-        }
+        // const response = await feedbackProvider.getTeachers({
+        //     pageSize: 0,
+        //     ...(selectedTeacher?.id && { teacherId: String(selectedTeacher.id) }),
+        //     ...(selectedCourse?.subtitle && { courseCode: selectedCourse.subtitle })
+        // });
+        // if (response) {
+        //     setTeachers(response);
+        // }
         setLoading(false);
     }
 

@@ -3,9 +3,9 @@ export { };
 declare global {
     namespace google.accounts.id {
         interface CredentialResponse {
-            clientId: string;
+            clientId?: string;
             credential: string;
-            select_by: string;
+            select_by?: string;
         }
 
         interface InitializeOptions {

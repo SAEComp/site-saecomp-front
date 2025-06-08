@@ -1,5 +1,3 @@
-import { createBrowserRouter } from "react-router";
-
 import Home from "./pages/Home";
 import Enfases from "./pages/Enfases";
 import Manual from "./pages/Manual-Bixo";
@@ -8,13 +6,20 @@ import Login from "./pages/Login";
 import TeacherFeedback from "./pages/TeacherFeedback";
 import TeacherFeedbackResults from "./pages/TeacherFeedbackResults";
 import LayoutWrapper from "./components/Layout/LayoutWrapper";
+import Error from "./pages/Error";
+import TeacherEvaluationMenu from "./pages/TeacherEvaluationMenu";
+import RequireAuth from "./auth/RequireAuth";
+import UsersRoles from "./pages/UsersRoles";
+import { AuthProvider } from "./auth/AuthContext";
+import { createBrowserRouter } from "react-router";
 
 
 
-const router = createBrowserRouter([
+const routes = createBrowserRouter([
     {
         path: "/",
-        element: <LayoutWrapper />,
+        element: <AuthProvider><LayoutWrapper /></AuthProvider>,
+        errorElement: <Error />,
         children: [
             {
                 path: "/",
@@ -25,10 +30,6 @@ const router = createBrowserRouter([
                 element: <SAEcomp />
             },
             {
-                path: "/avaliacao",
-                element: <TeacherFeedback />
-            },
-            {
                 path: "/enfases",
                 element: <Enfases />
             },
@@ -37,16 +38,41 @@ const router = createBrowserRouter([
                 element: <Manual />
             },
             {
-                path: "/resultados",
-                element: <TeacherFeedbackResults />
-            },
-            {
                 path: "/login",
                 element: <Login />
+            },
+            {
+                path: "/avaliacoes",
+                element: <RequireAuth />,
+                children: [
+                    {
+                        path: "/avaliacoes",
+                        element: <TeacherEvaluationMenu />
+                    },
+                    {
+                        path: "/avaliacoes/resultados",
+                        element: <TeacherFeedbackResults />
+                        
+                    },
+                    {
+                        path: "/avaliacoes/avaliacao",
+                        element: <TeacherFeedback />
+                    }
+                ]
+            },
+            {
+                path: "/admin",
+                element: <RequireAuth role="admin" />,
+                children: [
+                    {
+                        path: "/admin/usuarios",
+                        element: <UsersRoles />
+                    }
+                ]
             }
         ]
     }
 ]);
 
-export default router;
+export default routes;
 

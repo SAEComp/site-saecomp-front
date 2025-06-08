@@ -6,7 +6,7 @@ const LayoutWrapper = () => {
     return (
         <div className="flex flex-col min-h-screen">
             <NavBar />
-            <main className="flex-grow">
+            <main className="flex-1 flex flex-col">
                 <Outlet />
             </main>
             <Footer />

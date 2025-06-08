@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { ITeacher, IFilterData, IFeedbacksResponse, IPagination } from "../../../interfaces/TeacherFeedback/feedback.interface";
-import feedbackProvider from "../../../services/TeacherFeedback/feedback.provider";
+// import feedbackProvider from "../../../services/TeacherFeedback/feedback.provider";
 import arrow from "../../../assets/svg/arrow.svg";
 import Card from "./Card"
 import Filter from "./Filter"
@@ -16,37 +16,37 @@ const ResultsContainer = () => {
 
     const fetchTeachers = async () => {
         setLoadingTeachers(true);
-        const response = await feedbackProvider.getTeachers({
-            pageSize: 9,
-            ...(teachers?.lastVisible && { lastVisible: teachers.lastVisible })
-        });
-        if (response) {
-            if (teachers) {
-                response.data = [...teachers.data, ...response.data];
-            }
-            setTeachers(response);
-        }
+        // const response = await feedbackProvider.getTeachers({
+        //     pageSize: 9,
+        //     ...(teachers?.lastVisible && { lastVisible: teachers.lastVisible })
+        // });
+        // if (response) {
+        //     if (teachers) {
+        //         response.data = [...teachers.data, ...response.data];
+        //     }
+        //     setTeachers(response);
+        // }
         setLoadingTeachers(false);
     }
 
     const loadCard = async (teacherId: string) => {
         setLoadingCard(true);
-        const response = await feedbackProvider.getFeedbacks({
-            pageSize: 10,
-            teacherId: teacherId
-        })
-        if (response) {
-            setCardData(response);
-        }
+        // const response = await feedbackProvider.getFeedbacks({
+        //     pageSize: 10,
+        //     teacherId: teacherId
+        // })
+        // if (response) {
+        //     setCardData(response);
+        // }
         setLoadingCard(false);
         setShowCard(true);
     }
 
     const fetchFilterData = async () => {
-        const response = await feedbackProvider.getFilterData();
-        if (response) {
-            setFilterData(response);
-        }
+        // const response = await feedbackProvider.getFilterData();
+        // if (response) {
+        //     setFilterData(response);
+        // }
     }
 
     useEffect(() => {
