@@ -1,16 +1,11 @@
-import { Container, Wrapper } from './styles';
-
-import NavBar from "../../components/NavBar";
 import WhatIs from "../../components/WhatIs";
 import Extras from "../../components/Extra";
-import Footer from "../../components/Footer";
 import Header from '../../components/Header';
 
 export default function Home() {
 
    return (
-      <Container>
-         <NavBar />
+      <>
 
          <Header
             title="ENGENHARIA DE COMPUTAÇÃO"
@@ -22,7 +17,6 @@ export default function Home() {
             title="EXTRACURRICULARES"
             text="Umas das melhores oportunidades que se tem na universidade são as extras curriculares. Além de gerar muito aprendizado, também são ótimas para socializar. Dentre as diversas, estas foram responsáveis pelo desenvolvimento do site, mas você pode conferir as demais pelo seu manual!"
          />
-         <Footer />
-      </Container>
+      </>
    );
 }

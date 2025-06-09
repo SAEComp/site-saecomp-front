@@ -1,12 +1,6 @@
 import React from "react";
 import {WhatwedoDiv,WhatwedoDiv2,WhatwedoDiv3, Container  } from "./styles";
 import CardWhatwedo from '../CardWhatwedo'
-import img1 from '../../assets/img/brain.png';
-import img2 from '../../assets/img/blusa.png';
-import img3 from '../../assets/img/prancheta.png';
-import img4 from '../../assets/img/hug.png';
-import img5 from '../../assets/img/pc.png';
-import img6 from '../../assets/img/festa.png';
 
 
 const WhatWeDo:React.FC = ()=> {
