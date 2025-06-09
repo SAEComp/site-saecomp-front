@@ -1,8 +1,47 @@
 import DropDown from "../Inputs/DropDown";
 import { docentes, disciplinas, status, semestre } from "./mock";
 import SearchIcon from "@mui/icons-material/Search";
+// import { useState, useEffect } from "react";
+// import { IAnswersFilter, TAutocompleteOptions } from "./types";
+// const distinct = <T,>(list: T[], key: keyof T): T[] => {
+//   return [...new Map(list.map((item) => [item[key], item])).values()];
+// };
 
 const DropdownFilters = () => {
+  // const [statusFilter, setStatusFilter] = useState<string[]>();
+  // const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
+
+  // const [teacherFilter, setTeacherFilter] = useState<string[]>([]);
+  // const [selectedTeacher, setSelectedTeacher] = useState<string | null>(null);
+
+  // const [courseFilter, setCourseFilter] = useState<TAutocompleteOptions[]>([]);
+  // const [selectedDiscipline, setSelectedDiscipline] =
+  //   useState<TAutocompleteOptions | null>(null);
+
+  // const [semesterFilter, setSemesterFilter] = useState<string[]>([]);
+  // const [selectedSemester, setSelectedSemester] = useState<string | null>(null);
+
+  // const SetFilters = (
+  //   status: string | null,
+  //   teacher: string | null,
+  //   course: TAutocompleteOptions | null,
+  //   semester: string | null
+  // ) => {
+  //   setSelectedStatus(statusFilter);
+  //   setSelectedTeacher(teacherFilter);
+  //   setSelectedDiscipline(courseFilter);
+  //   setSelectedSemester(semesterFilter);
+  // };
+
+  // useEffect(() => {
+  //   setFilters(
+  //     selectedStatus,
+  //     selectedTeacher,
+  //     selectedCourse,
+  //     selectedSemester
+  //   );
+  // }, [filterData]);
+
   return (
     <div className="w-full flex justify-center flex-col md:flex-row gap-5 md:gap-5 lg:gap-[3%] px-[1vw] sm:px-[1vw] md:px-[1vw] lg:px-[5vw] xl:px-[2vw]">
       <DropDown

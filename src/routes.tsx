@@ -34,7 +34,6 @@ const AppRoutes = () => {
                 <Route element={<Test />} path="/test" />
                 <Route element={<TeacherFeedbackAdmin/>} path="/TeacherFeedbackAdmin" />
             </Routes>
-
         </BrowserRouter>
     )
 }
