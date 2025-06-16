@@ -11,7 +11,7 @@ import questionTypes from "../../../types/questionTypes";
 import { ActiveQuestions } from "../../../schemas/teacherEvaluation/output/evaluation.schema";
 
 
-const componentTypes: Record<typeof questionTypes[number], React.ComponentType<any>> = {
+export const componentTypes: Record<typeof questionTypes[number], React.ComponentType<any>> = {
     text: TextInput,
     slider: SliderInput,
     numeric: SliderInput

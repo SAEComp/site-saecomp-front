@@ -18,6 +18,8 @@ export const getPublicAnswersOutSchema = z.object({
     evaluations: z.array(publicAnswersSchema)
 });
 
+export type GetPublicAnswersOut = z.infer<typeof getPublicAnswersOutSchema>;
+
 const publicEvaluationDetailsSchema = z.object({
     evaluationId: z.coerce.number().int().positive("O ID da avaliação deve ser um número inteiro positivo."),
     teacherName: z.string().min(3, "O nome do professor deve ter pelo menos 3 caracteres."),
@@ -46,3 +48,5 @@ export type PublicAnswerDetails = z.infer<typeof publicAnswerDetailsSchema>;
 export const getPublicAnswerDetailsOutSchema = publicEvaluationDetailsSchema.extend({
     answers: z.array(publicAnswerDetailsSchema)
 });
+
+export type GetPublicAnswerDetailsOut = z.infer<typeof getPublicAnswerDetailsOutSchema>;
