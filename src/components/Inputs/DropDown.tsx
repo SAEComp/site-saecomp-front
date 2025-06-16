@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, memo } from "react";
 import { FixedSizeList as List } from "react-window";
 
-interface IOption {
+export interface IOption {
     label: string;
     id: string | number;
     subtitle?: string;
@@ -100,7 +100,7 @@ const DropDown = ({ options, showSubtitle = false, placeholder, searchable = tru
     });
 
     return (
-        <div className={className + " group relative min-w-3 min-h-5 font-inter"}>
+        <div className={className + " group relative min-w-3 min-h-5 font-inter overflow-visible"}>
             <input
                 ref={inputRef}
                 className="focus:outline-none focus:ring-0 focus:border-0 font-inter font-normal w-full h-full rounded-lg pr-16 py-3 pl-3 whitespace-nowrap overflow-hidden text-ellipsis placeholder-gray-400 placeholder-opacity-100 focus:placeholder-opacity-30"
@@ -172,7 +172,7 @@ const DropDown = ({ options, showSubtitle = false, placeholder, searchable = tru
                 </svg>
             </div>
             {isOpen && (
-                <div className="absolute z-50 w-full mt-1 bg-white rounded-lg shadow-sm py-2">
+                <div className="absolute z-[999999] w-full mt-1 bg-white rounded-lg shadow-sm py-2">
                     <List
                         height={Math.min(search.length * 60, 240)}
                         itemCount={search.length}

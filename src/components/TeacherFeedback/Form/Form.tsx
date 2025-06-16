@@ -1,110 +1,49 @@
-import { useEffect, useReducer, useState } from "react";
-import { IQuestion } from "./types";
-import QuestionsContainer from "./QuestionsContainer";
-import { formReducer, initialState } from "./reducer";
+import { useEffect, useState } from "react";
+import useIsMobile from "./useIsMobile";
 import NumberInput from "../../Inputs/NumberInput";
-import TextInput from "../../Inputs/TextInput";
-import { TAutocompleteOptions } from "./types";
-// import feedbackProvider from "../../../services/TeacherFeedback/feedback.provider";
-import { teacherEvalService } from "../../../services/teacherEval.service";
+import { Classes, ActiveQuestions } from "../../../schemas/teacherEvaluation/output/evaluation.schema";
+import Counter from "./Counter";
+import Questions from "./Questions";
+import AnimatedCarousel from "../../AnimatedCarousel/AnimatedCarousel";
+import { evaluationService } from "../../../services/evaluation.service";
+import useEvaluationForm from "./useEvaluationForm";
+import CloseIcon from '@mui/icons-material/Close';
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
 
-const useIsMobile = () => {
-    const [isMobile, setIsMobile] = useState(false);
-  
-    useEffect(() => {
-      const mediaQuery = window.matchMedia('(max-width: 768px)');
-  
-      const handleMediaChange = () => setIsMobile(mediaQuery.matches);
-  
-      handleMediaChange();
-      mediaQuery.addEventListener('change', handleMediaChange);
-  
-      return () => mediaQuery.removeEventListener('change', handleMediaChange);
-    }, []);
-  
-    return isMobile;
-  }
 
 const Form = () => {
-    const [formState, dispatch] = useReducer(formReducer, initialState);
-    const [teachers, setTeachers] = useState<TAutocompleteOptions[]>([]);
-    const [courses, setCourses] = useState<TAutocompleteOptions[]>([]);
+    const [classes, setClasses] = useState<Classes[]>([]);
+    const [questions, setQuestions] = useState<ActiveQuestions>([]);
     const isMobile = useIsMobile();
+    const evaluationForm = useEvaluationForm();
 
-    const fetchDropdownData = async () => {
-        await teacherEvalService.getTeachersCourses();
-        // const [teacherResult, courseResult] = await Promise.all([
-        //     feedbackProvider.getTeachers({ pageSize: 30 }),
-        //     feedbackProvider.getCourses({ pageSize: 30 })
-        // ]);
-        // if (teacherResult) setTeachers(teacherResult.data.map((teacher) => ({ id: teacher.teacherId, label: teacher.teacherName })));
-        // if (courseResult) setCourses(courseResult.data.map((course) => ({ id: course.courseId, label: course.courseName, subtitle: course.courseCode })));
-        // console.log(teacherResult, courseResult);
+    const fetchInitialData = async () => {
+        const _classes = await evaluationService.getClasses();
+        if (!_classes) {
+            alert('Erro ao buscar as turmas. Tente novamente mais tarde.');
+            return;
+        }
+        setClasses(_classes);
+        const _questions = await evaluationService.getQuestions();
+        if (!_questions) {
+            alert('Erro ao buscar as perguntas. Tente novamente mais tarde.');
+            return;
+        }
+        setQuestions(_questions);
     }
 
     useEffect(() => {
-        fetchDropdownData();
+        fetchInitialData();
     }, []);
 
     const createFeedback = async () => {
-        
-        for (const question of formState.questions) {
-            if (question.teacherId === null || question.subjectId === null) {
-                alert('Por favor, preencha todos os campos');
-                return;
-            }
-        }
-        for (const question of formState.questions) {
-            // const response = await feedbackProvider.createFeedback({
-            //     userId: user.email,
-            //     teacherId: question.teacherId as string,
-            //     courseId: question.subjectId as string,
-            //     positiveAspects: question.positiveAspects,
-            //     negativeAspects: question.negativeAspects,
-            //     rating: question.rating,
-            //     additionalComments: question.additionalComments
-            // });
-            // console.log(response);
-        }
+        await evaluationService.createEvaluation("0000000", evaluationForm.state.evaluations)
     };
-
-    const updateQuestion = (questionId: number, field: keyof IQuestion, value: number | string) => {
-        dispatch({ type: 'UPDATE_QUESTION', questionId, field, value });
-    };
-
-    const addNQuestions = (n: number) => {
-        dispatch({ type: 'ADD_N_QUESTIONS', n });
-    };
-
-    const removeNQuestions = (n: number) => {
-        dispatch({ type: 'REMOVE_N_QUESTIONS', n });
-    };
-
-    const setCurrentQuestion = (currentQuestion: number) => {
-        dispatch({ type: 'SET_CURRENT_QUESTION', payload: currentQuestion });
-    };
-
-    const setTotalQuestions = (totalQuestions: number) => {
-        dispatch({ type: 'SET_TOTAL_QUESTIONS', payload: totalQuestions });
-    };
-
-    const addAdditionalComments = (comments: string) => {
-        dispatch({ type: 'ADD_ADDITIONAL_COMMENTS', payload: comments });
-    };
-
-    const changeFunction = (newValue: number | null) => {
-        if (newValue === null || newValue == formState.totalQuestions) return;
-        const newQuestions = newValue - formState.totalQuestions
-        if (newQuestions > 0) addNQuestions(newQuestions);
-        else removeNQuestions(newQuestions);
-        setTotalQuestions(newValue);
-    }
-
 
 
     return (
         <div
-        className="flex flex-col justify-center items-center gap-10 w-full bg-[#03B04B] py-8 sm:px-8 md:px-10 px-2"
+            className="flex flex-col justify-center items-center gap-10 w-full bg-[#03B04B] py-8 sm:px-8 md:px-10 px-2"
 
         >
             <div
@@ -116,43 +55,70 @@ const Form = () => {
                     Quantas disciplinas você cursou esse semestre?
                 </span>
                 <NumberInput
+                    key={evaluationForm.state.totalEvaluations}
                     min={1}
                     max={50}
-                    defaultValue={1}
-                    onChange={changeFunction}
+                    defaultValue={evaluationForm.state.totalEvaluations}
+                    onChange={(newValue) => newValue ? evaluationForm.setTotalEvaluations(newValue) : null}
                     mobile={isMobile}
                 />
             </div>
-            <QuestionsContainer
-                setCurrentQuestion={setCurrentQuestion}
-                updateQuestion={updateQuestion}
-                formState={formState}
-                teachers={teachers}
-                courses={courses}
-            />
-            <div
-                className="flex flex-col gap-4 p-3 w-full md:w-1/2"
-            >
-                <span
-                    className="font-inter text-white"
+            <div className="flex flex-col bg-white w-full rounded-xl p-5 md:p-12 gap-5 relative">
+                <div className="flex justify-between">
+                    <Counter
+                        setCurrentQuestion={evaluationForm.setCurrentEvaluation}
+                        totalQuestions={evaluationForm.state.totalEvaluations}
+                        currentQuestion={evaluationForm.state.currentEvaluation}
+                    />
+                    <div className="flex my-auto gap-5">
+                        <div
+                            className="bg-black rounded-lg flex justify-center items-center p-2 cursor-pointer group"
+                            title="Resetar formulário"
+                            onClick={() => evaluationForm.resetForm()}
+                        >
+                            <RestartAltIcon className="text-white group-hover:animate-spinOnce h-6 w-6" />
+                        </div>
+                        {evaluationForm.state.totalEvaluations > 1 && (<div
+                            className="bg-black rounded-lg flex justify-center items-center p-2 cursor-pointer group"
+                            title="Limpar todos os formulários"
+                            onClick={() => evaluationForm.removeEvaluation(evaluationForm.state.currentEvaluation)}
+                        >
+                            <CloseIcon className="text-white group-hover:scale-125 duration-100 transition-transform ease-in-out h-6 w-6" />
+                        </div>)}
+
+                    </div>
+
+
+
+
+                </div>
+
+                <AnimatedCarousel
+                    index={evaluationForm.state.currentEvaluation}
+                    setIndex={evaluationForm.setCurrentEvaluation}
+                    className="w-full"
                 >
-                    Comentários adicionais
-                </span>
-                <TextInput
-                    label="Comente outras sugestões ou reclamações gerais, não específicas a um professor"
-                    multiline
-                    rows={6}
-                    value={formState.additionalComments}
-                    onChange={addAdditionalComments}
+                    {Array.from({ length: evaluationForm.state.totalEvaluations }).map((_, i) => (
+                        <Questions
+                            key={i}
+                            evaluationState={evaluationForm.state.evaluations[i]}
+                            updateEvaluationClass={(classId) => evaluationForm.updateEvaluationClass(i, classId)}
+                            updateAnswer={(questionId, answer) => evaluationForm.updateAnswer(i, questionId, answer)}
+                            classes={classes}
+                            questions={questions}
+                        />
+                    ))}
+                </AnimatedCarousel>
+
+                <Counter
+                    setCurrentQuestion={evaluationForm.setCurrentEvaluation}
+                    totalQuestions={evaluationForm.state.totalEvaluations}
+                    currentQuestion={evaluationForm.state.currentEvaluation}
                 />
             </div>
             <button
                 className={`bg-[#101010] text-white font-inter font-medium h-12 w-[80%] md:w-[30%] rounded-lg`}
-
-                onClick={() => {
-
-                    createFeedback();
-                }}
+                onClick={createFeedback}
             >
                 Enviar
             </button>

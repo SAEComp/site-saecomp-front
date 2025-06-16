@@ -8,7 +8,7 @@ const Login = () => {
     const google = useGoogle();
     const navigate = useNavigate();
     const location = useLocation();
-    const { logout, isAuthenticated, user } = useAuth();
+    const { logout, isAuthenticated, user, googleInitialized } = useAuth();
     const signInDiv = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -26,6 +26,7 @@ const Login = () => {
 
     useEffect(() => {
         if (!google) return;
+        if (!googleInitialized) return;
         if (isAuthenticated) return;
 
         const docGetId = signInDiv.current;
@@ -37,7 +38,7 @@ const Login = () => {
             type: "standard"
         });
 
-    }, [google, isAuthenticated]);
+    }, [google, isAuthenticated, googleInitialized]);
 
     return (
         <div className="flex flex-1 items-center justify-center bg-gray-100 py-12 px-4">
