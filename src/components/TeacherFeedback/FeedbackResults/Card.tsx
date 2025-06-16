@@ -58,7 +58,7 @@ export default function Card({ evaluationId, setShowCard }: CardProps) {
                         {/* Photo background and image */}
                         <div className="absolute inset-3 flex items-center justify-center rounded-full bg-[#D9D9D9]">
                             <img
-                                src="./src/assets/img/perry.png"
+                                src={`${import.meta.env.VITE_FILES}/${cardData?.teacherId}.jpg`}
                                 className="w-full h-full object-cover rounded-full"
                             />
                         </div>
