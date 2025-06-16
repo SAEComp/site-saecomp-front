@@ -1,7 +1,7 @@
 import DropDown from "../../Inputs/DropDown";
 import { IFilterData, ITeacher, IPagination } from "../../../interfaces/TeacherFeedback/feedback.interface";
 import { useState, useEffect } from "react";
-import { TAutocompleteOptions } from "../Form/types";
+import { IOption as TAutocompleteOptions } from "../../Inputs/DropDown";
 // import feedbackProvider from "../../../services/TeacherFeedback/feedback.provider";
 import Spinner from "../../Spinner/Spinner";
 
@@ -10,7 +10,7 @@ interface IFilter {
     setTeachers: React.Dispatch<React.SetStateAction<IPagination<ITeacher> | null>>
 }
 
-const distinct = <T,>(list: T[], key: keyof T): T[] => {
+export const distinct = <T,>(list: T[], key: keyof T): T[] => {
     return [...new Map(list.map(item => [item[key], item])).values()];
 };
 

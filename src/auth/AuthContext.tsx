@@ -13,6 +13,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const google = useGoogle();
     const [user, setUser] = useState<IUser | null>(null);
     const silentCallback = useRef<boolean>(false);
+    const [googleInitialized, setGoogleInitialized] = useState<boolean>(false);
 
     const logout = async () => {
         const resp = await authService.logout();
@@ -89,6 +90,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 import.meta.env.VITE_GOOGLE_CLIENT_ID || '',
             callback: handleCallbackResponse
         });
+        setGoogleInitialized(true);
         const timer = setTimeout(() => {
             if (!silentCallback.current) effectCheck();
         }, 500);
@@ -96,7 +98,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }, [google]);
 
     return (
-        <AuthContext.Provider value={{ user, login, checkLogin, logout, isAuthenticated: !!user }}>
+        <AuthContext.Provider value={{ user, login, checkLogin, logout, isAuthenticated: !!user, googleInitialized }}>
             {children}
         </AuthContext.Provider>
     );

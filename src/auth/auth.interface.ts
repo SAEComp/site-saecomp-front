@@ -15,4 +15,5 @@ export interface IAuthContext {
     logout: () => Promise<void>;
     checkLogin: () => Promise<void>;
     isAuthenticated: boolean;
+    googleInitialized: boolean;
 }
