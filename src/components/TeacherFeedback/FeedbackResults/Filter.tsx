@@ -1,53 +1,75 @@
 import DropDown from "../../Inputs/DropDown";
-import { IFilterData, ITeacher, IPagination } from "../../../interfaces/TeacherFeedback/feedback.interface";
 import { useState, useEffect } from "react";
-import { IOption as TAutocompleteOptions } from "../../Inputs/DropDown";
-// import feedbackProvider from "../../../services/TeacherFeedback/feedback.provider";
 import Spinner from "../../Spinner/Spinner";
-
-interface IFilter {
-    filterData: IFilterData[];
-    setTeachers: React.Dispatch<React.SetStateAction<IPagination<ITeacher> | null>>
-}
+import { Classes } from "../../../schemas/teacherEvaluation/output/evaluation.schema";
+import { IOption } from "../../Inputs/DropDown";
+import { GetPublicAnswersOut } from "../../../schemas/teacherEvaluation/output/answer.schema";
+import { answersService } from "../../../services/answers.service";
 
 export const distinct = <T,>(list: T[], key: keyof T): T[] => {
     return [...new Map(list.map(item => [item[key], item])).values()];
 };
 
 
+interface FilterProps {
+    classes: Classes[];
+    setAnswers: React.Dispatch<React.SetStateAction<GetPublicAnswersOut>>;
+}
 
-const Filter = ({ filterData, setTeachers }: IFilter) => {
-    const [teacherFilter, setTeacherFilter] = useState<TAutocompleteOptions[]>([]);
-    const [courseFilter, setCourseFilter] = useState<TAutocompleteOptions[]>([]);
-    const [selectedTeacher, setSelectedTeacher] = useState<TAutocompleteOptions | null>(null);
-    const [selectedCourse, setSelectedCourse] = useState<TAutocompleteOptions | null>(null);
+
+const Filter = ({ classes, setAnswers }: FilterProps) => {
     const [loading, setLoading] = useState<boolean>(false);
 
-    const setFilters = (teacher: TAutocompleteOptions | null, course: TAutocompleteOptions | null) => {
-        console.log("...", filterData);
-        setTeacherFilter(distinct(filterData.filter((obj) => {
-            return course === null ? true : obj.courseId === course.id
-        }).map((el) => { return { id: el.teacherId, label: el.teacherName, subtitle: el.teacherNickname } }), "id"))
-
-        setCourseFilter(distinct(filterData.filter((obj) => {
-            return teacher === null ? true : obj.teacherId === teacher.id
-        }).map((el) => { return { id: el.courseId, label: el.courseName, subtitle: el.courseCode } }), "id"))
-    }
+    const [teachers, setTeachers] = useState<IOption[]>([]);
+    const [courses, setCourses] = useState<IOption[]>([]);
+    const [selectedTeacher, setSelectedTeacher] = useState<IOption | null>(null);
+    const [selectedCourse, setSelectedCourse] = useState<IOption | null>(null);
 
     useEffect(() => {
-        setFilters(selectedTeacher, selectedCourse);
-    }, [filterData]);
+        setTeachers(
+            distinct(classes.map(q => ({
+                id: q.teacherId,
+                label: q.teacherName
+            })), 'id')
+        );
+        setCourses(
+            distinct(classes.map(q => ({
+                id: q.courseId,
+                label: q.courseName,
+                subtitle: q.courseCode
+            })), 'id')
+        );
+    }, [classes]);
+
+    function changeTeacher(newTeacher: IOption | null) {
+        setSelectedTeacher(newTeacher);
+        setCourses(
+            distinct(classes.filter(q => !newTeacher ? true : q.teacherId === newTeacher.id).map(q => ({
+                id: q.courseId,
+                label: q.courseName,
+                subtitle: q.courseCode
+            })), 'id')
+        );
+    }
+
+    function changeCourse(newCourse: IOption | null) {
+        setSelectedCourse(newCourse);
+        setTeachers(
+            distinct(classes.filter(q => !newCourse ? true : q.courseId === newCourse.id).map(q => ({
+                id: q.teacherId,
+                label: q.teacherName
+            })), 'id')
+        );
+    }
 
     const fetchFilteredTeachers = async () => {
         setLoading(true);
-        // const response = await feedbackProvider.getTeachers({
-        //     pageSize: 0,
-        //     ...(selectedTeacher?.id && { teacherId: String(selectedTeacher.id) }),
-        //     ...(selectedCourse?.subtitle && { courseCode: selectedCourse.subtitle })
-        // });
-        // if (response) {
-        //     setTeachers(response);
-        // }
+        const _answers = await answersService.getAnswers(1, 10, selectedTeacher?.id as number ?? undefined, selectedCourse?.id as number ?? undefined);
+        if (!_answers) {
+            alert('erro');
+            return;
+        }
+        setAnswers(_answers);
         setLoading(false);
     }
 
@@ -57,7 +79,7 @@ const Filter = ({ filterData, setTeachers }: IFilter) => {
         >
             <DropDown
                 className="w-full md:w-1/3 lg:w-1/4"
-                options={teacherFilter}
+                options={teachers}
                 placeholder={"Professor"}
                 searchable={true}
                 showSubtitle={true}
@@ -69,14 +91,11 @@ const Filter = ({ filterData, setTeachers }: IFilter) => {
                         option.subtitle?.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(normalizedSearch.toLowerCase())
                     ) ?? false;
                 }}
-                onChange={(newValue) => {
-                    setSelectedTeacher(newValue);
-                    setFilters(newValue, selectedCourse);
-                }}
+                onChange={changeTeacher}
             />
             <DropDown
                 className="w-full md:w-1/3 lg:w-1/4"
-                options={courseFilter}
+                options={courses}
                 placeholder={"Curso"}
                 searchable={true}
                 showSubtitle={true}
@@ -88,10 +107,7 @@ const Filter = ({ filterData, setTeachers }: IFilter) => {
                         option.subtitle?.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(normalizedSearch.toLowerCase())
                     ) ?? false;
                 }}
-                onChange={(newValue) => {
-                    setSelectedCourse(newValue);
-                    setFilters(selectedTeacher, newValue);
-                }}
+                onChange={changeCourse}
             />
             <div
                 className="w-full md:w-28 h-12 flex justify-center items-center"
