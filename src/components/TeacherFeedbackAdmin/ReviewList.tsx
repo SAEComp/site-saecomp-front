@@ -1,6 +1,4 @@
-import { avaliacoes } from "./mock";
-import { GetAdminAnswerDetailsOut, GetAdminAnswersOut } from "../../schemas/adminAnswers.schema";
-import { purple } from "@mui/material/colors";
+import { GetAdminAnswersOut } from "../../schemas/adminAnswers.schema";
 
 interface IReviewListProps {
   answersList: GetAdminAnswersOut | null;
@@ -16,7 +14,7 @@ detailedAnswerIndex,
 } : IReviewListProps
 ) => {
   return (
-    <div className="flex flex-col  w-full h-full overflow-auto p-2">
+    <div className="flex flex-col  w-full h-full p-2">
       {answersList?.answers.map((avaliacao) => (
         <div
           onClick={() => {onReviewClick(avaliacao.evaluationId)}}
@@ -31,10 +29,11 @@ detailedAnswerIndex,
               ? "bg-red-500" : "bg-purple-100"
           }
           active:scale-95
-          transition duration-300 
+          transition-all duration-300 
           ease-in-out
           shadow-md active:shadow-lg
           cursor-pointer select-none
+          ${detailedAnswerIndex === avaliacao.evaluationId ? "translate-x-10" : ""}
           `}>
           <h3 className="text-lg text-black font-semibold">
             {avaliacao.teacherName}

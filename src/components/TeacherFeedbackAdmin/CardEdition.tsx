@@ -1,142 +1,117 @@
-import { status, answer2 } from "./mock";
 import QuestionComponent from "../TeacherFeedback/Form/QuestionComponent";
-import TextInput from "../Inputs/TextInput";
 import SaveIcon from "@mui/icons-material/Save";
-import ReplayIcon from "@mui/icons-material/Replay";
-import UndoIcon from "@mui/icons-material/Undo";
 import { GetAdminAnswerDetailsOut } from "../../schemas/adminAnswers.schema";
-import { useReviewReducer } from "./cardReducer";
 import { useEffect } from "react";
+import useEvaluationEdit from "./useEvaluationEdit";
+import { componentTypes } from "../TeacherFeedback/Form/Questions";
+import { IOption } from "../Inputs/DropDown";
+import DropDown from "../Inputs/DropDown";
 import { teacherEvalService } from "../../services/teacherEval.service";
 
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
 export interface ICardEditionProps {
-  detailedAnswer: GetAdminAnswerDetailsOut | null;
-  // setDetailedAnswer: React.Dispatch<React.SetStateAction<GetAdminAnswerDetailsOut | null >>;
+    detailedAnswer: GetAdminAnswerDetailsOut | null;
+    setDetailedAnswer: React.Dispatch<React.SetStateAction<GetAdminAnswerDetailsOut | null>>;
 }
 
-const CardEdition = ({ detailedAnswer }: ICardEditionProps) => {
-  const { state, dispatch } = useReviewReducer(null);
+const CardEdition = ({ detailedAnswer, setDetailedAnswer }: ICardEditionProps) => {
+    const evaluationEdit = useEvaluationEdit();
 
-  useEffect(() => {
-    if (detailedAnswer) {
-      dispatch({ type: "INITIALIZE_DATA", payload: detailedAnswer });
+    const statusOptions: IOption[] = [
+        { id: 1, label: "Aprovado", subtitle: 'approved' },
+        { id: 2, label: "Rejeitado", subtitle: 'rejected' },
+        { id: 3, label: "Pendente", subtitle: 'pending' },
+    ];
+
+    useEffect(() => {
+        if (detailedAnswer) {
+            evaluationEdit.setEvaluation(detailedAnswer);
+        } else evaluationEdit.resetState();
     }
-  }, [detailedAnswer, dispatch]);
+        , [detailedAnswer]);
 
-  const handleSave = async () => {
-    if (!state.editedData) return;
-
-    dispatch({ type: "SAVE_START" });
-    const payload = {
-      state: state.editedData.status,
-      answers: state.editedData.answers,
-    };
-    try {
-      await teacherEvalService.updateAnswer(
-        payload,
-        state.editedData.evaluationId
-      );
-      dispatch({ type: "SAVE_SUCCESS" });
-    } catch (err) {
-      dispatch({
-        type: "SAVE_ERROR",
-        payload: "Falha ao salvar. Tente novamente.",
-      });
+    async function saveEditedEvaluation() {
+        const result = await teacherEvalService.updateAnswer({
+            status: evaluationEdit.state.status,
+            answers: evaluationEdit.state.answers.map(answer => ({
+                questionId: answer.questionId,
+                editedAnswer: answer.editedAnswer ?? answer.answer,
+            }))
+        },
+            evaluationEdit.state.evaluationId
+        )
+        if (!result) return alert("Erro ao salvar a avaliação editada");
+        setDetailedAnswer(await teacherEvalService.getAdminAnswerDetails(evaluationEdit.state.evaluationId));
     }
-  };
 
-  return (
-    <div>
-      <div className="flex flex-col gap-4 p-3 w-full h-full bg-gray-500 rounded-lg shadow-lg">
-        <h2 className="text-lg font-semibold text-black">
-          Edição de Avaliação
-        </h2>
-
-        <div className="flex flex-col md:flex-row w-full justify-around gap-4 ">
-          <select
-            value={state.editedData?.status}
-            onChange={(e) =>
-              dispatch({
-                type: "UPDATE_STATUS",
-                payload: e.target.value as any,
-              })
-            }
-            className="p-2 rounded bg-gray-800 text-white w-full md:w-[50%]">
-            {status.map((s) => (
-              <option key={s.id} value={s.label}>
-                {s.label}
-              </option>
-            ))}
-          </select>
-
-          <div className=" relative group inline-block w-full md:w-[15%] ">
-            <button
-              onClick={() => dispatch({ type: "RESET_CHANGES" })}
-              data-ripple-light="true"
-              data-tooltip-target="tooltip"
-              className="active:scale-95 transition duration-150 ease-in-out shadow-md active:shadow-lg w-full  bg-black text-center flex items-center justify-center h-12 rounded-md">
-              <ReplayIcon htmlColor="white" />
-            </button>
-            <div className=" absolute z-10 left-1/2 -translate-x-1/2 hidden group-hover:block bg-gray-700 text-white text-xs rounded-lg p-2">
-              Recarrega a avaliação original do aluno
-            </div>
-          </div>
-
-          <div className="relative group inline-block w-full md:w-[15%] ">
-            <button
-              onClick={() => dispatch({ type: "UNDO_RESET" })}
-              data-ripple-light="true"
-              data-tooltip-target="tooltip"
-              className="active:scale-95 transition duration-150 ease-in-out shadow-md active:shadow-lg w-full  bg-black text-center flex items-center justify-center h-12 rounded-md">
-              <UndoIcon htmlColor="white" />
-            </button>
-            <div className=" absolute z-10 left-1/2 -translate-x-1/2 hidden group-hover:block bg-gray-700 text-white text-xs rounded-lg p-2">
-              Recarrega a avaliação editada do aluno
-            </div>
-          </div>
-
-          <div className=" relative group inline-block w-full md:w-[15%] ">
-            <button
-              onClick={handleSave}
-              data-ripple-light="true"
-              data-tooltip-target="tooltip"
-              className="active:scale-95 transition duration-150 ease-in-out shadow-md active:shadow-lg w-full  bg-black text-center flex items-center justify-center h-12 rounded-md">
-              <SaveIcon htmlColor="white" />
-            </button>
-            <div className="  absolute z-10 left-1/2 -translate-x-1/2 hidden group-hover:block bg-gray-700 text-white text-xs rounded-lg p-2">
-              Salvar avaliação editada
-            </div>
-          </div>
-        </div>
-
-        {detailedAnswer !== null
-          ? detailedAnswer.answers.map((question) => (
-              <div key={question.questionId}>
-                <QuestionComponent
-                  label={question.question}
-                  component={TextInput}
-                  componentProps={{
-                    multiline: true,
-                    rows: 4,
-                    label: "Sua resposta",
-                    value: question.answer ?? undefined,
-                    onChange: (e) => {
-                      dispatch({
-                        type: "UPDATE_ANSWER",
-                        payload: {
-                          questionId: question.questionId,
-                          answer: e,
-                        },
-                      });
-                    },
-                  }}
+    return (
+        <div className="flex flex-col gap-4 p-3 w-full h-full bg-white rounded-lg shadow-lg">
+            <h2 className="text-lg font-semibold text-black">
+                Edição de Avaliação
+            </h2>
+            <div className="bg-[#F1F1F1] rounded-3xl py-6 px-4 flex justify-between gap-3">
+                <DropDown
+                    className="md:w-1/2 w-full"
+                    options={statusOptions}
+                    placeholder={"Status"}
+                    searchable={false}
+                    showSubtitle={false}
+                    clearable={false}
+                    value={statusOptions.find(el => el.subtitle === evaluationEdit.state.status) ?? null}
+                    onChange={(value) => {
+                        evaluationEdit.setEvaluationStatus(value?.subtitle as 'approved' | 'rejected' | 'pending')
+                    }}
                 />
-              </div>
-            ))
-          : null}
-      </div>
-    </div>
-  );
+                {evaluationEdit.state.evaluationId >= 0 && (<div
+                    className="bg-black rounded-lg flex justify-center items-center p-2 cursor-pointer group aspect-square"
+                    title="Limpar todos os formulários"
+                onClick={saveEditedEvaluation}
+                >
+                    <SaveIcon className="text-white group-hover:scale-110 duration-200 transition-transform ease-in-out h-6 w-6" />
+                </div>)}
+            </div>
+            <div className="flex flex-col gap-4">
+                {evaluationEdit.state.answers.map((answer) => (
+                    <QuestionComponent
+                        key={answer.questionId}
+                        label={answer.question}
+                        component={componentTypes[answer.questionType]}
+                        componentProps={{
+                            multiline: true,
+                            rows: 4,
+                            label: 'Sua resposta',
+                            value: answer.answer || ''
+                        }}
+                        component2={componentTypes[answer.questionType]}
+                        componentProps2={{
+                            multiline: true,
+                            rows: 4,
+                            label: 'Resposta editada',
+                            value: answer.editedAnswer ?? answer.answer,
+                            onChange: (newValue: string) => {
+                                evaluationEdit.setEditedAnswer(answer.questionId, String(newValue));
+                            }
+                        }}
+                    >
+                        <div className="flex flex-col justify-between mt-2">
+                            <hr className="h-px bg-slate-700 w-full mb-2" />
+                            <div className="flex justify-between px-1">
+                                <div>Resposta editada:</div>
+                                {answer.editedAnswer !== null && (<div
+                                    className="bg-black rounded-lg flex justify-center items-center p-1 cursor-pointer group"
+                                    title="Voltar resposta original"
+                                    onClick={() => evaluationEdit.resetEditedAnswer(answer.questionId)}
+                                >
+                                    <RestartAltIcon className="text-white group-hover:animate-spinOnce h-4 w-4" />
+                                </div>)}
+                            </div>
+                        </div>
+                    </QuestionComponent>
+                ))}
+            </div>
+
+        </div>
+    );
 };
 
 export default CardEdition;

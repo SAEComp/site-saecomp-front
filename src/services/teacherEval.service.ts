@@ -52,7 +52,7 @@ class TeacherEvalService {
     async  updateAnswer(body : UpdateAnswerPayload, id: number): Promise <boolean | null> {
         try{
             const response = await teacherEvaluationProvider.put(`/admin/answers/${id}`, body);
-            if (response.status !== 200) return null;
+            if (response.status !== 204) return null;
             return true;
         }
         catch (error) {

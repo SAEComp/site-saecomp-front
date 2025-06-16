@@ -31,7 +31,6 @@ const Form = () => {
         }
         setQuestions(_questions);
     }
-  }, []);
 
     useEffect(() => {
         fetchInitialData();
