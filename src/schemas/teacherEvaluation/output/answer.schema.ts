@@ -48,3 +48,5 @@ export type PublicAnswerDetails = z.infer<typeof publicAnswerDetailsSchema>;
 export const getPublicAnswerDetailsOutSchema = publicEvaluationDetailsSchema.extend({
     answers: z.array(publicAnswerDetailsSchema)
 });
+
+export type GetPublicAnswerDetailsOut = z.infer<typeof getPublicAnswerDetailsOutSchema>;
