@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, memo } from "react";
 import { FixedSizeList as List } from "react-window";
 
-interface IOption {
+export interface IOption {
     label: string;
     id: string | number;
     subtitle?: string;

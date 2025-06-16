@@ -1,20 +1,34 @@
 import { avaliacoes } from "./mock";
+import { GetAdminAnswerDetailsOut, GetAdminAnswersOut } from "../../schemas/adminAnswers.schema";
+import { purple } from "@mui/material/colors";
 
-const ReviewList = () => {
+interface IReviewListProps {
+  answersList: GetAdminAnswersOut | null;
+  detailedAnswerIndex: number | null;
+  onReviewClick: (id: number) => void
+}
+
+const ReviewList = (
+  {answersList,
+detailedAnswerIndex,
+  onReviewClick
+
+} : IReviewListProps
+) => {
   return (
     <div className="flex flex-col  w-full h-full overflow-auto p-2">
-      {avaliacoes.map((avaliacao) => (
+      {answersList?.answers.map((avaliacao) => (
         <div
+          onClick={() => {onReviewClick(avaliacao.evaluationId)}}
           key={avaliacao.evaluationId}
           className={` p-4 mb-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300
           ${
-            avaliacao.status === "Pendente"
-              ? "bg-white"
-              : avaliacao.status === "Aprovado"
+            avaliacao.status === "pending"
+              ? "bg-yellow-500"
+              : avaliacao.status === "approved"
               ? "bg-green-900"
-              : avaliacao.status === "Reprovado"
-              ? "bg-red-500"
-              : "bg-yellow-500"
+              : avaliacao.status === "rejected"
+              ? "bg-red-500" : "bg-purple-100"
           }
           active:scale-95
           transition duration-300 

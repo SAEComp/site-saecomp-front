@@ -140,17 +140,10 @@ export const docentes = [
   { id: 24, label: "Dilvan de Abreu Moreira" },
 ];
 
-export const status = [
-  { id: 1, label: "Pendente" },
-  { id: 2, label: "Aprovado" },
-  { id: 3, label: "Reprovado" },
-  { id: 4, label: "Em revisão" },
-];
-
 export const semestre = [
-  { id: 1, label: "2024-1" },
-  { id: 2, label: "2024-2" },
-  { id: 3, label: "2025-1" },
+  { id: 1, label: "2024.1" },
+  { id: 2, label: "2024.2" },
+  { id: 3, label: "2025.1" },
 ];
 
 export const avaliacoes = [
@@ -473,4 +466,91 @@ export const answer2 = {
     },
   ],
 };
+
+export const teacher_courses = [
+  {
+    teacherId: 1,
+    teacherName: "Thiago Alexandre S. Pardo",
+    courseId: 1,
+    courseName: "Processamento de Linguagem Natural",
+    courseCode: "PRG0018",
+  },
+  {
+    teacherId: 2,
+    teacherName: "André de Freitas Smaira",
+    courseId: 11,
+    courseName: "Introdução ao Desenvolvimento Web",
+    courseCode: "SCC0219",
+  },
+  {
+    teacherId: 3,
+    teacherName: "Diego Raphael Amancio",
+    courseId: 16,
+    courseName: "Inteligência Artificial",
+    courseCode: "SCC0230",
+  },
+  {
+    teacherId: 4,
+    teacherName: "Marcelo Garcia Manzato",
+    courseId: 17,
+    courseName: "Aplicações de Aprendizado de Máquina e Mineração de Dados",
+    courseCode: "SCC0233",
+  },
+  {
+    teacherId: 5,
+    teacherName: "Rudinei Goularte",
+    courseId: 39,
+    courseName: "Bases de Dados",
+    courseCode: "SCC0540",
+  },
+  {
+    teacherId: 6,
+    teacherName: "Joao Luis Garcia Rosa",
+    courseId: 24,
+    courseName: "Robôs Móveis e Inteligentes",
+    courseCode: "SCC0273",
+  },
+  {
+    teacherId: 9,
+    teacherName: "Solange Oliveira Rezende",
+    courseId: 25,
+    courseName: "Introdução à Ciência de Dados",
+    courseCode: "SCC0275",
+  },
+  {
+    teacherId: 13,
+    teacherName: "Alneu de Andrade Lopes",
+    courseId: 28,
+    courseName: "Sistemas de Recomendação",
+    courseCode: "SCC0284",
+  },
+  {
+    teacherId: 14,
+    teacherName: "Diego Furtado Silva",
+    courseId: 27,
+    courseName: "Introdução à Web Semântica",
+    courseCode: "SCC0283",
+  },
+  {
+    teacherId: 22,
+    teacherName: "Moacir Antonelli Ponti",
+    courseId: 47,
+    courseName:
+      "Tópicos Avançados em Ciências de Computação I - Aprendizado de Máquina para Séries Temporais",
+    courseCode: "SCC0910",
+  },
+];
+
+export const status = [
+  { id: 1, label: "Pendente" },
+  { id: 2, label: "Aprovado" },
+  { id: 3, label: "Reprovado" },
+  { id: 4, label: "Em revisão" },
+]
+
+export const semester  = [
+  { id: 1, value: "2024.1" },
+  { id: 2, value: "2024.2" },
+  { id: 3, value: "2025.1" },
+]
 

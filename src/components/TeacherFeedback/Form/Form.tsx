@@ -32,26 +32,26 @@ const Form = () => {
   const isMobile = useIsMobile();
 
   const fetchDropdownData = async () => {
-    const [teacherResult, courseResult] = await Promise.all([
-      feedbackProvider.getTeachers({ pageSize: 30 }),
-      feedbackProvider.getCourses({ pageSize: 30 }),
-    ]);
-    if (teacherResult)
-      setTeachers(
-        teacherResult.data.map((teacher) => ({
-          id: teacher.teacherId,
-          label: teacher.teacherName,
-        }))
-      );
-    if (courseResult)
-      setCourses(
-        courseResult.data.map((course) => ({
-          id: course.courseId,
-          label: course.courseName,
-          subtitle: course.courseCode,
-        }))
-      );
-    console.log(teacherResult, courseResult);
+    // const [teacherResult, courseResult] = await Promise.all([
+    //   feedbackProvider.getTeachers({ pageSize: 30 }),
+    //   feedbackProvider.getCourses({ pageSize: 30 }),
+    // ]);
+    // if (teacherResult)
+    //   setTeachers(
+    //     teacherResult.data.map((teacher) => ({
+    //       id: teacher.teacherId,
+    //       label: teacher.teacherName,
+    //     }))
+    //   );
+    // if (courseResult)
+    //   setCourses(
+    //     courseResult.data.map((course) => ({
+    //       id: course.courseId,
+    //       label: course.courseName,
+    //       subtitle: course.courseCode,
+    //     }))
+    //   );
+    // console.log(teacherResult, courseResult);
   };
 
   useEffect(() => {
@@ -59,24 +59,24 @@ const Form = () => {
   }, []);
 
   const createFeedback = async () => {
-    for (const question of formState.questions) {
-      if (question.teacherId === null || question.subjectId === null) {
-        alert("Por favor, preencha todos os campos");
-        return;
-      }
-    }
-    for (const question of formState.questions) {
-      const response = await feedbackProvider.createFeedback({
-        userId: user.email,
-        teacherId: question.teacherId as string,
-        courseId: question.subjectId as string,
-        positiveAspects: question.positiveAspects,
-        negativeAspects: question.negativeAspects,
-        rating: question.rating,
-        additionalComments: question.additionalComments,
-      });
-      console.log(response);
-    }
+    // for (const question of formState.questions) {
+    //   if (question.teacherId === null || question.subjectId === null) {
+    //     alert("Por favor, preencha todos os campos");
+    //     return;
+    //   }
+    // }
+    // for (const question of formState.questions) {
+    //   const response = await feedbackProvider.createFeedback({
+    //     userId: user.email,
+    //     teacherId: question.teacherId as string,
+    //     courseId: question.subjectId as string,
+    //     positiveAspects: question.positiveAspects,
+    //     negativeAspects: question.negativeAspects,
+    //     rating: question.rating,
+    //     additionalComments: question.additionalComments,
+    //   });
+    //   console.log(response);
+    // }
   };
 
   const updateQuestion = (

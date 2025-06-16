@@ -16,9 +16,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const logout = async () => {
         const resp = await authService.logout();
-        if (!resp) {
-            throw new Error("Failed to logout");
-        }
+        // if (!resp) {
+        //     throw new Error("Failed to logout");
+        // }
         saveUser(null);
         setUser(null);
     };

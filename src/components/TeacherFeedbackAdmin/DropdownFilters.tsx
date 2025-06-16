@@ -1,56 +1,62 @@
-import DropDown from "../Inputs/DropDown";
+import DropDown, { IOption } from "../Inputs/DropDown";
 import { docentes, disciplinas, status, semestre } from "./mock";
 import SearchIcon from "@mui/icons-material/Search";
+import { Status } from "../../services/teacherEval.service";
+import { semester } from "../../services/mock";
 // import { useState, useEffect } from "react";
 // import { IAnswersFilter, TAutocompleteOptions } from "./types";
 // const distinct = <T,>(list: T[], key: keyof T): T[] => {
 //   return [...new Map(list.map((item) => [item[key], item])).values()];
 // };
+interface IDropdownFiltersProps {
+  teachersDropdownList: IOption[];
+  coursesDropdownList: IOption[];
+  selectedTeacher: IOption | null;
+  selectedCourse: IOption | null;
+  setSelectedTeacher: React.Dispatch<React.SetStateAction<IOption | null>>;
+  setSelectedCourse: React.Dispatch<React.SetStateAction<IOption | null>>;
 
-const DropdownFilters = () => {
-  // const [statusFilter, setStatusFilter] = useState<string[]>();
-  // const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
+  selectedStatus: Status | null;
+  setselectedStatus: React.Dispatch<React.SetStateAction<Status | null>>;
 
-  // const [teacherFilter, setTeacherFilter] = useState<string[]>([]);
-  // const [selectedTeacher, setSelectedTeacher] = useState<string | null>(null);
+  selectedSemester: string | null;
+  setselectedSemester: React.Dispatch<React.SetStateAction<string | null>>;
 
-  // const [courseFilter, setCourseFilter] = useState<TAutocompleteOptions[]>([]);
-  // const [selectedDiscipline, setSelectedDiscipline] =
-  //   useState<TAutocompleteOptions | null>(null);
+  searchAnswers: () => Promise<void>;
+}
 
-  // const [semesterFilter, setSemesterFilter] = useState<string[]>([]);
-  // const [selectedSemester, setSelectedSemester] = useState<string | null>(null);
-
-  // const SetFilters = (
-  //   status: string | null,
-  //   teacher: string | null,
-  //   course: TAutocompleteOptions | null,
-  //   semester: string | null
-  // ) => {
-  //   setSelectedStatus(statusFilter);
-  //   setSelectedTeacher(teacherFilter);
-  //   setSelectedDiscipline(courseFilter);
-  //   setSelectedSemester(semesterFilter);
-  // };
-
-  // useEffect(() => {
-  //   setFilters(
-  //     selectedStatus,
-  //     selectedTeacher,
-  //     selectedCourse,
-  //     selectedSemester
-  //   );
-  // }, [filterData]);
+const DropdownFilters = ({
+  teachersDropdownList,
+  coursesDropdownList,
+  selectedTeacher,
+  selectedCourse,
+  setSelectedTeacher,
+  setSelectedCourse,
+  setselectedStatus,
+  selectedStatus,
+  selectedSemester,
+  setselectedSemester,
+  searchAnswers,
+}: IDropdownFiltersProps) => {
+  const statusOptions: IOption[] = [
+    { id: 1, label: "Aprovado" },
+    { id: 2, label: "Rejeitado" },
+    { id: 3, label: "Pendente" },
+  ];
 
   return (
     <div className="w-full flex justify-center flex-col md:flex-row gap-5 md:gap-5 lg:gap-[3%] px-[1vw] sm:px-[1vw] md:px-[1vw] lg:px-[5vw] xl:px-[2vw]">
       <DropDown
         className="w-full md:w-1/3 lg:w-1/4"
-        options={status}
+        options={statusOptions}
         placeholder={"Status"}
         searchable={true}
         showSubtitle={true}
-        value={null}
+        value={
+          statusOptions.find((value) => {
+            return value.label === selectedStatus;
+          }) ?? null
+        }
         searchFilter={(search, option) => {
           const normalizedSearch = search
             .normalize("NFD")
@@ -69,15 +75,17 @@ const DropdownFilters = () => {
             false
           );
         }}
-        onChange={() => {}}
+        onChange={(value) => {
+          setselectedStatus((value?.label ?? null) as Status | null);
+        }}
       />
       <DropDown
         className="w-full md:w-1/3 lg:w-1/4"
-        options={docentes}
+        options={teachersDropdownList}
         placeholder={"Professor(a)"}
         searchable={true}
         showSubtitle={true}
-        value={null}
+        value={selectedTeacher}
         searchFilter={(search, option) => {
           const normalizedSearch = search
             .normalize("NFD")
@@ -96,15 +104,15 @@ const DropdownFilters = () => {
             false
           );
         }}
-        onChange={() => {}}
+        onChange={setSelectedTeacher}
       />
       <DropDown
         className="w-full md:w-1/3 lg:w-1/4"
-        options={disciplinas}
+        options={coursesDropdownList}
         placeholder={"Disciplina"}
         searchable={true}
         showSubtitle={true}
-        value={null}
+        value={selectedCourse}
         searchFilter={(search, option) => {
           const normalizedSearch = search
             .normalize("NFD")
@@ -123,7 +131,7 @@ const DropdownFilters = () => {
             false
           );
         }}
-        onChange={() => {}}
+        onChange={setSelectedCourse}
       />
       <DropDown
         className="w-full md:w-1/3 lg:w-1/4"
@@ -131,7 +139,11 @@ const DropdownFilters = () => {
         placeholder={"Semestre"}
         searchable={true}
         showSubtitle={true}
-        value={null}
+        value={
+          semestre.find((value) => {
+            return selectedSemester === value.label;
+          }) ?? null
+        }
         searchFilter={(search, option) => {
           const normalizedSearch = search
             .normalize("NFD")
@@ -150,9 +162,12 @@ const DropdownFilters = () => {
             false
           );
         }}
-        onChange={() => {}}
+        onChange={(value) => {
+          setselectedSemester((value?.label ?? null) as string | null);
+        }}
       />
-      <div className="active:scale-95 transition duration-150 ease-in-out shadow-md active:shadow-lg w-full md:w-[108px]  bg-black text-center flex items-center justify-center h-12 rounded-md">
+      <div onClick={searchAnswers}
+      className="active:scale-95 transition duration-150 ease-in-out shadow-md active:shadow-lg w-full md:w-[108px]  bg-black text-center flex items-center justify-center h-12 rounded-md">
         <SearchIcon htmlColor="white" />
       </div>
     </div>
