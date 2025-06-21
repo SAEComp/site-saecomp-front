@@ -14,12 +14,12 @@ detailedAnswerIndex,
 } : IReviewListProps
 ) => {
   return (
-    <div className="flex flex-col  w-full h-full p-2">
+    <div className="flex flex-col  w-full h-full p-2 overflow-auto overscroll-" >
       {answersList?.answers.map((avaliacao) => (
         <div
           onClick={() => {onReviewClick(avaliacao.evaluationId)}}
           key={avaliacao.evaluationId}
-          className={` p-4 mb-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300
+          className={` p-4 mb-4 mr-5 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300
           ${
             avaliacao.status === "pending"
               ? "bg-yellow-500"
@@ -33,7 +33,7 @@ detailedAnswerIndex,
           ease-in-out
           shadow-md active:shadow-lg
           cursor-pointer select-none
-          ${detailedAnswerIndex === avaliacao.evaluationId ? "translate-x-10" : ""}
+          ${detailedAnswerIndex === avaliacao.evaluationId ? "translate-x-5" : ""}
           `}>
           <h3 className="text-lg text-black font-semibold">
             {avaliacao.teacherName}

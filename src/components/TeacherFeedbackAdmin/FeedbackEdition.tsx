@@ -179,7 +179,7 @@ const FeedbackEdition = () => {
             {/* lista de cards com scroll bar */}
             {/* OVERFLOW-SCROW */}
             <div className="flex flex-row  mx-[5%] my-[20px] gap-[5%] justify-around">
-                <div className=" h-[1104px] w-[300px] bg-green-700 rounded-lg">
+                <div className="h-[100vh] w-[260px] sm:w-[300px] md:w-[300px] lg:w-[20%] xl:w-[20%] 2xl:w-[20%] bg-green-700 rounded-lg">
                     <ReviewList
                         detailedAnswerIndex={detailedAnswer?.evaluationId ?? -1}
                         onReviewClick={handleReviewSelect}
