@@ -1,4 +1,4 @@
-import { IForm, IQuestion } from "./types";
+import { IForm, IQuestion, IFormEdit, IQuestionEdit } from "./types";
 
 
 type Action =

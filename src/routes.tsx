@@ -10,6 +10,7 @@ import Error from "./pages/Error";
 import TeacherEvaluationMenu from "./pages/TeacherEvaluationMenu";
 import RequireAuth from "./auth/RequireAuth";
 import UsersRoles from "./pages/UsersRoles";
+import FeedbackEdit from "./pages/AdminQuestions";
 import { AuthProvider } from "./auth/AuthContext";
 import { createBrowserRouter } from "react-router";
 
@@ -36,6 +37,10 @@ const routes = createBrowserRouter([
             {
                 path: "manual",
                 element: <Manual />
+            },
+            {
+                path: "questions",
+                element: <FeedbackEdit />
             },
             {
                 path: "login",
