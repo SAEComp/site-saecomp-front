@@ -6,7 +6,7 @@ class AdminQuestionsService {
         try{
             const response = await teacherEvaluationProvider.get("/admin/questions", {
             })
-            return response.data;
+            return response.data.questions;
         } catch (error){
             console.error ("Error fetching Form Data", error);
             return null;

@@ -1,7 +1,7 @@
 import { useReducer, useCallback } from "react";
 import { Question } from "../../../schemas/adminQuestions.schema";
 
-interface IQuestionEdit extends Question {
+export interface IQuestionEdit extends Question {
     editing: boolean;
     required: boolean;
 }
