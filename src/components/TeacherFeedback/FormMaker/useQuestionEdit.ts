@@ -31,7 +31,7 @@ const createNewQuestionEdit = (nextId: number, activeCount: number): IQuestionEd
     id: nextId,
     question: "Sua pergunta",
     type: "text",
-    active: true,
+    active: false,
     order: activeCount,
     isScore: false,
     editing: false,
@@ -73,8 +73,8 @@ const questionEditReducer = (state: IQuestionEditList, action: Action):IQuestion
                     ...state.questions,
                     createNewQuestionEdit(state.nextId, state.activeCount)
                 ].sort(comp),
-                nextId: state.nextId--,
-                activeCount: state.activeCount++
+                nextId: state.nextId-1,
+                activeCount: state.activeCount+1
             }
         case 'DELETE_QUESTION':{
             return{
@@ -82,7 +82,7 @@ const questionEditReducer = (state: IQuestionEditList, action: Action):IQuestion
                 questions: order(
                     state.questions.filter( q => q.id !== action.questionId )
                 ),
-                activeCount: state.activeCount--
+                activeCount: state.activeCount-1
             }
         }
         case 'COPY_QUESTION':{
@@ -99,12 +99,12 @@ const questionEditReducer = (state: IQuestionEditList, action: Action):IQuestion
             return{
                 ...state,
                 questions: order([
-                    ...state.questions.slice(0, currentIndex),
+                    ...state.questions.slice(0, currentIndex+1),
                     newQuestion,
-                    ...state.questions.slice(currentIndex)
+                    ...state.questions.slice(currentIndex+1)
                 ]),
-                activeCount: state.activeCount++,
-                nextId: state.nextId--, 
+                activeCount: state.activeCount+1,
+                nextId: state.nextId-1, 
             }
         }   
         case 'MOVE_QUESTION_UP':
@@ -165,7 +165,7 @@ const questionEditReducer = (state: IQuestionEditList, action: Action):IQuestion
                 questions: state.questions.map( q => ({
                     ...q,
                     active: q.id===action.questionId? action.active : q.active,
-                })) 
+                })).sort(comp)
             }
     }
 }
@@ -175,6 +175,11 @@ export default function useQuestionEdit() {
     const setQuestionList = useCallback(
         (questions: IQuestionEdit[]) =>
             dispatch ({type: 'SET_STATE', state: questions}),
+        []
+    )
+    const addQuestion = useCallback(
+        () =>
+            dispatch({type: 'ADD_QUESTION'}),
         []
     )
     const deleteQuestion = useCallback(
@@ -225,6 +230,7 @@ export default function useQuestionEdit() {
     return{
         state,
         setQuestionList,
+        addQuestion,
         deleteQuestion,
         copyQuestion,
         moveQuestionUp,

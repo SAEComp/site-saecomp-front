@@ -1,7 +1,28 @@
 import QuestionsEdit from "./QuestionsEdit";
-
+import QuestionsInactive from "./QuestionsInactive";
+import { useEffect } from "react";
+import useQuestionEdit from "./useQuestionEdit";
+import { adminQuestionsService } from "../../../services/adminQuestions.service";
 
 const FormMaker = () => {
+    const questionEdit = useQuestionEdit();
+    
+        const getQuestionsDB = async () => {
+            const newQuestList = await adminQuestionsService.getQuestionList();
+            if (newQuestList === null) {
+                console.log("vish");
+                return;
+            };
+            questionEdit.setQuestionList(newQuestList.map(q => ({
+                ...q,
+                editing: false,
+                required: false
+            })));
+        }
+    
+            useEffect(() => {
+                getQuestionsDB().catch(console.error);
+            }, [])
 
     return (
         <div
@@ -9,19 +30,46 @@ const FormMaker = () => {
 
         >
             <div
-                className="flex flex-col justify-center items-center w-full gap-4 md:flex-row md:gap-[10%]"
+                className="flex flex-col justify-center items-center w-full gap-4 md:flex-row md:gap-[30%]"
             >
-                <span
-                    className="font-inter text-white"
+
+                <button
+                onClick={() => {getQuestionsDB()}}
+                className="text-center bg-white rounded-xl p-5"
                 >
-                    Quantas disciplinas você cursou esse semestre?
-                </span>
+                    Resetar Formulário
+                </button>
+
+                <button
+                onClick={() => {getQuestionsDB()}}
+                className="text-center bg-white rounded-xl p-5"
+                >
+                    Salvar Formulário
+                </button>
 
             </div>
             <div
                 className="flex flex-col bg-white w-full rounded-xl p-5 md:p-12 gap-5 relative"
             >
-                <QuestionsEdit />
+                <QuestionsEdit
+                reducer= {questionEdit}
+                />
+
+            </div>
+
+            <span
+            className="font-inter text-white"
+            >
+                Perguntas Desativadas
+            </span>
+
+             <div
+                className="flex flex-col bg-white w-full rounded-xl p-5 md:p-12 gap-5 relative"
+            >
+                <QuestionsInactive
+                reducer= {questionEdit}
+                />
+
             </div>
         </div>
     )

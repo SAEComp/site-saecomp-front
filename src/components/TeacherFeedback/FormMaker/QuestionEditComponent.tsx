@@ -10,6 +10,7 @@ import TextInput from "../../Inputs/TextInput";
 import questionTypes from "../../../types/questionTypes";
 import DropDown from "../../Inputs/DropDown";
 import { Question } from "../../../schemas/adminQuestions.schema";
+import Mark from "./Mark";
 
 interface IQuestionEditComponent {
     question: IQuestionEdit;
@@ -35,7 +36,7 @@ const QuestionEditComponent = ({ question, reducer }: IQuestionEditComponent) =>
                     className="flex flex-col"
                 >
                     <button
-                        onClick={() => { }}
+                        onClick={() => { reducer.moveQuestionUp(question.id) }}
                         className="group"
                     >
                         <KeyboardDoubleArrowUpIcon
@@ -43,7 +44,7 @@ const QuestionEditComponent = ({ question, reducer }: IQuestionEditComponent) =>
                         />
                     </button>
                     <button
-                        onClick={() => { }}
+                        onClick={() => { reducer.moveQuestionDown(question.id) }}
                         className="group"
                     >
                         <KeyboardDoubleArrowDownIcon 
@@ -84,7 +85,13 @@ const QuestionEditComponent = ({ question, reducer }: IQuestionEditComponent) =>
                 <button
                     onClick={() => { reducer.setQuestionEditing(question.id, !question.editing) }}
                 >
-                    {question.editing ? (<CheckIcon />) : (<EditIcon />)}
+                    {question.editing ? (
+                        <CheckIcon 
+                        className="fill text-3xl hover:text-[#03B04B]"
+                        />) : (
+                        <EditIcon 
+                        className="fill hover:text-[#03B04B]"
+                        />)}
                 </button>
             </div>
 
@@ -114,23 +121,44 @@ const QuestionEditComponent = ({ question, reducer }: IQuestionEditComponent) =>
             <div
                 className="flex flex-row justify-between px-3 pb-4 pt-1 border-t-2"
             >
+                <div
+                className=""
+                >
+                    <button
+                    className="flex flex-row items-center"
+                    onClick={() => { reducer.setQuestionRequired(question.id, !question.required) }}
+                    >
+                    
+                    <div>
+                    Pergunta obrigatória
+                    </div> 
+
+                    <div>
+                    <Mark
+                    marked= {question.required}
+                    />
+                    </div>
+                    
+                    </button>
+                </div>
+                
+
 
                 <button
-                    onClick={() => { }}
+                    className="self-center"
+                    onClick={() => { reducer.copyQuestion(question.id) }}
                 >
-                    Pergunta obrigatória {question.required ? "( O )" : "(   )"}
+                    <ContentCopyIcon 
+                    className="fill text-2xl hover:text-[#03B04B]"
+                    />
                 </button>
 
                 <button
-                    onClick={() => { }}
+                    onClick={() => { reducer.deleteQuestion(question.id) }}
                 >
-                    <ContentCopyIcon />
-                </button>
-
-                <button
-                    onClick={() => { }}
-                >
-                    <DeleteForeverIcon />
+                    <DeleteForeverIcon
+                    className="fill text-2xl hover:text-red-600"
+                    />
                 </button>
 
 
