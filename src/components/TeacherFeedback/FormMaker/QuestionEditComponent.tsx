@@ -27,7 +27,6 @@ const QuestionEditComponent = ({ question, reducer }: IQuestionEditComponent) =>
         <div
             className="bg-[#F1F1F1] rounded-3xl flex flex-col"
         >
-
             <div
                 className="flex flex-row items-center px-3 gap-2 mt-4"
             >
@@ -53,14 +52,6 @@ const QuestionEditComponent = ({ question, reducer }: IQuestionEditComponent) =>
                     </button>
                 </div>
 
-
-                {/* <DropDown
-                    options={questionOptions}
-                    placeholder={"lael"}
-                    value={null}
-                    onChange={() => { }
-                    }
-                    /> */}
                 {!question.editing ? (
                 <div
                 className="text-wrap flex-grow"
@@ -119,53 +110,71 @@ const QuestionEditComponent = ({ question, reducer }: IQuestionEditComponent) =>
 
 
             <div
-                className="flex flex-row justify-between px-3 pb-4 pt-1 border-t-2"
+                className="flex md:flex-row flex-col justify-between px-5 pb-4 pt-1 border-t-2"
             >
+                
                 <div
-                className=""
+                    className="flex flex-row gap-5 justify-between md:justify-start"
+                >
+                    <div
+                        className="flex flex-row items-center"
+                    >
+
+                        <div>
+                            Pergunta Obrigatória
+                        </div>
+
+                        <button
+                            onClick={() => { reducer.setQuestionRequired(question.id, !question.required) }}
+                        >
+                            <Mark
+                                marked={!question.required}
+                            />
+                        </button>
+
+                    </div>
+
+                    <div
+                        className="flex flex-row items-center"
+                    >
+
+                        <div>
+                            Pergunta Desativada
+                        </div>
+
+                        <button
+                            onClick={() => { reducer.setQuestionActive(question.id, !question.active) }}
+                        >
+                            <Mark
+                                marked={!question.active}
+                            />
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <div
+                className="flex flex-row gap-10 pt-4 md:pt-0 md:justify-start justify-between md:border-l-2 px-5 md:pr-0 md:pl-5"
                 >
                     <button
-                    className="flex flex-row items-center"
-                    onClick={() => { reducer.setQuestionRequired(question.id, !question.required) }}
+                        onClick={() => { reducer.copyQuestion(question.id) }}
                     >
-                    
-                    <div>
-                    Pergunta obrigatória
-                    </div> 
+                        <ContentCopyIcon
+                            className="fill text-2xl hover:text-[#03B04B]"
+                        />
+                    </button>
 
-                    <div>
-                    <Mark
-                    marked= {question.required}
-                    />
-                    </div>
-                    
+                    <button
+                        onClick={() => { reducer.deleteQuestion(question.id) }}
+                    >
+                        <DeleteForeverIcon
+                            className="fill text-2xl hover:text-red-600"
+                        />
                     </button>
                 </div>
-                
-
-
-                <button
-                    className="self-center"
-                    onClick={() => { reducer.copyQuestion(question.id) }}
-                >
-                    <ContentCopyIcon 
-                    className="fill text-2xl hover:text-[#03B04B]"
-                    />
-                </button>
-
-                <button
-                    onClick={() => { reducer.deleteQuestion(question.id) }}
-                >
-                    <DeleteForeverIcon
-                    className="fill text-2xl hover:text-red-600"
-                    />
-                </button>
-
-
 
             </div>
-
-
 
         </div>
     )

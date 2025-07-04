@@ -31,8 +31,8 @@ const createNewQuestionEdit = (nextId: number, activeCount: number): IQuestionEd
     id: nextId,
     question: "Sua pergunta",
     type: "text",
-    active: false,
-    order: activeCount,
+    active: true,
+    order: activeCount+1,
     isScore: false,
     editing: false,
     required: false
@@ -54,7 +54,7 @@ const comp = (q1: IQuestionEdit, q2: IQuestionEdit) => {
 const order = (questions: IQuestionEdit[] ) => {
     return questions.map( (q,j) =>({
             ...q,
-            order: q.active? j : null,
+            order: q.active? j+1 : null,
         }))
 }
 

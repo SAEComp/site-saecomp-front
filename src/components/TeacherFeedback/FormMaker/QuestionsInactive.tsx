@@ -1,5 +1,6 @@
 import useQuestionEdit from "./useQuestionEdit"
 import QuestionEditInput from "./QuestionEditInput"
+import Mark from "./Mark"
 
 interface IQuestionsInactive {
     reducer: ReturnType<typeof useQuestionEdit>
@@ -8,16 +9,16 @@ interface IQuestionsInactive {
 const QuestionsInactive = ({reducer}:IQuestionsInactive) => {
     return(
         <div
-        className="flex flex-col gap-5"
+            className="flex flex-col gap-5"
         >
-            {reducer.state.questions.map( question => (
+            {reducer.state.questions.map(question => (
 
                 <div>
                     {!question.active && (<div
                         className="bg-[#F1F1F1] rounded-3xl flex flex-col"
                     >
                         <div
-                            className="pl-10 pt-4 text-wrap flex-grow"
+                            className="pl-5 pt-4 text-wrap flex-grow"
                         >
                             {question.question}
                         </div>
@@ -30,12 +31,27 @@ const QuestionsInactive = ({reducer}:IQuestionsInactive) => {
                             />
                         </div>
 
-                        <button
-                        className="flex-grow self-center pb-4 pt-1"
-                        onClick={() => (reducer.setQuestionActive(question.id, !question.active))}
+                        <div
+                        className="flex-grow"
                         >
-                            Ativar
-                        </button>
+                            <div
+                                className="flex flex-row items-center px-5 pb-4 pt-1"
+                            >
+
+                                <div>
+                                    Pergunta Desativada
+                                </div>
+
+                                <button
+                                onClick={() => { reducer.setQuestionActive(question.id, !question.active) }}
+                                >
+                                    <Mark
+                                        marked={!question.active}
+                                    />
+                                </button>
+
+                            </div>
+                        </div>
                     </div>)}
 
                 </div>

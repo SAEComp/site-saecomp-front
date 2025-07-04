@@ -1,5 +1,3 @@
-import { useEffect } from "react";
-import { adminQuestionsService } from "../../../services/adminQuestions.service";
 import useQuestionEdit from "./useQuestionEdit";
 import QuestionEditComponent from "./QuestionEditComponent";
 import AddIcon from '@mui/icons-material/Add';
@@ -16,7 +14,7 @@ const QuestionsEdit = ({reducer}: IQuestionsEdit) => {
                 <div
                     className="flex flex-col gap-5"
                 >
-                    {reducer.state.questions.map((question, i) => (
+                    {reducer.state.questions.map((question) => (
                         question.active&& (<QuestionEditComponent
                         question={question}
                         reducer={reducer}
