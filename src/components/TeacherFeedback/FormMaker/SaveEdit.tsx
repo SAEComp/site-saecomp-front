@@ -3,6 +3,9 @@ import { Modal } from "@mui/material";
 import useQuestionEdit, { IQuestionEdit } from "./useQuestionEdit";
 import ModifiedQuestion from "./ModifiedQuestion";
 import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
+import { adminQuestionsService } from "../../../services/adminQuestions.service";
+import { Question } from "../../../schemas/adminQuestions.schema";
+import { promise } from "zod";
 
 
 interface ISaveEdit {
@@ -32,7 +35,7 @@ const SaveEdit = ({reducer, original, save, setSave}:ISaveEdit ) => {
             }
             const kuestion = original.find((q) => q.id===question.id);
             if(!kuestion){
-                throw new Error('Sei la')
+                throw new Error('Error loading changes.')
             }
             const modified = Object.entries(question).reduce((acc, cur) => kuestion[cur[0] as keyof IQuestionEdit]===cur[1]? acc : acc+1, 0 );
             if(modified>0){
@@ -62,6 +65,31 @@ const SaveEdit = ({reducer, original, save, setSave}:ISaveEdit ) => {
     useEffect(() => {
         if(save) getChangeList()
         }, [save])
+
+    const saveChangesDB = async () => {
+
+        changedQuestions.map(async (cur) => {
+            const {editing, required, ...reducedQ} = cur.question;
+            switch (cur.method) {
+                case 'Post':
+                    const newQuestionId = await adminQuestionsService.postQuestion(reducedQ);
+                    if(newQuestionId){
+                        reducer.setQuestionId(cur.question.id, newQuestionId);
+                    }
+                case 'Put':
+                    await adminQuestionsService.putQuestion(reducedQ);
+
+                case 'Delete':
+                    const deleted = await adminQuestionsService.deleteQuestion(cur.question.id);
+                    if(!deleted){
+                        reducer.copyDeletedQuestion(cur.question)
+                    }
+            }
+        })
+
+
+
+    }
 
     return(
         <Modal
@@ -106,7 +134,7 @@ const SaveEdit = ({reducer, original, save, setSave}:ISaveEdit ) => {
 
                     <button
                     className="rounded-xl bg-[#03B04B] text-white p-5 "
-                    onClick={() => {}}
+                    onClick={() => {saveChangesDB()}}
                     >
                         Salvar
                     </button>

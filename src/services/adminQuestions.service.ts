@@ -13,7 +13,7 @@ class AdminQuestionsService {
         }
     }
 
-    async postQuestion(question : Omit<Question,'id'>) {
+    async postQuestion(question : Omit<Question,'id'>) : Promise<number | null> {
         try{
             const response = await teacherEvaluationProvider.post("/admin/questions",{
                 ...question
@@ -39,7 +39,7 @@ class AdminQuestionsService {
         }
     }
 
-    async deleteQuestion(id : number) {
+    async deleteQuestion(id : number) : Promise<boolean | null> {
         try{
             const response = await teacherEvaluationProvider.delete(`/admin/questions/${id}`,{
             })

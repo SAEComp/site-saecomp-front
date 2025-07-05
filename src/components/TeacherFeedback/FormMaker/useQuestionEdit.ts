@@ -17,13 +17,15 @@ type Action =
     | { type: 'ADD_QUESTION'; }
     | { type: 'DELETE_QUESTION'; questionId: number; }
     | { type: 'COPY_QUESTION'; questionId: number; }
+    | { type: 'COPY_DELETED_QUESTION'; question: IQuestionEdit}
     | { type: 'MOVE_QUESTION_UP'; questionId: number; }
     | { type: 'MOVE_QUESTION_DOWN'; questionId: number; }
     | { type: 'SET_QUESTION_REQUIRED'; questionId: number; required: boolean; }
     | { type: 'SET_QUESTION_EDITING'; questionId: number; editing: boolean; }
     | { type: 'SET_QUESTION_TEXT'; questionId: number; text: string; }
     | { type: 'SET_QUESTION_COMPONENTTYPE'; questionId: number; componentType: Question['type']; }
-    | { type: 'SET_QUESTION_ACTIVE'; questionId: number; active: boolean}
+    | { type: 'SET_QUESTION_ACTIVE'; questionId: number; active: boolean;}
+    | { type: 'SET_QUESTION_ID'; questionId: number; newId: number;}
 
 
 
@@ -106,7 +108,20 @@ const questionEditReducer = (state: IQuestionEditList, action: Action):IQuestion
                 activeCount: state.activeCount+1,
                 nextId: state.nextId-1, 
             }
-        }   
+        }
+        case 'COPY_DELETED_QUESTION':{
+            const newQuestion = {
+                ...action.question,
+                active: false
+            }
+            return{
+                ...state,
+                questions: order([
+                    ...state.questions,
+                    newQuestion
+                ]).sort(comp)
+            }
+        }
         case 'MOVE_QUESTION_UP':
             return{
                 ...state,
@@ -133,6 +148,8 @@ const questionEditReducer = (state: IQuestionEditList, action: Action):IQuestion
                 questions: state.questions.map( q => ({
                     ...q,
                     type: q.id===action.questionId? action.componentType : q.type,
+                    isScore: q.id!==action.questionId? q.isScore :
+                             action.componentType==='text'?  false : true 
                 }))   
             }
         case 'SET_QUESTION_EDITING':
@@ -167,6 +184,14 @@ const questionEditReducer = (state: IQuestionEditList, action: Action):IQuestion
                     active: q.id===action.questionId? action.active : q.active,
                 })).sort(comp)
             }
+        case 'SET_QUESTION_ID':
+            return{
+                ...state,
+                questions: state.questions.map( q=> ({
+                    ...q,
+                    id: q.id===action.questionId? action.newId : q.id,
+                }))
+            }
     }
 }
 
@@ -192,6 +217,11 @@ export default function useQuestionEdit() {
             dispatch ({type: 'COPY_QUESTION', questionId: id}),
         []
     ) 
+    const copyDeletedQuestion = useCallback(
+        (question: IQuestionEdit) =>
+            dispatch ({type: 'COPY_DELETED_QUESTION', question: question}),
+        []
+    )
     const moveQuestionUp = useCallback(
         (id: number) =>
             dispatch ({type: 'MOVE_QUESTION_UP', questionId: id}),
@@ -227,18 +257,25 @@ export default function useQuestionEdit() {
             dispatch ({type: 'SET_QUESTION_ACTIVE', questionId:id , active: active}),
         []  
     ) 
+    const setQuestionId = useCallback(
+        (id: number, newId: number) =>
+            dispatch ({type: 'SET_QUESTION_ID', questionId:id, newId:newId}),
+        []
+    )
     return{
         state,
         setQuestionList,
         addQuestion,
         deleteQuestion,
         copyQuestion,
+        copyDeletedQuestion,
         moveQuestionUp,
         moveQuestionDown,
         setQuestionRequired,
         setQuestionEditing,
         setQuestionText,
         setQuestionType,
-        setQuestionActive
+        setQuestionActive,
+        setQuestionId,
     }
 }

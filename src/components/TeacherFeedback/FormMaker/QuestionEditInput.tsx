@@ -1,5 +1,4 @@
 import { IQuestionEdit } from "./useQuestionEdit";
-import QuestionComponent from "../Form/QuestionComponent";
 import TextInput from "../../Inputs/TextInput";
 import SliderInput from "../../Inputs/SliderInput";
 import NumberInput from "../../Inputs/NumberInput";
