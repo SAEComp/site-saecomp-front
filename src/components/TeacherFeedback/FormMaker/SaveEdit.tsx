@@ -89,6 +89,7 @@ const SaveEdit = ({reducer, original, save, setSave}:ISaveEdit ) => {
         })
         reducer.setQuestionList(reducer.state.questions);
         original.current = reducer.state.questions;
+        setSave(false);
     }
 
     return(
