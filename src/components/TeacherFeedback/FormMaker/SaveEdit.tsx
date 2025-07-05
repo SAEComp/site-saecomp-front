@@ -9,7 +9,7 @@ import { adminQuestionsService } from "../../../services/adminQuestions.service"
 
 interface ISaveEdit {
     reducer: ReturnType<typeof useQuestionEdit>
-    original: IQuestionEdit[]
+    original: React.MutableRefObject<IQuestionEdit[]>
     save: boolean
     setSave: React.Dispatch<React.SetStateAction<boolean>>
 }
@@ -32,7 +32,7 @@ const SaveEdit = ({reducer, original, save, setSave}:ISaveEdit ) => {
                         method: 'Post'
                 }])
             }
-            const kuestion = original.find((q) => q.id===question.id);
+            const kuestion = original.current.find((q) => q.id===question.id);
             if(!kuestion){
                 throw new Error('Error loading changes.')
             }
@@ -50,7 +50,7 @@ const SaveEdit = ({reducer, original, save, setSave}:ISaveEdit ) => {
 
         const changeList2 : IQuestionService[] = [
             ...changeList,
-            ...original.filter( (q) => (
+            ...original.current.filter( (q) => (
                 !reducer.state.questions.find( (l) => q.id===l.id)
                 )).map<IQuestionService>( (q) => ({
                     question: q,
@@ -87,6 +87,8 @@ const SaveEdit = ({reducer, original, save, setSave}:ISaveEdit ) => {
                     break;
             }
         })
+        reducer.setQuestionList(reducer.state.questions);
+        original.current = reducer.state.questions;
     }
 
     return(

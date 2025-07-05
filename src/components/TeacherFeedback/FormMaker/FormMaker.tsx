@@ -38,7 +38,7 @@ const FormMaker = () => {
     <>
     <SaveEdit
     reducer={questionEdit}
-    original={originalQuestions.current}
+    original={originalQuestions}
     save={save}
     setSave={setSave}
     />
