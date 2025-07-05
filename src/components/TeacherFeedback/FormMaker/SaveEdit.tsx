@@ -4,8 +4,7 @@ import useQuestionEdit, { IQuestionEdit } from "./useQuestionEdit";
 import ModifiedQuestion from "./ModifiedQuestion";
 import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
 import { adminQuestionsService } from "../../../services/adminQuestions.service";
-import { Question } from "../../../schemas/adminQuestions.schema";
-import { promise } from "zod";
+
 
 
 interface ISaveEdit {
@@ -76,19 +75,18 @@ const SaveEdit = ({reducer, original, save, setSave}:ISaveEdit ) => {
                     if(newQuestionId){
                         reducer.setQuestionId(cur.question.id, newQuestionId);
                     }
+                    break;
                 case 'Put':
                     await adminQuestionsService.putQuestion(reducedQ);
-
+                    break;
                 case 'Delete':
                     const deleted = await adminQuestionsService.deleteQuestion(cur.question.id);
                     if(!deleted){
                         reducer.copyDeletedQuestion(cur.question)
                     }
+                    break;
             }
         })
-
-
-
     }
 
     return(
