@@ -13,71 +13,79 @@ import UsersRoles from "./pages/UsersRoles";
 import FeedbackEdit from "./pages/AdminQuestions";
 import { AuthProvider } from "./auth/AuthContext";
 import { createBrowserRouter } from "react-router";
-
-
+import TeacherFeedbackAdmin from "./pages/TeacherFeedbackAdmin";
 
 const routes = createBrowserRouter([
-    {
-        path: "/",
-        element: <AuthProvider><LayoutWrapper /></AuthProvider>,
-        errorElement: <Error />,
+  {
+    path: "/",
+    element: (
+      <AuthProvider>
+        <LayoutWrapper />
+      </AuthProvider>
+    ),
+    errorElement: <Error />,
+    children: [
+      {
+        index: true,
+        element: <Home />,
+      },
+      {
+        path: "saecomp",
+        element: <SAEcomp />,
+      },
+      {
+        path: "enfases",
+        element: <Enfases />,
+      },
+      {
+        path: "manual",
+        element: <Manual />,
+      },
+      {
+        path: "login",
+        element: <Login />,
+      },
+      {
+        path: "avaliacoes",
+        element: <RequireAuth />,
         children: [
-            {
-                index: true,
-                element: <Home />
-            },
-            {
-                path: "saecomp",
-                element: <SAEcomp />
-            },
-            {
-                path: "enfases",
-                element: <Enfases />
-            },
-            {
-                path: "manual",
-                element: <Manual />
-            },
-            {
-                path: "questions",
-                element: <FeedbackEdit />
-            },
-            {
-                path: "login",
-                element: <Login />
-            },
-            {
-                path: "avaliacoes",
-                element: <RequireAuth />,
-                children: [
-                    {
-                        index: true,
-                        element: <TeacherEvaluationMenu />
-                    },
-                    {
-                        path: "resultados",
-                        element: <TeacherFeedbackResults />
-                        
-                    },
-                    {
-                        path: "avaliacao",
-                        element: <TeacherFeedback />
-                    }
-                ]
-            },
-            {
-                path: "admin",
-                element: <RequireAuth role="admin" />,
-                children: [
-                    {
-                        path: "usuarios",
-                        element: <UsersRoles />
-                    }
-                ]
-            }
-        ]
-    }
+          {
+            index: true,
+            element: <TeacherEvaluationMenu />,
+          },
+          {
+            path: "resultados",
+            element: <TeacherFeedbackResults />,
+          },
+          {
+            path: "avaliacao",
+            element: <TeacherFeedback />,
+          },
+          {
+            path: "admin",
+            element: <RequireAuth role="admin" />,
+            children: [
+                {
+                    path: "resultados",
+                    element: <TeacherFeedbackAdmin />,
+                }
+            ]
+          }
+          
+        ],
+      },
+      {
+        path: "admin",
+        element: <RequireAuth role="admin" />,
+        children: [
+          {
+            path: "usuarios",
+            element: <UsersRoles />,
+          },
+        ],
+      },
+    ],
+  },
 ]);
 
 export default routes;
-

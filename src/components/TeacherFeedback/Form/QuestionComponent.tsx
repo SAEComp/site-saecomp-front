@@ -4,6 +4,9 @@ interface IQuestionContainer<ComponentProps> {
     label: string;
     component: ComponentType<ComponentProps>;
     componentProps: ComponentProps;
+    component2?: ComponentType<ComponentProps>;
+    componentProps2?: ComponentProps;
+    children?: React.ReactNode;
     sx?: React.CSSProperties;
 }
 
@@ -12,6 +15,9 @@ const QuestionComponent = <ComponentProps extends {}>({
     label,
     component: Component,
     componentProps,
+    component2: Component2,
+    componentProps2,
+    children,
     sx
 }: IQuestionContainer<ComponentProps>) => {
     return (
@@ -25,7 +31,10 @@ const QuestionComponent = <ComponentProps extends {}>({
                 {label}
             </span>
             <Component {...componentProps} />
-
+            {children}
+            {Component2 && componentProps2 && (
+                <Component2 {...componentProps2} />
+            )}
         </div>
     )
 }

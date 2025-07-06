@@ -1,17 +1,80 @@
 import QuestionComponent from "./QuestionComponent";
-// import DropDown from "./Inputs/DropDown";
 import TextInput from "../../Inputs/TextInput";
 import SliderInput from "../../Inputs/SliderInput";
-import { disciplinas, docentes } from "./mock";
-import { IQuestionProps } from "./types";
 import DropDown from "../../Inputs/DropDown";
+import { IEvaluation } from "../../../schemas/teacherEvaluation/input/evaluation.schema";
+import { Classes } from "../../../schemas/teacherEvaluation/output/evaluation.schema";
+import { IOption } from "../../Inputs/DropDown";
+import { useEffect, useState } from "react";
+import { distinct } from "../FeedbackResults/Filter";
+import questionTypes from "../../../types/questionTypes";
+import { ActiveQuestions } from "../../../schemas/teacherEvaluation/output/evaluation.schema";
 
 
-interface IQuestion extends Omit<IQuestionProps, 'setCurrentQuestion'> {
-    questionIndex: number;
+export const componentTypes: Record<typeof questionTypes[number], React.ComponentType<any>> = {
+    text: TextInput,
+    slider: SliderInput,
+    numeric: SliderInput
 }
 
-const Questions = ({ updateQuestion, formState, questionIndex, teachers, courses }: IQuestion) => {
+
+interface QuestionProps {
+    evaluationState: IEvaluation;
+    updateEvaluationClass: (classId: number) => void;
+    updateAnswer: (questionId: number, answer: string) => void;
+    classes: Classes[];
+    questions: ActiveQuestions;
+}
+
+const Questions = ({ evaluationState, updateEvaluationClass, updateAnswer, classes, questions }: QuestionProps) => {
+    const [teachers, setTeachers] = useState<IOption[]>([]);
+    const [courses, setCourses] = useState<IOption[]>([]);
+    const [selectedTeacher, setSelectedTeacher] = useState<IOption | null>(null);
+    const [selectedCourse, setSelectedCourse] = useState<IOption | null>(null);
+
+    useEffect(() => {
+        setTeachers(
+            distinct(classes.map(q => ({
+                id: q.teacherId,
+                label: q.teacherName
+            })), 'id')
+        );
+        setCourses(
+            distinct(classes.map(q => ({
+                id: q.courseId,
+                label: q.courseName,
+                subtitle: q.courseCode
+            })), 'id')
+        );
+    }, [classes]);
+
+    function changeTeacher(newTeacher: IOption | null) {
+        setSelectedTeacher(newTeacher);
+        setCourses(
+            distinct(classes.filter(q => !newTeacher ? true : q.teacherId === newTeacher.id).map(q => ({
+                id: q.courseId,
+                label: q.courseName,
+                subtitle: q.courseCode
+            })), 'id')
+        );
+        if (newTeacher && selectedCourse) {
+            updateEvaluationClass(classes.find(q => q.teacherId === newTeacher.id && q.courseId === selectedCourse.id)?.classId ?? -1);
+        }
+    }
+
+    function changeCourse(newCourse: IOption | null) {
+        setSelectedCourse(newCourse);
+        setTeachers(
+            distinct(classes.filter(q => !newCourse ? true : q.courseId === newCourse.id).map(q => ({
+                id: q.teacherId,
+                label: q.teacherName
+            })), 'id')
+        );
+        if (newCourse && selectedTeacher) {
+            updateEvaluationClass(classes.find(q => q.teacherId === selectedTeacher.id && q.courseId === newCourse.id)?.classId ?? -1);
+        }
+    }
+
     return (
         <div
             className="flex flex-col gap-5"
@@ -26,11 +89,8 @@ const Questions = ({ updateQuestion, formState, questionIndex, teachers, courses
                         options: teachers,
                         placeholder: "Sua resposta",
                         searchable: true,
-                        value: teachers.find((obj) => obj.id === formState.questions[questionIndex].teacherId) ?? null,
-                        onChange: (newValue) => {
-                            console.log(newValue)
-                            updateQuestion(questionIndex, 'teacherId', newValue?.id ?? null);
-                        }
+                        value: selectedTeacher,
+                        onChange: changeTeacher
                     }}
                     sx={{
                         flexGrow: '1'
@@ -44,73 +104,38 @@ const Questions = ({ updateQuestion, formState, questionIndex, teachers, courses
                         placeholder: "Sua resposta",
                         searchable: true,
                         showSubtitle: true,
-                        value: courses.find((obj) => obj.id === formState.questions[questionIndex].subjectId) ?? null,
+                        value: selectedCourse,
                         searchFilter: (search, option) => {
                             const normalizedSearch = search.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
                             return (
-                                option.label.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(normalizedSearch.toLowerCase()) || 
+                                option.label.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(normalizedSearch.toLowerCase()) ||
                                 option.subtitle?.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(normalizedSearch.toLowerCase())
                             ) ?? false;
                         },
-                        onChange: (newValue) => {
-                            updateQuestion(questionIndex, 'subjectId', newValue?.id ?? null);
-                        }
+                        onChange: changeCourse
                     }}
                     sx={{
                         flexGrow: '2'
                     }}
                 />
             </div>
-            <QuestionComponent
-                label="Quais foram os pontos positivos do professor nesse semestre?"
-                component={TextInput}
-                componentProps={{
-                    multiline: true,
-                    rows: 4,
-                    label: 'Sua resposta',
-                    value: formState.questions[questionIndex].positiveAspects,
-                    onChange: (newValue) => {
-                        updateQuestion(questionIndex, 'positiveAspects', newValue);
-                    }
-                }}
-            />
-            <QuestionComponent
-                label="Quais foram os pontos negativos do professor nesse semestre?"
-                component={TextInput}
-                componentProps={{
-                    multiline: true,
-                    rows: 4,
-                    label: 'Sua resposta',
-                    value: formState.questions[questionIndex].negativeAspects,
-                    onChange: (newValue) => {
-                        updateQuestion(questionIndex, 'negativeAspects', newValue);
-                    }
-                }}
-            />
-            <QuestionComponent
-                label="Nota geral que você daria ao professor nesse semestre:"
-                component={SliderInput}
-                componentProps={{
-                    value: formState.questions[questionIndex].rating,
-                    setValue: (newValue) => {
-                        updateQuestion(questionIndex, 'rating', newValue);
-                    }
-                }}
-            />
-            <QuestionComponent
-                label="Algum comentário extra ou dicas sobre o professor e a disciplina que você gostaria de deixar pras próximas turmas?
-                    (Escolheremos algumas respostas pra divulgar para uso dos alunos que terão aulas da disciplina/com o professor nos semestres futuros. Sua resposta SEMPRE será anônima);"
-                component={TextInput}
-                componentProps={{
-                    multiline: true,
-                    rows: 4,
-                    label: 'Sua resposta',
-                    value: formState.questions[questionIndex].additionalComments,
-                    onChange: (newValue) => {
-                        updateQuestion(questionIndex, 'additionalComments', newValue);
-                    }
-                }}
-            />
+            {questions && questions.map(question => (
+                <QuestionComponent
+                    key={question.id}
+                    label={question.question}
+                    component={componentTypes[question.type]}
+                    componentProps={{
+                        multiline: true,
+                        rows: 4,
+                        label: 'Sua resposta',
+                        value: evaluationState.answers.find(an => an.questionId === question.id)?.answer || '',
+                        onChange: (newValue: string) => {
+                            updateAnswer(question.id, String(newValue));
+                        }
+                    }}
+                />
+            ))}
+
         </div>
     )
 }

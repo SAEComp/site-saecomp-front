@@ -9,7 +9,7 @@ interface IMark {
 
 interface ISliderInputProps {
     value: number;
-    setValue: (value: number) => void;
+    onChange: (value: number) => void;
     sx?: SxProps<Theme>;
 }
 
@@ -89,11 +89,11 @@ const StyledSlider = styled(Slider)(({theme}) => ({
     },
 }));
 
-const SliderInput = ({ value, setValue, sx }: ISliderInputProps) => {
+const SliderInput = ({ value, onChange, sx }: ISliderInputProps) => {
 
     const handleChange = (_: Event, newValue: number | number[]) => {
         if (typeof newValue === 'number') {
-            setValue(newValue);
+            onChange(newValue);
         }
     };
 
@@ -101,7 +101,7 @@ const SliderInput = ({ value, setValue, sx }: ISliderInputProps) => {
         <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', marginTop: '30px', ...sx }}>
             <StyledSlider
                 aria-label="Custom marks"
-                value={value}
+                value={Number(value)}
                 onChange={handleChange}
                 getAriaValueText={valuetext}
                 step={1}
