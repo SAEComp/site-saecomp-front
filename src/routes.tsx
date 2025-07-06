@@ -10,7 +10,7 @@ import Error from "./pages/Error";
 import TeacherEvaluationMenu from "./pages/TeacherEvaluationMenu";
 import RequireAuth from "./auth/RequireAuth";
 import UsersRoles from "./pages/UsersRoles";
-import FeedbackEdit from "./pages/AdminQuestions";
+import TeacherQuestionsEdit from "./pages/TeacherQuestionsEdit";
 import { AuthProvider } from "./auth/AuthContext";
 import { createBrowserRouter } from "react-router";
 import TeacherFeedbackAdmin from "./pages/TeacherFeedbackAdmin";
@@ -65,6 +65,10 @@ const routes = createBrowserRouter([
             path: "admin",
             element: <RequireAuth role="admin" />,
             children: [
+                {
+                  path: "questoes",
+                  element: <TeacherQuestionsEdit/>,
+                },
                 {
                     path: "resultados",
                     element: <TeacherFeedbackAdmin />,

@@ -1,7 +1,7 @@
 import FormMaker from "../../components/TeacherFeedback/FormMaker/FormMaker";
 
 
-const FeedbackEdit = () =>{
+const TeacherQuestionsEdit = () =>{
     return(
         <div
             className="w-screen font-inter"
@@ -31,4 +31,4 @@ const FeedbackEdit = () =>{
     )
 }
 
-export default FeedbackEdit;
+export default TeacherQuestionsEdit;
