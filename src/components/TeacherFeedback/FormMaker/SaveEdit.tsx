@@ -10,6 +10,7 @@ import { adminQuestionsService } from "../../../services/adminQuestions.service"
 interface ISaveEdit {
     reducer: ReturnType<typeof useQuestionEdit>
     original: React.MutableRefObject<IQuestionEdit[]>
+    getQuestionsDB: () => Promise<void>
     save: boolean
     setSave: React.Dispatch<React.SetStateAction<boolean>>
 }
@@ -19,7 +20,7 @@ export interface IQuestionService {
     method: 'Post'|'Put'|'Delete'
 }
 
-const SaveEdit = ({reducer, original, save, setSave}:ISaveEdit ) => {
+const SaveEdit = ({reducer, original, getQuestionsDB, save, setSave}:ISaveEdit ) => {
     const [changedQuestions, setChangedQuestions] = useState<IQuestionService[]>([]);
 
     const getChangeList = () => {
@@ -67,28 +68,22 @@ const SaveEdit = ({reducer, original, save, setSave}:ISaveEdit ) => {
 
     const saveChangesDB = async () => {
 
-        changedQuestions.map(async (cur) => {
+        await Promise.all(changedQuestions.map( (cur) => ( async () => {
             const {editing, required, ...reducedQ} = cur.question;
             switch (cur.method) {
                 case 'Post':
-                    const newQuestionId = await adminQuestionsService.postQuestion(reducedQ);
-                    if(newQuestionId){
-                        reducer.setQuestionId(cur.question.id, newQuestionId);
-                    }
-                    break;
+                    await adminQuestionsService.postQuestion(reducedQ);
+                    break; 
                 case 'Put':
                     await adminQuestionsService.putQuestion(reducedQ);
                     break;
                 case 'Delete':
-                    const deleted = await adminQuestionsService.deleteQuestion(cur.question.id);
-                    if(!deleted){
-                        reducer.copyDeletedQuestion(cur.question)
-                    }
+                    await adminQuestionsService.deleteQuestion(cur.question.id);
                     break;
             }
-        })
-        reducer.setQuestionList(reducer.state.questions);
-        original.current = reducer.state.questions;
+        })()) )
+        
+        getQuestionsDB();
         setSave(false);
     }
 
@@ -112,9 +107,10 @@ const SaveEdit = ({reducer, original, save, setSave}:ISaveEdit ) => {
                 className="flex flex-col items-center gap-5 p-5"
                 >
                     {
-                        changedQuestions.map(question => {
+                        changedQuestions.map( (question, j) => {
                             return (
                                 <ModifiedQuestion
+                                key={j}
                                 question={question.question}
                                 method={question.method}
                                 />

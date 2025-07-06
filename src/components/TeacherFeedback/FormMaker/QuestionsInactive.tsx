@@ -11,9 +11,11 @@ const QuestionsInactive = ({reducer}:IQuestionsInactive) => {
         <div
             className="flex flex-col gap-5"
         >
-            {reducer.state.questions.map(question => (
+            {reducer.state.questions.map( (question,j) => (
 
-                <div>
+                <div
+                key={j}
+                >
                     {!question.active && (<div
                         className="bg-[#F1F1F1] rounded-3xl flex flex-col"
                     >

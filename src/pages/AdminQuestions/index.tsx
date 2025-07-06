@@ -20,7 +20,9 @@ const FeedbackEdit = () =>{
                     <span
                     className="text-base font-light text-[#828282] font-inter"
                     >
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse auctor nulla non lectus ullamcorper malesuada. Aenean suscipit, tellus ac malesuada rutrum, nulla ipsum elementum mauris, nec aliquam lorem dolor sit amet erat. In at consequat metus. Aenean nisi arcu, condimentum tristique lacinia ac, sollicitudin id libero. Duis euismod risus at lorem feugiat fringilla. Vivamus aliquam sit amet velit auctor tempus. Quisque aliquet elit mauris, sit amet condimentum dui porta at. Pellentesque rutrum orci tortor, non porttitor nunc tincidunt ut.
+                        Nesta página você pode definir que perguntas estarão presentes no formulário de Avalição dos Professores. As perguntas aparecerão no tipo e ordem apresentadas e você pode marcar-la como obrigatória. Também e possível ativar e desativar perguntas. Perguntas desativadas não estarão no formulário e também não serão contabilizadas para os resultados das avaliações.
+                        <br/>
+                        Após realizar suas alterações no formulário, você pode descartá-las, retornando o formulário para a última versão salva, ou salvá-las, em que serão apresentadas um sumário das alterações antes de confirmar as mudanças.
                     </span>
                 </div>
                 <FormMaker/>

@@ -14,8 +14,9 @@ const QuestionsEdit = ({reducer}: IQuestionsEdit) => {
                 <div
                     className="flex flex-col gap-5"
                 >
-                    {reducer.state.questions.map((question) => (
+                    {reducer.state.questions.map((question, j) => (
                         question.active&& (<QuestionEditComponent
+                        key={j}
                         question={question}
                         reducer={reducer}
                         />)
@@ -26,11 +27,11 @@ const QuestionsEdit = ({reducer}: IQuestionsEdit) => {
                     className="align-self-center flex justify-center align-center bg-white rounded-xl box-border border-8 my-10 w-20 h-20"
                     onClick={() => { reducer.addQuestion() }}
                 >
-                    <text
+                    <div
                         className="box-border -mt-1 font-bold text-center text-6xl align-top"
                     >
                         <AddIcon/>
-                    </text>
+                    </div>
                 </button>
             </div>
         )

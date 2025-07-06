@@ -179,10 +179,16 @@ const questionEditReducer = (state: IQuestionEditList, action: Action):IQuestion
         case 'SET_QUESTION_ACTIVE':
             return{
                 ...state,
-                questions: state.questions.map( q => ({
+                questions: order(state.questions.map( q => ({
                     ...q,
                     active: q.id===action.questionId? action.active : q.active,
-                })).sort(comp)
+                    order: q.id!==action.questionId? q.order :
+                        action.active? state.activeCount+1 : null,
+                    isScore: q.id!==action.questionId? q.isScore :
+                        !action.active? false :
+                        q.type==='text'? false : true
+                })).sort(comp)),
+                activeCount: action.active? state.activeCount+1 : state.activeCount-1
             }
         case 'SET_QUESTION_ID':
             return{

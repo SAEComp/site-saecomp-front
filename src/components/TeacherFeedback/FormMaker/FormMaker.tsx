@@ -1,7 +1,7 @@
 import QuestionsEdit from "./QuestionsEdit";
 import QuestionsInactive from "./QuestionsInactive";
 import { IQuestionEdit } from "./useQuestionEdit";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import useQuestionEdit from "./useQuestionEdit";
 import { adminQuestionsService } from "../../../services/adminQuestions.service";
 import SaveIcon from '@mui/icons-material/Save';
@@ -14,10 +14,14 @@ const FormMaker = () => {
     const originalQuestions = useRef<IQuestionEdit[]>([]);
     const [save, setSave] = useState(false);
     
+    const setOriginalQuestions = useCallback((questions: IQuestionEdit[]) => {
+        originalQuestions.current = questions
+    },[])
+
     const getQuestionsDB = async () => {
         const newQuestList = await adminQuestionsService.getQuestionList();
         if (newQuestList === null) {
-            console.log("vish");
+            console.log("Lista de Perguntas Vazia");
             return;
         };
         const originalForm = newQuestList.map(q => ({
@@ -26,7 +30,7 @@ const FormMaker = () => {
             required: false
         }));
         questionEdit.setQuestionList(originalForm);
-        originalQuestions.current = originalForm;
+        setOriginalQuestions(originalForm);
     }
 
     useEffect(() => {
@@ -39,6 +43,7 @@ const FormMaker = () => {
     <SaveEdit
     reducer={questionEdit}
     original={originalQuestions}
+    getQuestionsDB={getQuestionsDB}
     save={save}
     setSave={setSave}
     />
