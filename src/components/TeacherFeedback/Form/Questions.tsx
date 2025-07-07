@@ -5,7 +5,7 @@ import DropDown from "../../Inputs/DropDown";
 import { IEvaluation } from "../../../schemas/teacherEvaluation/input/evaluation.schema";
 import { Classes } from "../../../schemas/teacherEvaluation/output/evaluation.schema";
 import { IOption } from "../../Inputs/DropDown";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { distinct } from "../FeedbackResults/Filter";
 import questionTypes from "../../../types/questionTypes";
 import { ActiveQuestions } from "../../../schemas/teacherEvaluation/output/evaluation.schema";
@@ -31,6 +31,7 @@ const Questions = ({ evaluationState, updateEvaluationClass, updateAnswer, class
     const [courses, setCourses] = useState<IOption[]>([]);
     const [selectedTeacher, setSelectedTeacher] = useState<IOption | null>(null);
     const [selectedCourse, setSelectedCourse] = useState<IOption | null>(null);
+    const internalChange = useRef<boolean>(false);
 
     useEffect(() => {
         setTeachers(
@@ -48,6 +49,30 @@ const Questions = ({ evaluationState, updateEvaluationClass, updateAnswer, class
         );
     }, [classes]);
 
+    useEffect(() => {
+        if (internalChange.current) {
+            // Só atualiza os estados locais, não sobrescreve nada
+            internalChange.current = false;
+            return;
+        }
+        if (!evaluationState.classId || evaluationState.classId < 0) {
+            setSelectedTeacher(null);
+            setSelectedCourse(null);
+            return;
+        }
+        const _class = classes.find(el => el.classId === evaluationState.classId)
+        if (!_class) return;
+        setSelectedTeacher({
+            id: _class.teacherId,
+            label: _class.teacherName
+        });
+        setSelectedCourse({
+            id: _class.courseId,
+            label: _class.courseName,
+            subtitle: _class.courseCode
+        });
+    }, [evaluationState.classId, classes])
+
     function changeTeacher(newTeacher: IOption | null) {
         setSelectedTeacher(newTeacher);
         setCourses(
@@ -58,7 +83,10 @@ const Questions = ({ evaluationState, updateEvaluationClass, updateAnswer, class
             })), 'id')
         );
         if (newTeacher && selectedCourse) {
-            updateEvaluationClass(classes.find(q => q.teacherId === newTeacher.id && q.courseId === selectedCourse.id)?.classId ?? -1);
+            const foundClass = classes.find(q => q.teacherId === newTeacher.id && q.courseId === selectedCourse.id);
+            if (foundClass) {
+                updateEvaluationClass(foundClass.classId);
+            }
         }
     }
 
@@ -71,7 +99,10 @@ const Questions = ({ evaluationState, updateEvaluationClass, updateAnswer, class
             })), 'id')
         );
         if (newCourse && selectedTeacher) {
-            updateEvaluationClass(classes.find(q => q.teacherId === selectedTeacher.id && q.courseId === newCourse.id)?.classId ?? -1);
+            const foundClass = classes.find(q => q.teacherId === selectedTeacher.id && q.courseId === newCourse.id);
+            if (foundClass) {
+                updateEvaluationClass(foundClass.classId);
+            }
         }
     }
 
@@ -90,7 +121,10 @@ const Questions = ({ evaluationState, updateEvaluationClass, updateAnswer, class
                         placeholder: "Sua resposta",
                         searchable: true,
                         value: selectedTeacher,
-                        onChange: changeTeacher
+                        onChange: (newValue: IOption | null) => {
+                            internalChange.current = true;
+                            changeTeacher(newValue);
+                        }
                     }}
                     sx={{
                         flexGrow: '1'
@@ -112,7 +146,10 @@ const Questions = ({ evaluationState, updateEvaluationClass, updateAnswer, class
                                 option.subtitle?.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(normalizedSearch.toLowerCase())
                             ) ?? false;
                         },
-                        onChange: changeCourse
+                        onChange: (newValue: IOption | null) => {
+                            internalChange.current = true;
+                            changeCourse(newValue);
+                        }
                     }}
                     sx={{
                         flexGrow: '2'
