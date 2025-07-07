@@ -18,7 +18,7 @@ const QuestionEditInput = ({ q }: { q: IQuestionEdit }) => {
             return (
                 <SliderInput
                     value={0}
-                    setValue={() => null}
+                    onChange={() => {} }
                 />
             )
         case 'numeric':
