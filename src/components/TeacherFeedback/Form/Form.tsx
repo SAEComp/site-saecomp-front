@@ -9,11 +9,22 @@ import { evaluationService } from "../../../services/evaluation.service";
 import useEvaluationForm from "./useEvaluationForm";
 import CloseIcon from '@mui/icons-material/Close';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import DropDown, { IOption } from "../../Inputs/DropDown";
+
+
+const idealYearOptions: IOption[] = [
+    { label: '1° período', id: 1 },
+    { label: '3° período', id: 3 },
+    { label: '5° período', id: 5 },
+    { label: '7° período', id: 7 },
+    { label: '9° período', id: 9 },
+]
 
 
 const Form = () => {
     const [classes, setClasses] = useState<Classes[]>([]);
     const [questions, setQuestions] = useState<ActiveQuestions>([]);
+    const [idealYear, setIdealYear] = useState<number | null>(null);
     const isMobile = useIsMobile();
     const evaluationForm = useEvaluationForm();
 
@@ -37,8 +48,25 @@ const Form = () => {
     }, []);
 
     const createFeedback = async () => {
-        await evaluationService.createEvaluation("0000000", evaluationForm.state.evaluations)
+        await evaluationService.createEvaluation(evaluationForm.state.evaluations)
     };
+
+    const getIdealYear = async (idealYear: number | null) => {
+        evaluationForm.resetForm();
+        console.log(evaluationForm.state)
+        if (idealYear === null) return;
+        const _idealClasses = await evaluationService.getClasses(idealYear);
+        if (!_idealClasses || _idealClasses.length === 0) return;
+        evaluationForm.setTotalEvaluations(_idealClasses.length)
+        _idealClasses.forEach((el, i) => {
+            evaluationForm.updateEvaluationClass(i, el.classId)
+        })
+        // setTimeout(() => {
+        //     evaluationForm.removeEvaluation(0);
+        // }, 100);
+
+
+    }
 
 
     return (
@@ -47,7 +75,7 @@ const Form = () => {
 
         >
             <div
-                className="flex flex-col justify-center items-center w-full gap-4 md:flex-row md:gap-[10%]"
+                className="flex flex-col justify-center items-center w-full gap-4 md:flex-row md:justify-between md:w-[40%] text-center"
             >
                 <span
                     className="font-inter text-white"
@@ -61,6 +89,25 @@ const Form = () => {
                     defaultValue={evaluationForm.state.totalEvaluations}
                     onChange={(newValue) => newValue ? evaluationForm.setTotalEvaluations(newValue) : null}
                     mobile={isMobile}
+                />
+            </div>
+            <div
+                className="flex flex-col justify-center items-center w-full gap-4 md:flex-row md:justify-between md:w-[40%] text-center"
+            >
+                <span
+                    className="font-inter text-white"
+                >
+                    Qual o seu período ideal?
+                </span>
+                <DropDown
+                    options={idealYearOptions}
+                    value={idealYearOptions.find(option => option.id === idealYear) || null}
+                    onChange={(option) => {
+                        setIdealYear(option ? Number(option.id) : null);
+                        getIdealYear((option?.id ?? null) as number | null);
+                    }}
+                    searchable={false}
+                    placeholder="Selecione o período ideal"
                 />
             </div>
             <div className="flex flex-col bg-white w-full rounded-xl p-5 md:p-12 gap-5 relative">
@@ -100,7 +147,7 @@ const Form = () => {
                 >
                     {Array.from({ length: evaluationForm.state.totalEvaluations }).map((_, i) => (
                         <Questions
-                            key={i}
+                            key={`${i}-${evaluationForm.state.evaluations[i]?.classId ?? 'none'}`}
                             evaluationState={evaluationForm.state.evaluations[i]}
                             updateEvaluationClass={(classId) => evaluationForm.updateEvaluationClass(i, classId)}
                             updateAnswer={(questionId, answer) => evaluationForm.updateAnswer(i, questionId, answer)}

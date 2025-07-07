@@ -25,9 +25,9 @@ class EvaluationService {
             return null;
         }
     }
-    async createEvaluation(nusp: string, evaluations: IEvaluation[]): Promise<boolean | null> {
+    async createEvaluation(evaluations: IEvaluation[]): Promise<boolean | null> {
         try {
-            const body = createEvaluationInSchema.parse({ nusp, evaluations });
+            const body = createEvaluationInSchema.parse({ evaluations });
             const response = await teacherEvaluationProvider.post('/create', body);
             return response.status === 201;
         } catch (error) {
