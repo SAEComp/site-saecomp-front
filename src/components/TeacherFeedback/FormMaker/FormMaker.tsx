@@ -62,21 +62,21 @@ const FormMaker = () => {
 
                     <button
                         onClick={() => { getQuestionsDB() }}
-                        className="text-center bg-black text-white rounded-xl p-4"
+                        className="text-center bg-black text-white rounded-xl p-4 group"
                         title="Restaura o formulário para o salvo."
                     >
                         <RestoreIcon
-                            className="text-3xl"
+                            className="text-3xl group-hover:animate-spinOnce"
                         />
                     </button>
 
                     <button
                         onClick={() => { setSave(!save) }}
-                        className="text-center bg-black text-white rounded-xl p-4"
+                        className="text-center bg-black text-white rounded-xl p-4 group"
                         title="Salvar alterações."
                     >
                         <SaveIcon
-                            className="text-3xl"
+                            className="text-3xl group-hover:scale-110 duration-200 transition-transform ease-in-out"
                         />
                     </button>
 

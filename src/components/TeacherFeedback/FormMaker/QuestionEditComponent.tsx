@@ -75,13 +75,14 @@ const QuestionEditComponent = ({ question, reducer }: IQuestionEditComponent) =>
 
                 <button
                     onClick={() => { reducer.setQuestionEditing(question.id, !question.editing) }}
+                    className="group"
                 >
                     {question.editing ? (
                         <CheckIcon 
-                        className="fill text-3xl hover:text-[#03B04B]"
+                        className="fill text-3xl hover:text-[#03B04B] group-hover:scale-110 transition-transform ease-in-out"
                         />) : (
                         <EditIcon 
-                        className="fill hover:text-[#03B04B]"
+                        className="fill hover:text-[#03B04B] group-hover:scale-110 transition-transform ease-in-out"
                         />)}
                 </button>
             </div>
@@ -159,17 +160,19 @@ const QuestionEditComponent = ({ question, reducer }: IQuestionEditComponent) =>
                 >
                     <button
                         onClick={() => { reducer.copyQuestion(question.id) }}
+                        className="group"
                     >
                         <ContentCopyIcon
-                            className="fill text-2xl hover:text-[#03B04B]"
+                            className="fill text-2xl hover:text-[#03B04B] group-hover:scale-110 transition-transform ease-in-out"
                         />
                     </button>
 
                     <button
                         onClick={() => { reducer.deleteQuestion(question.id) }}
+                        className="group"
                     >
                         <DeleteForeverIcon
-                            className="fill text-2xl hover:text-red-600"
+                            className="fill text-2xl hover:text-red-600 group-hover:scale-110 transition-transform ease-in-out"
                         />
                     </button>
                 </div>

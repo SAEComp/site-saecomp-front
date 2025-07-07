@@ -24,13 +24,15 @@ const QuestionsEdit = ({reducer}: IQuestionsEdit) => {
                 </div>
 
                 <button
-                    className="align-self-center flex justify-center align-center bg-white rounded-xl box-border border-8 my-10 w-20 h-20"
+                    className="align-self-center flex justify-center align-center bg-white rounded-xl box-border border-8 my-10 w-20 h-20 group"
                     onClick={() => { reducer.addQuestion() }}
                 >
                     <div
-                        className="box-border -mt-1 font-bold text-center text-6xl align-top"
+                        className="box-border -mt-1 font-bold text-center text-6xl align-top "
                     >
-                        <AddIcon/>
+                        <AddIcon
+                        className="box-border group-hover:scale-125 transition-transform ease-in-out"
+                        />
                     </div>
                 </button>
             </div>
