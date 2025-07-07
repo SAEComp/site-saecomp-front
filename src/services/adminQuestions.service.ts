@@ -32,7 +32,8 @@ class AdminQuestionsService {
                 type: question.type,
                 active: question.active,
                 order: question.order,
-                isScore: question.isScore
+                isScore: question.isScore,
+                required: question.required
             })
         } catch (error){
             console.error ("Error putting Form question", error);

@@ -3,7 +3,6 @@ import { Question } from "../../../schemas/adminQuestions.schema";
 
 export interface IQuestionEdit extends Question {
     editing: boolean;
-    required: boolean;
 }
 
 interface IQuestionEditList {

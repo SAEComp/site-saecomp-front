@@ -69,7 +69,7 @@ const SaveEdit = ({reducer, original, getQuestionsDB, save, setSave}:ISaveEdit )
     const saveChangesDB = async () => {
 
         await Promise.all(changedQuestions.map( (cur) => ( async () => {
-            const {editing, required, ...reducedQ} = cur.question;
+            const {editing, ...reducedQ} = cur.question;
             switch (cur.method) {
                 case 'Post':
                     await adminQuestionsService.postQuestion(reducedQ);

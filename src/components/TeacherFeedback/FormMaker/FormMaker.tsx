@@ -27,7 +27,6 @@ const FormMaker = () => {
         const originalForm = newQuestList.map(q => ({
             ...q,
             editing: false,
-            required: false
         }));
         questionEdit.setQuestionList(originalForm);
         setOriginalQuestions(originalForm);
