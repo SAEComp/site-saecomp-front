@@ -7,7 +7,7 @@ import { Classes } from "../../../schemas/teacherEvaluation/output/evaluation.sc
 import { IOption } from "../../Inputs/DropDown";
 import { useEffect, useState, useRef } from "react";
 import { distinct } from "../FeedbackResults/Filter";
-import questionTypes from "../../../types/questionTypes";
+import questionTypes from "../../../schemas/teacherEvaluation/questionTypes";
 import { ActiveQuestions } from "../../../schemas/teacherEvaluation/output/evaluation.schema";
 
 

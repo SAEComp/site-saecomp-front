@@ -1,8 +1,6 @@
 import authService from "../../services/auth.service";
 import { IUserData } from "../../interfaces/authService.interface";
 import { useEffect, useState, useRef } from "react";
-import DropDown from "../../components/Inputs/DropDown";
-import CircularProgress from '@mui/material/CircularProgress';
 import Table from "../../components/Table/Table";
 import { Role } from "../../schemas/auth/out/roles.schema";
 import { Permission } from "../../schemas/auth/out/permissions.schema";
@@ -10,46 +8,26 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import Checkmark from "../../components/Inputs/Checkmark";
 import TextInput from "../../components/Inputs/TextInput";
+import UserTable from "../../components/UserRoles/UserTable";
 
-interface IUser extends IUserData {
-    loading?: boolean;
-}
 
 interface IPermission extends Permission {
     activeInRole?: boolean;
 }
 
 const UsersRoles = () => {
-    const [users, setUsers] = useState<IUser[]>([]);
     const [roles, setRoles] = useState<Role[]>([]);
     const originalRoles = useRef<Role[]>([]);
     const [permissions, setPermissions] = useState<IPermission[]>([]);
     const originalPermissions = useRef<IPermission[]>([]);
     const [selectedRole, setSelectedRole] = useState<number | null>(null);
-    const tableHeaders: Record<keyof IUserData, string> = {
-        id: "ID",
-        name: "Nome",
-        email: "E-mail",
-        nusp: "NUSP",
-        created_at: "Data de Criação",
-        active_sessions: "Sessões Ativas",
-        role: "Função",
-        roleId: "Função ID"
-    }
+    
 
     const fetchAll = async () => {
-        const [_users, _roles, _permissions] = await Promise.all([
-            authService.listUsers(),
+        const [_roles, _permissions] = await Promise.all([
             authService.listRoles(),
             authService.listPermissions()
         ]);
-        if (_users) {
-            setUsers(_users.map(el => ({
-                ...el,
-                created_at: el.created_at.toLocaleDateString("pt-BR"),
-                nusp: el.nusp ?? '-'
-            })));
-        }
         if (_roles) {
             setRoles(_roles);
             originalRoles.current = _roles;
@@ -225,30 +203,9 @@ const UsersRoles = () => {
                 </div>
 
             </div>
-            <div className="flex flex-col overflow-x-auto w-fit max-w-full bg-white rounded-2xl shadow p-3 py-6">
-                <p className="text-2xl font-bold mb-4 ml-2">Usuários</p>
-                <Table
-                    tableHeaders={Object.values(tableHeaders)}
-                    tableData={users.map((row) => (Object.keys(tableHeaders) as (keyof IUser)[]).map((field, j) => (
-                        field !== 'role' ? <div key={j} className="text-center py-4">
-                            {String(row[field])}
-                        </div> :
-                            (row.loading ? (
-                                <CircularProgress className="text-slate-600 m-auto" key={j} />
-                            ) : (
-                                <DropDown
-                                    key={j}
-                                    className="text-center w-32 h-10 m-auto"
-                                    value={{ label: row.role, id: row.role }}
-                                    options={['admin', 'user'].map(role => ({ label: role, id: role }))}
-                                    onChange={(opt) => { }}
-                                    searchable={false}
-                                    clearable={false}
-                                />
-                            ))
-                    )))}
-                />
-            </div>
+            <UserTable
+                roles={roles}
+            />
         </div>
 
     );

@@ -40,9 +40,9 @@ class AuthService {
             return false;
         }
     }
-    async changeRole(userId: number, newRole: string): Promise<boolean> {
+    async changeRole(userId: number, roleId: number): Promise<boolean> {
         try {
-            const response = await authProvider.post('/admin/change-role', { newRole, userId });
+            const response = await authProvider.post('/admin/change-role', { roleId, userId });
             if (response.status !== 204) return false;
             return true;
         }

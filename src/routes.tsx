@@ -69,6 +69,10 @@ const routes = createBrowserRouter([
                             {
                                 path: "resultados",
                                 element: <TeacherFeedbackAdmin />,
+                            },
+                            {
+                                path: "questoes",
+                                element: <TeacherQuestionsEdit />,
                             }
                         ]
                     }
