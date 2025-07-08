@@ -14,7 +14,10 @@ detailedAnswerIndex,
 } : IReviewListProps
 ) => {
   return (
-    <div className="flex flex-col  w-full h-full p-2">
+    <div 
+    className="flex flex-col overflow-y-scroll w-full h-full p-2"
+    style={{scrollbarWidth: "none"}}
+    >
       {answersList?.answers.map((avaliacao) => (
         <div
           onClick={() => {onReviewClick(avaliacao.evaluationId)}}
