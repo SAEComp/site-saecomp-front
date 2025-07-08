@@ -3,7 +3,7 @@ import { useNavigate, useLocation, Outlet } from "react-router";
 import { useEffect, useState } from "react";
 import CircularProgress from '@mui/material/CircularProgress';
 
-const RequireAuth = ({ role }: { role?: 'admin' | 'user' }) => {
+const RequireAuth = () => {
     const [isChecking, setIsChecking] = useState<boolean>(true);
     const { user, checkLogin } = useAuth();
     const navigate = useNavigate();
@@ -18,11 +18,6 @@ const RequireAuth = ({ role }: { role?: 'admin' | 'user' }) => {
 
                 if (!user) {
                     navigate("/login", { replace: true, state: { from: location } });
-                    return;
-                }
-
-                if (role && user.role !== role) {
-                    navigate("/", { replace: true });
                     return;
                 }
             } catch (err) {
