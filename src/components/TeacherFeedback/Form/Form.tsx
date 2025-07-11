@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import useIsMobile from "./useIsMobile";
 import NumberInput from "../../Inputs/NumberInput";
-import { Classes, ActiveQuestions } from "../../../schemas/teacherEvaluation/output/evaluation.schema";
+import { Classes, ActiveQuestions, Teacher, Course } from "../../../schemas/teacherEvaluation/output/evaluation.schema";
 import Counter from "./Counter";
 import Questions from "./Questions";
 import AnimatedCarousel from "../../AnimatedCarousel/AnimatedCarousel";
@@ -24,28 +24,72 @@ const idealYearOptions: IOption[] = [
 ]
 
 
+
 const Form = () => {
     const navigate = useNavigate();
     const [classes, setClasses] = useState<Classes[]>([]);
+    const [teachers, setTeachers] = useState<Teacher[]>([]);
+    const [courses, setCourses] = useState<Course[]>([]);
+    const [teacherDropdown, setTeacherDropdown] = useState<IOption[]>([]);
+    const [courseDropdown, setCourseDropdown] = useState<IOption[]>([]);
     const [questions, setQuestions] = useState<ActiveQuestions>([]);
     const [idealYear, setIdealYear] = useState<number | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const isMobile = useIsMobile();
     const evaluationForm = useEvaluationForm();
 
+    const sortTeachersClassFirst = (selectedCourse: IOption | null) => {
+        if (!selectedCourse) {
+            return (a: IOption, b: IOption) => String(a.label).localeCompare(String(b.label));
+        }
+        const filteredClasses = classes.filter(c => c.courseId === selectedCourse.id);
+        const teacherIdsInClass = new Set(filteredClasses.map(c => c.teacherId));
+        return (a: IOption, b: IOption) => {
+            const aInClass = teacherIdsInClass.has(a.id as number);
+            const bInClass = teacherIdsInClass.has(b.id as number);
+            if (aInClass && !bInClass) return -1;
+            if (!aInClass && bInClass) return 1;
+            return String(a.label).localeCompare(String(b.label));
+        }
+    }
+
+    const sortCoursesClassFirst = (selectedTeacher: IOption | null) => {
+        if (!selectedTeacher) {
+            return (a: IOption, b: IOption) => String(a.label).localeCompare(String(b.label));
+        }
+        const filteredClasses = classes.filter(c => c.teacherId === selectedTeacher.id);
+        const courseIdsInClass = new Set(filteredClasses.map(c => c.courseId));
+        return (a: IOption, b: IOption) => {
+            const aInClass = courseIdsInClass.has(a.id as number);
+            const bInClass = courseIdsInClass.has(b.id as number);
+            if (aInClass && !bInClass) return -1;
+            if (!aInClass && bInClass) return 1;
+            return String(a.label).localeCompare(String(b.label));
+        }
+    }
+
     const fetchInitialData = async () => {
-        const _classes = await evaluationService.getClasses();
-        if (!_classes) {
-            alert('Erro ao buscar as turmas. Tente novamente mais tarde.');
-            return;
-        }
-        setClasses(_classes);
-        const _questions = await evaluationService.getQuestions();
-        if (!_questions) {
-            alert('Erro ao buscar as perguntas. Tente novamente mais tarde.');
-            return;
-        }
-        setQuestions(_questions);
+        const [_classes, _teachers, _courses, _questions] = await Promise.all([
+            evaluationService.getClasses(),
+            evaluationService.getTeachers(),
+            evaluationService.getCourses(),
+            evaluationService.getQuestions()
+        ]);
+        if (!_classes) toast.error('Erro ao buscar as disciplinas.');
+        else setClasses(_classes);
+        if (!_teachers) toast.error('Erro ao buscar os professores.');
+        else setTeachers(_teachers);
+        if (!_courses) toast.error('Erro ao buscar as disciplinas.');
+        else setCourses(_courses);
+        if (!_questions) toast.error('Erro ao buscar as perguntas.');
+        else setQuestions(_questions);
+        if (!_classes || !_teachers || !_courses) return;
+        setTeacherDropdown(
+            _teachers.map(t => ({ id: t.teacherId, label: t.teacherName }))
+        );
+        setCourseDropdown(
+            _courses.map(c => ({ id: c.courseId, label: c.courseName, subtitle: c.courseCode }))
+        );
     }
 
     useEffect(() => {
@@ -73,7 +117,7 @@ const Form = () => {
         if (!_idealClasses || _idealClasses.length === 0) return;
         evaluationForm.setTotalEvaluations(_idealClasses.length)
         _idealClasses.forEach((el, i) => {
-            evaluationForm.updateEvaluationClass(i, el.classId)
+            evaluationForm.updateEvaluationClass(i, el.classId, el.teacherId, el.courseId);
         })
     }
 
@@ -129,14 +173,14 @@ const Form = () => {
                     <div className="flex my-auto gap-5">
                         <div
                             className="bg-black rounded-lg flex justify-center items-center p-2 cursor-pointer group"
-                            title="Resetar formulário"
+                            title="Resetar todos os formulários"
                             onClick={() => evaluationForm.resetForm()}
                         >
                             <RestartAltIcon className="text-white group-hover:animate-spinOnce h-6 w-6" />
                         </div>
                         {evaluationForm.state.totalEvaluations > 1 && (<div
                             className="bg-black rounded-lg flex justify-center items-center p-2 cursor-pointer group"
-                            title="Limpar todos os formulários"
+                            title="Excluir formulário atual"
                             onClick={() => evaluationForm.removeEvaluation(evaluationForm.state.currentEvaluation)}
                         >
                             <CloseIcon className="text-white group-hover:scale-125 duration-100 transition-transform ease-in-out h-6 w-6" />
@@ -158,10 +202,14 @@ const Form = () => {
                         <Questions
                             key={`${i}-${evaluationForm.state.evaluations[i]?.classId ?? 'none'}`}
                             evaluationState={evaluationForm.state.evaluations[i]}
-                            updateEvaluationClass={(classId) => evaluationForm.updateEvaluationClass(i, classId)}
+                            updateEvaluationClass={(classId, teacherId, courseId) => evaluationForm.updateEvaluationClass(i, classId, teacherId, courseId)}
                             updateAnswer={(questionId, answer) => evaluationForm.updateAnswer(i, questionId, answer)}
                             classes={classes}
                             questions={questions}
+                            teacherDropdown={teacherDropdown}
+                            courseDropdown={courseDropdown}
+                            sortTeachersClassFirst={sortTeachersClassFirst}
+                            sortCoursesClassFirst={sortCoursesClassFirst}
                         />
                     ))}
                 </AnimatedCarousel>
