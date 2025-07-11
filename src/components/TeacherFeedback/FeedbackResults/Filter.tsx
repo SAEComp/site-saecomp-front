@@ -116,7 +116,7 @@ const Filter = ({ classes, setAnswers }: FilterProps) => {
                     <Spinner />
                 ) : (
                     <button
-                        className="bg-black text-white px-5 rounded-md h-12 w-full"
+                        className="bg-black text-white px-5 rounded-md h-12 w-full cursor-pointer"
                         onClick={fetchFilteredTeachers}
                     >
                         Filtrar
