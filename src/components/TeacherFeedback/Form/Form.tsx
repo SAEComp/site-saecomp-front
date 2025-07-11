@@ -98,6 +98,20 @@ const Form = () => {
 
     const createFeedback = async () => {
         setLoading(true);
+        for (const evaluation of evaluationForm.state.evaluations) {
+            if (!evaluation.classId || !evaluation.teacherId || !evaluation.courseId) {
+                toast.error('Por favor, preencha todas as informações das disciplinas e professores.');
+                setLoading(false);
+                return;
+            }
+            for (const question of questions) {
+                if (!evaluation.answers.find(e => e.questionId == question.id)?.answer.trim() && question.required) {
+                    toast.error('Por favor, responda todas as perguntas obrigatórias.');
+                    setLoading(false);
+                    return;
+                }
+            }
+        }
         const result = await evaluationService.createEvaluation(evaluationForm.state.evaluations);
         setLoading(false);
         if (!result) {

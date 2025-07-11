@@ -1,6 +1,8 @@
 import { teacherEvaluationProvider } from "../providers";
 import { Classes, getClassesOutSchema, ActiveQuestions, getActiveQuestionsOutSchema, Teacher, Course, getTeachersOutSchema, getCoursesOutSchema } from "../schemas/teacherEvaluation/output/evaluation.schema";
 import { IEvaluation, createEvaluationInSchema } from "../schemas/teacherEvaluation/input/evaluation.schema";
+import { toast } from "sonner";
+import { ZodError } from "zod";
 
 class EvaluationService {
     async getClasses(idealYear?: number): Promise<Classes[] | null> {
@@ -52,6 +54,9 @@ class EvaluationService {
             return true;
         } catch (error) {
             console.error("Error creating evaluation:", error);
+            if (error instanceof ZodError) {
+                toast.error("Erro ao criar avaliação: " + error.errors.map(e => e.message).join(", "));
+            }
             return null;
         }
     }

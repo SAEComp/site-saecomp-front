@@ -129,7 +129,7 @@ const QuestionEditComponent = ({ question, reducer }: IQuestionEditComponent) =>
                             onClick={() => { reducer.setQuestionRequired(question.id, !question.required) }}
                         >
                             <Mark
-                                marked={!question.required}
+                                marked={question.required}
                             />
                         </button>
 
