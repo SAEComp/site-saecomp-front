@@ -4,6 +4,7 @@ import { listPermissionsOutSchema, Permission } from "../schemas/auth/out/permis
 import { listRolesOutSchema, Role } from "../schemas/auth/out/roles.schema";
 import { EditRoleIn } from "../schemas/auth/input/roles.schema";
 import { ErrorCode } from "../providers/errorInterceptor";
+import { CreateUser } from "../schemas/auth/input/user.schema";
 import { AxiosError } from "axios";
 
 class AuthService {
@@ -58,6 +59,14 @@ class AuthService {
         }
         catch (error) {
             console.error('Error listing users:', error);
+            return null;
+        }
+    }
+    async createUser(newUser: CreateUser): Promise<number | null> {
+        try {
+            const response = await authProvider.post('/admin/users', newUser);
+            return response.data.id;
+        } catch (error) {
             return null;
         }
     }

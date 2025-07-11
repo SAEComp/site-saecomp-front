@@ -18,7 +18,13 @@ const Login = () => {
     useEffect(() => {
         const redirect = location.state?.from?.pathname || null;
         if (user && redirect) navigate(redirect, { replace: true });
-    }, [user])
+    }, [user]);
+
+    useEffect(() => {
+        if (tempCredential) {
+            logout();
+        }
+    }, []);
 
     async function handleSignout() {
         try {
@@ -79,6 +85,7 @@ const Login = () => {
                                     className="w-20 h-20 mx-auto rounded-full mb-4 shadow"
                                 />
                                 <h3 className="text-lg font-semibold">{user?.name}</h3>
+                                {user?.role != 'user' && (<p className="text-gray-600 mb-4">{user?.role}</p>)}
                                 <button
                                     onClick={handleSignout}
                                     className="mt-4 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded transition"

@@ -11,7 +11,7 @@ function Checkmark({ checked = false, onChange }: CheckmarkProps) {
             type="checkbox"
             checked={checked}
             onChange={e => onChange?.(e.target.checked)}
-            className="w-5 h-5 accent-green-600"
+            className="w-5 h-5 accent-green-600 cursor-pointer"
         />
     );
 }

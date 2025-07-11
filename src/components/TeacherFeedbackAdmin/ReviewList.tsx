@@ -1,4 +1,4 @@
-import { GetAdminAnswersOut } from "../../schemas/adminAnswers.schema";
+import { GetAdminAnswersOut } from "../../schemas/teacherEvaluation/output/adminAnswer.schema";
 
 interface IReviewListProps {
   answersList: GetAdminAnswersOut | null;

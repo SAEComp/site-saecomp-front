@@ -64,15 +64,18 @@ const routes = createBrowserRouter([
                     },
                     {
                         path: "admin",
-                        element: <AuthPermissions permissions={["evaluation:admin"]} />,
                         children: [
                             {
                                 path: "resultados",
-                                element: <TeacherFeedbackAdmin />,
+                                element: <AuthPermissions permissions={['evaluation:review']}>
+                                    <TeacherFeedbackAdmin />
+                                </AuthPermissions>,
                             },
                             {
                                 path: "questoes",
-                                element: <TeacherQuestionsEdit />,
+                                element: <AuthPermissions permissions={['evaluation:edit']}>
+                                    <TeacherQuestionsEdit />
+                                    </AuthPermissions>,
                             }
                         ]
                     }

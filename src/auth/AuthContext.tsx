@@ -21,6 +21,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         // if (!resp) {
         //     throw new Error("Failed to logout");
         // }
+        setTempCredential(undefined);
         saveUser(null);
         setUser(null);
     };

@@ -9,7 +9,7 @@ import QuestionEditInput from "./QuestionEditInput";
 import TextInput from "../../Inputs/TextInput";
 import questionTypes from "../../../schemas/teacherEvaluation/questionTypes";
 import DropDown from "../../Inputs/DropDown";
-import { Question } from "../../../schemas/teacherEvaluation/adminQuestions.schema";
+import { Question } from "../../../schemas/teacherEvaluation/output/adminQuestions.schema";
 import Mark from "./Mark";
 
 interface IQuestionEditComponent {

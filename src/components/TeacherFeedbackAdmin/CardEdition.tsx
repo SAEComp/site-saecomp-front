@@ -1,6 +1,6 @@
 import QuestionComponent from "../TeacherFeedback/Form/QuestionComponent";
 import SaveIcon from "@mui/icons-material/Save";
-import { GetAdminAnswerDetailsOut } from "../../schemas/adminAnswers.schema";
+import { GetAdminAnswerDetailsOut } from "../../schemas/teacherEvaluation/output/adminAnswer.schema";
 import { useEffect } from "react";
 import useEvaluationEdit from "./useEvaluationEdit";
 import { componentTypes } from "../TeacherFeedback/Form/Questions";

@@ -1,5 +1,5 @@
 import { useReducer, useCallback } from "react";
-import { Question } from "../../../schemas/adminQuestions.schema";
+import { Question } from "../../../schemas/teacherEvaluation/output/adminQuestions.schema";
 
 export interface IQuestionEdit extends Question {
     editing: boolean;

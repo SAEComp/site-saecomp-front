@@ -11,7 +11,7 @@ function AuthPermissions({ permissions=[], children }: AuthPermissionsProps) {
     const { user } = useAuth();
 
     if (!user) {
-        return <Navigate to="/" replace />;
+        return;
     }
 
     const hasPermission = permissions.every(permission => user.permissions.includes(permission));

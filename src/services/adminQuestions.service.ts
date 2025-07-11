@@ -1,5 +1,5 @@
 import { teacherEvaluationProvider } from "../providers";
-import { Question } from "../schemas/adminQuestions.schema";
+import { Question } from "../schemas/teacherEvaluation/output/adminQuestions.schema";
 
 class AdminQuestionsService {
     async getQuestionList() : Promise<Question[] | null> {
