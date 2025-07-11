@@ -5,8 +5,6 @@ import DropDown from "../../Inputs/DropDown";
 import { IEvaluation } from "../../../schemas/teacherEvaluation/input/evaluation.schema";
 import { Classes } from "../../../schemas/teacherEvaluation/output/evaluation.schema";
 import { IOption } from "../../Inputs/DropDown";
-import { useEffect, useState, useRef } from "react";
-import { distinct } from "../FeedbackResults/Filter";
 import questionTypes from "../../../schemas/teacherEvaluation/questionTypes";
 import { ActiveQuestions } from "../../../schemas/teacherEvaluation/output/evaluation.schema";
 
@@ -20,90 +18,26 @@ export const componentTypes: Record<typeof questionTypes[number], React.Componen
 
 interface QuestionProps {
     evaluationState: IEvaluation;
-    updateEvaluationClass: (classId: number) => void;
+    updateEvaluationClass: (classId?: number, teacherId?: number, courseId?: number) => void;
     updateAnswer: (questionId: number, answer: string) => void;
     classes: Classes[];
     questions: ActiveQuestions;
+    teacherDropdown: IOption[];
+    courseDropdown: IOption[];
+    sortTeachersClassFirst: (selectedCourse: IOption | null) => (a: IOption, b: IOption) => number;
+    sortCoursesClassFirst: (selectedTeacher: IOption | null) => (a: IOption, b: IOption) => number;
 }
 
-const Questions = ({ evaluationState, updateEvaluationClass, updateAnswer, classes, questions }: QuestionProps) => {
-    const [teachers, setTeachers] = useState<IOption[]>([]);
-    const [courses, setCourses] = useState<IOption[]>([]);
-    const [selectedTeacher, setSelectedTeacher] = useState<IOption | null>(null);
-    const [selectedCourse, setSelectedCourse] = useState<IOption | null>(null);
-    const internalChange = useRef<boolean>(false);
-
-    useEffect(() => {
-        setTeachers(
-            distinct(classes.map(q => ({
-                id: q.teacherId,
-                label: q.teacherName
-            })), 'id')
-        );
-        setCourses(
-            distinct(classes.map(q => ({
-                id: q.courseId,
-                label: q.courseName,
-                subtitle: q.courseCode
-            })), 'id')
-        );
-    }, [classes]);
-
-    useEffect(() => {
-        if (internalChange.current) {
-            // Só atualiza os estados locais, não sobrescreve nada
-            internalChange.current = false;
-            return;
-        }
-        if (!evaluationState.classId || evaluationState.classId < 0) {
-            setSelectedTeacher(null);
-            setSelectedCourse(null);
-            return;
-        }
-        const _class = classes.find(el => el.classId === evaluationState.classId)
-        if (!_class) return;
-        setSelectedTeacher({
-            id: _class.teacherId,
-            label: _class.teacherName
-        });
-        setSelectedCourse({
-            id: _class.courseId,
-            label: _class.courseName,
-            subtitle: _class.courseCode
-        });
-    }, [evaluationState.classId, classes])
+const Questions = ({ evaluationState, updateEvaluationClass, updateAnswer, classes, questions, teacherDropdown, courseDropdown, sortCoursesClassFirst, sortTeachersClassFirst }: QuestionProps) => {
 
     function changeTeacher(newTeacher: IOption | null) {
-        setSelectedTeacher(newTeacher);
-        setCourses(
-            distinct(classes.filter(q => !newTeacher ? true : q.teacherId === newTeacher.id).map(q => ({
-                id: q.courseId,
-                label: q.courseName,
-                subtitle: q.courseCode
-            })), 'id')
-        );
-        if (newTeacher && selectedCourse) {
-            const foundClass = classes.find(q => q.teacherId === newTeacher.id && q.courseId === selectedCourse.id);
-            if (foundClass) {
-                updateEvaluationClass(foundClass.classId);
-            }
-        }
+        const foundClass = classes.find(q => q.teacherId === newTeacher?.id && q.courseId === evaluationState.courseId);
+        updateEvaluationClass(foundClass?.classId, newTeacher?.id as number | undefined, evaluationState.courseId);
     }
 
     function changeCourse(newCourse: IOption | null) {
-        setSelectedCourse(newCourse);
-        setTeachers(
-            distinct(classes.filter(q => !newCourse ? true : q.courseId === newCourse.id).map(q => ({
-                id: q.teacherId,
-                label: q.teacherName
-            })), 'id')
-        );
-        if (newCourse && selectedTeacher) {
-            const foundClass = classes.find(q => q.teacherId === selectedTeacher.id && q.courseId === newCourse.id);
-            if (foundClass) {
-                updateEvaluationClass(foundClass.classId);
-            }
-        }
+        const foundClass = classes.find(q => q.teacherId === evaluationState.teacherId && q.courseId === newCourse?.id);
+        updateEvaluationClass(foundClass?.classId, evaluationState.teacherId, newCourse?.id as number | undefined);
     }
 
     return (
@@ -117,12 +51,11 @@ const Questions = ({ evaluationState, updateEvaluationClass, updateAnswer, class
                     label="Nome do Docente:"
                     component={DropDown}
                     componentProps={{
-                        options: teachers,
+                        options: teacherDropdown.sort(sortTeachersClassFirst(courseDropdown.find(el => el.id === evaluationState.courseId) ?? null)),
                         placeholder: "Sua resposta",
                         searchable: true,
-                        value: selectedTeacher,
+                        value: teacherDropdown.find(el => el.id === evaluationState.teacherId) ?? null,
                         onChange: (newValue: IOption | null) => {
-                            internalChange.current = true;
                             changeTeacher(newValue);
                         }
                     }}
@@ -134,11 +67,11 @@ const Questions = ({ evaluationState, updateEvaluationClass, updateAnswer, class
                     label="Nome e/ou Código da Disciplina"
                     component={DropDown}
                     componentProps={{
-                        options: courses,
+                        options: courseDropdown.sort(sortCoursesClassFirst(teacherDropdown.find(el => el.id === evaluationState.teacherId) ?? null)),
                         placeholder: "Sua resposta",
                         searchable: true,
                         showSubtitle: true,
-                        value: selectedCourse,
+                        value: courseDropdown.find(el => el.id === evaluationState.courseId) ?? null,
                         searchFilter: (search, option) => {
                             const normalizedSearch = search.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
                             return (
@@ -147,7 +80,6 @@ const Questions = ({ evaluationState, updateEvaluationClass, updateAnswer, class
                             ) ?? false;
                         },
                         onChange: (newValue: IOption | null) => {
-                            internalChange.current = true;
                             changeCourse(newValue);
                         }
                     }}
