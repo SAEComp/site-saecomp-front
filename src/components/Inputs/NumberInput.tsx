@@ -7,6 +7,7 @@ interface INumberInputProps {
     mobile?: boolean;
     defaultValue?: number;
     onChange?: (value: number | null) => void;
+    className?: React.HTMLProps<HTMLElement>["className"];
 }
 
 export default function NumberInput({
@@ -16,6 +17,7 @@ export default function NumberInput({
     defaultValue = 1,
     mobile = false,
     onChange,
+    className = ''
 }: INumberInputProps) {
     const [value, setValue] = useState<number | null>(defaultValue);
 
@@ -25,6 +27,10 @@ export default function NumberInput({
             setValue(newValue);
             if (onChange) onChange(newValue);
         }
+        if (value === null) {
+            setValue(min);
+            if (onChange) onChange(min);
+        }
     };
 
     const handleDecrement = () => {
@@ -32,6 +38,10 @@ export default function NumberInput({
             const newValue = value - 1;
             setValue(newValue);
             if (onChange) onChange(newValue);
+        }
+        if (value === null) {
+            setValue(min);
+            if (onChange) onChange(min);
         }
     };
 
@@ -68,10 +78,10 @@ export default function NumberInput({
     return (
         <>
             {mobile ? (
-                <div className="flex items-center gap-2">
+                <div className={`flex items-center gap-2 ${className}`}>
                     <button
                         onClick={handleDecrement}
-                        disabled={(value ?? min - 1) <= min}
+                        disabled={(value ?? min+1) <= min}
                         className="flex items-center justify-center w-10 h-10 bg-gray-100 text-gray-600 rounded-full hover:bg-gray-200 disabled:opacity-50"
                     >
                         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -91,7 +101,7 @@ export default function NumberInput({
 
                     <button
                         onClick={handleIncrement}
-                        disabled={(value ?? max + 1) >= max}
+                        disabled={(value ?? max - 1) >= max}
                         className="flex items-center justify-center w-10 h-10 bg-gray-100 text-gray-600 rounded-full hover:bg-gray-200 disabled:opacity-50"
                     >
                         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -101,7 +111,7 @@ export default function NumberInput({
                 </div>
             ) : (
                 <div
-                    className={`flex min-w-3 min-h-5 h-12 bg-white gap-0 overflow-hidden rounded-md border border-gray-300`}
+                    className={`flex min-w-3 min-h-5 h-12 bg-white gap-0 overflow-hidden rounded-md border border-gray-300 ${className}`}
                 >
                     <input
                         type="text"

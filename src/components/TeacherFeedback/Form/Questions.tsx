@@ -7,12 +7,13 @@ import { Classes } from "../../../schemas/teacherEvaluation/output/evaluation.sc
 import { IOption } from "../../Inputs/DropDown";
 import questionTypes from "../../../schemas/teacherEvaluation/questionTypes";
 import { ActiveQuestions } from "../../../schemas/teacherEvaluation/output/evaluation.schema";
+import NumberInput from "../../Inputs/NumberInput";
 
 
 export const componentTypes: Record<typeof questionTypes[number], React.ComponentType<any>> = {
     text: TextInput,
     slider: SliderInput,
-    numeric: SliderInput
+    numeric: NumberInput
 }
 
 
@@ -88,11 +89,12 @@ const Questions = ({ evaluationState, updateEvaluationClass, updateAnswer, class
                     }}
                 />
             </div>
-            {questions && questions.map(question => (
+            {questions && questions.sort((a, b) => a.order - b.order).map(question => (
                 <QuestionComponent
                     key={question.id}
                     label={question.question}
                     component={componentTypes[question.type]}
+                    required={question.required}
                     componentProps={{
                         multiline: true,
                         rows: 4,
@@ -100,7 +102,10 @@ const Questions = ({ evaluationState, updateEvaluationClass, updateAnswer, class
                         value: evaluationState.answers.find(an => an.questionId === question.id)?.answer || '',
                         onChange: (newValue: string) => {
                             updateAnswer(question.id, String(newValue));
-                        }
+                        },
+                        mobile: true,
+                        className: 'w-full flex justify-center',
+                        defaultValue: null,
                     }}
                 />
             ))}
