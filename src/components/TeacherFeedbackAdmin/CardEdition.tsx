@@ -1,6 +1,6 @@
 import QuestionComponent from "../TeacherFeedback/Form/QuestionComponent";
 import SaveIcon from "@mui/icons-material/Save";
-import { GetAdminAnswerDetailsOut } from "../../schemas/adminAnswers.schema";
+import { GetAdminAnswerDetailsOut } from "../../schemas/teacherEvaluation/output/adminAnswer.schema";
 import { useEffect } from "react";
 import useEvaluationEdit from "./useEvaluationEdit";
 import { componentTypes } from "../TeacherFeedback/Form/Questions";
@@ -9,6 +9,7 @@ import DropDown from "../Inputs/DropDown";
 import { teacherEvalService } from "../../services/teacherEval.service";
 
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import { toast } from "sonner";
 export interface ICardEditionProps {
     detailedAnswer: GetAdminAnswerDetailsOut | null;
     setDetailedAnswer: React.Dispatch<React.SetStateAction<GetAdminAnswerDetailsOut | null>>;
@@ -40,7 +41,11 @@ const CardEdition = ({ detailedAnswer, setDetailedAnswer }: ICardEditionProps) =
         },
             evaluationEdit.state.evaluationId
         )
-        if (!result) return alert("Erro ao salvar a avaliação editada");
+        if (!result) {
+            toast.error("Erro ao salvar a avaliação");
+            return;
+        }
+        toast.success("Avaliação salva com sucesso");
         setDetailedAnswer(await teacherEvalService.getAdminAnswerDetails(evaluationEdit.state.evaluationId));
     }
 
@@ -64,7 +69,7 @@ const CardEdition = ({ detailedAnswer, setDetailedAnswer }: ICardEditionProps) =
                 />
                 {evaluationEdit.state.evaluationId >= 0 && (<div
                     className="bg-black rounded-lg flex justify-center items-center p-2 cursor-pointer group aspect-square"
-                    title="Limpar todos os formulários"
+                    title="Salvar"
                 onClick={saveEditedEvaluation}
                 >
                     <SaveIcon className="text-white group-hover:scale-110 duration-200 transition-transform ease-in-out h-6 w-6" />

@@ -7,9 +7,9 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CheckIcon from '@mui/icons-material/Check';
 import QuestionEditInput from "./QuestionEditInput";
 import TextInput from "../../Inputs/TextInput";
-import questionTypes from "../../../types/questionTypes";
+import questionTypes from "../../../schemas/teacherEvaluation/questionTypes";
 import DropDown from "../../Inputs/DropDown";
-import { Question } from "../../../schemas/adminQuestions.schema";
+import { Question } from "../../../schemas/teacherEvaluation/output/adminQuestions.schema";
 import Mark from "./Mark";
 
 interface IQuestionEditComponent {

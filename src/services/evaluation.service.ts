@@ -28,8 +28,8 @@ class EvaluationService {
     async createEvaluation(evaluations: IEvaluation[]): Promise<boolean | null> {
         try {
             const body = createEvaluationInSchema.parse({ evaluations });
-            const response = await teacherEvaluationProvider.post('/create', body);
-            return response.status === 201;
+            await teacherEvaluationProvider.post('/create', body);
+            return true;
         } catch (error) {
             console.error("Error creating evaluation:", error);
             return null;

@@ -1,4 +1,4 @@
-import { GetAdminAnswersOut } from "../../schemas/adminAnswers.schema";
+import { GetAdminAnswersOut } from "../../schemas/teacherEvaluation/output/adminAnswer.schema";
 
 interface IReviewListProps {
   answersList: GetAdminAnswersOut | null;
@@ -36,7 +36,7 @@ detailedAnswerIndex,
           ease-in-out
           shadow-md active:shadow-lg
           cursor-pointer select-none
-          ${detailedAnswerIndex === avaliacao.evaluationId ? "translate-x-10" : ""}
+          ${detailedAnswerIndex === avaliacao.evaluationId ? "translate-x-2" : ""}
           `}>
           <h3 className="text-lg text-black font-semibold">
             {avaliacao.teacherName}

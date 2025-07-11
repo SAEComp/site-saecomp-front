@@ -24,7 +24,7 @@ const NavBar = () => {
             <div
                 className={`flex xl:relative xl:translate-x-0 xl:flex-row xl:shadow-none xl:rounded-none xl:p-0 gap-8 items-center fixed top-0 right-0 flex-col bg-[#03B04B] pt-20 pb-7 px-4 rounded-xl z-10 shadow ease-in-out transition-transform duration-300 ${isMenuOpen ? "translate-x-0" : "translate-x-full"}`}
             >
-                {user?.role === 'admin' && (
+                {user?.permissions?.includes('users:edit') && (
                     <NavButton navigateTo="/admin/usuarios" onClick={toggleMenu}>Admin</NavButton>
                 )}
                 <NavButton navigateTo="/saecomp" onClick={toggleMenu}>A SAEComp</NavButton>

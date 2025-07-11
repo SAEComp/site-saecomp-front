@@ -14,12 +14,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useState<IUser | null>(null);
     const silentCallback = useRef<boolean>(false);
     const [googleInitialized, setGoogleInitialized] = useState<boolean>(false);
+    const [tempCredential, setTempCredential] = useState<google.accounts.id.CredentialResponse | undefined>(undefined);
 
     const logout = async () => {
         const resp = await authService.logout();
         // if (!resp) {
         //     throw new Error("Failed to logout");
         // }
+        setTempCredential(undefined);
         saveUser(null);
         setUser(null);
     };
@@ -42,16 +44,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
     }
 
-    const login = async (googleCredential: google.accounts.id.CredentialResponse) => {
-        const accessToken = await authService.googleLogin(googleCredential.credential);
-        if (!accessToken) {
+    const login = async (googleCredential: google.accounts.id.CredentialResponse, nusp?: string) => {
+        const accessToken = await authService.googleLogin(googleCredential.credential, nusp);
+        if (accessToken === '') {
+            setTempCredential(googleCredential);
+            return;
+        }
+        setTempCredential(undefined);
+        if (accessToken === null) {
             throw new Error("Failed to login with Google");
         }
         const googleUser = decodeGoogleToken(googleCredential);
         const accessUser = decodeAccessToken(accessToken);
         const newUser: IUser = {
             id: Number(accessUser.sub),
-            role: accessUser.role as 'admin' | 'user',
+            role: accessUser.role,
+            permissions: accessUser.permissions,
             googleId: googleUser.sub,
             name: googleUser.name,
             email: googleUser.email,
@@ -98,7 +106,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }, [google]);
 
     return (
-        <AuthContext.Provider value={{ user, login, checkLogin, logout, isAuthenticated: !!user, googleInitialized }}>
+        <AuthContext.Provider value={{ user, login, checkLogin, logout, isAuthenticated: !!user, googleInitialized, tempCredential }}>
             {children}
         </AuthContext.Provider>
     );

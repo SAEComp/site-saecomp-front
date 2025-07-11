@@ -10,6 +10,9 @@ import useEvaluationForm from "./useEvaluationForm";
 import CloseIcon from '@mui/icons-material/Close';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import DropDown, { IOption } from "../../Inputs/DropDown";
+import { useNavigate } from "react-router";
+import Spinner from "../../Spinner/Spinner";
+import { toast } from "sonner";
 
 
 const idealYearOptions: IOption[] = [
@@ -22,9 +25,11 @@ const idealYearOptions: IOption[] = [
 
 
 const Form = () => {
+    const navigate = useNavigate();
     const [classes, setClasses] = useState<Classes[]>([]);
     const [questions, setQuestions] = useState<ActiveQuestions>([]);
     const [idealYear, setIdealYear] = useState<number | null>(null);
+    const [loading, setLoading] = useState<boolean>(false);
     const isMobile = useIsMobile();
     const evaluationForm = useEvaluationForm();
 
@@ -48,7 +53,16 @@ const Form = () => {
     }, []);
 
     const createFeedback = async () => {
-        await evaluationService.createEvaluation(evaluationForm.state.evaluations)
+        setLoading(true);
+        const result = await evaluationService.createEvaluation(evaluationForm.state.evaluations);
+        setLoading(false);
+        if (!result) {
+            console.error(result);
+            toast.error('Erro ao enviar a avaliação.');
+            return;
+        }
+        toast.success('Avaliação enviada com sucesso!');
+        navigate('/avaliacoes', { replace: true });
     };
 
     const getIdealYear = async (idealYear: number | null) => {
@@ -61,11 +75,6 @@ const Form = () => {
         _idealClasses.forEach((el, i) => {
             evaluationForm.updateEvaluationClass(i, el.classId)
         })
-        // setTimeout(() => {
-        //     evaluationForm.removeEvaluation(0);
-        // }, 100);
-
-
     }
 
 
@@ -163,12 +172,12 @@ const Form = () => {
                     currentQuestion={evaluationForm.state.currentEvaluation}
                 />
             </div>
-            <button
+            {loading ? (<Spinner/>) : (<button
                 className={`bg-[#101010] text-white font-inter font-medium h-12 w-[80%] md:w-[30%] rounded-lg`}
                 onClick={createFeedback}
             >
                 Enviar
-            </button>
+            </button>)}
 
         </div>
     )
