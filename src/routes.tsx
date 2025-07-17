@@ -3,6 +3,13 @@ import Enfases from "./pages/Enfases";
 import Manual from "./pages/Manual-Bixo";
 import SAEcomp from "./pages/SAEComp";
 import Login from "./pages/Login";
+import LojinhaLayout from "./pages/Lojinha/LojinhaLayout";
+import OrderSuccess from "./pages/Lojinha/OrderSuccess";
+import Checkout from "./pages/Lojinha/Checkout";
+import ProductDetails from "./pages/Lojinha/ProductDetails";
+import LojinhaGerenciamento from "./pages/Lojinha/LojinhaGerenciamento";
+import LojinhaStore from "./pages/Lojinha/LojinhaStore";
+import CartPage from "./pages/Lojinha/CartPage";
 import TeacherFeedback from "./pages/TeacherFeedback";
 import TeacherFeedbackResults from "./pages/TeacherFeedbackResults";
 import LayoutWrapper from "./components/Layout/LayoutWrapper";
@@ -41,6 +48,38 @@ const routes = createBrowserRouter([
             {
                 path: "manual",
                 element: <Manual />,
+            },
+            {
+                path: "lojinha",
+                element: <LojinhaLayout />,
+                children: [
+                    {
+                        index: true,
+                        element: <LojinhaStore />,
+                    },
+                    {
+                        path: "produto/:id",
+                        element: <ProductDetails />,
+                    },
+                    {
+                        path: "carrinho",
+                        element: <CartPage />,
+                    },
+                    {
+                        path: "checkout",
+                        element: <Checkout />,
+                    },
+                    {
+                        path: "sucesso/:orderId",
+                        element: <OrderSuccess />,
+                    },
+                    {
+                        path: "admin",
+                        element: <AuthPermissions permissions={["users:edit"]}>
+                            <LojinhaGerenciamento />
+                        </AuthPermissions>,
+                    },
+                ],
             },
             {
                 path: "login",
