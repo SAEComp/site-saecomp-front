@@ -25,16 +25,25 @@ const ImageTest = () => {
             <p><strong>imageUrl original:</strong> {testProduct.imageUrl}</p>
             <p><strong>URL processada:</strong> {imageUrl}</p>
             
-            <h2>Imagem:</h2>
+            <h2>Imagem com novo enquadramento:</h2>
+            <div className="aspect-square bg-gray-50 p-4 flex items-center justify-center rounded-lg" style={{ width: '200px', height: '200px', border: '1px solid #ccc' }}>
+                <img 
+                    src={imageUrl} 
+                    alt={testProduct.name}
+                    className="max-w-full max-h-full object-contain rounded-lg"
+                    onLoad={() => console.log('✅ Imagem carregada com sucesso:', imageUrl)}
+                    onError={(e) => {
+                        console.error('❌ Erro ao carregar imagem:', imageUrl);
+                        e.currentTarget.src = '/placeholder-product.svg';
+                    }}
+                />
+            </div>
+            
+            <h2>Imagem original (para comparação):</h2>
             <img 
                 src={imageUrl} 
                 alt={testProduct.name}
                 style={{ width: '200px', height: '200px', objectFit: 'cover', border: '1px solid #ccc' }}
-                onLoad={() => console.log('✅ Imagem carregada com sucesso:', imageUrl)}
-                onError={(e) => {
-                    console.error('❌ Erro ao carregar imagem:', imageUrl);
-                    e.currentTarget.src = '/placeholder-product.svg';
-                }}
             />
             
             <h2>Teste de URL direta:</h2>

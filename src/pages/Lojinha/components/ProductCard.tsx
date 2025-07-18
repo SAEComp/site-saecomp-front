@@ -17,14 +17,16 @@ const ProductCard = ({ product }: ProductCardProps) => {
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
       <Link to={`/lojinha/produto/${product._id}`} className="block">
-        <img 
-          src={getProductImageUrl(product)} 
-          alt={product.name} 
-          className="w-full h-48 object-cover"
-          onError={(e) => {
-            e.currentTarget.src = FALLBACK_IMAGE;
-          }}
-        />
+        <div className="aspect-square bg-gray-50 p-4 flex items-center justify-center">
+          <img 
+            src={getProductImageUrl(product)} 
+            alt={product.name} 
+            className="max-w-full max-h-full object-contain rounded-lg"
+            onError={(e) => {
+              e.currentTarget.src = FALLBACK_IMAGE;
+            }}
+          />
+        </div>
         <div className="p-4">
           <h3 className="text-lg font-semibold text-gray-800 mb-2">{product.name}</h3>
           <p className="text-gray-600 text-sm mb-3 line-clamp-2">{product.description}</p>

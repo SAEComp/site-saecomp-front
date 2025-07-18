@@ -57,14 +57,16 @@ const Cart = () => {
                         {state.items.map(item => (
                             <div key={item._id} className="bg-white rounded-lg shadow-sm p-4">
                                 <div className="flex items-center space-x-4">
+                                <div className="w-20 h-20 bg-gray-50 rounded-lg flex items-center justify-center p-2">
                                     <img 
                                         src={getProductImageUrl(item)} 
                                         alt={item.name} 
-                                        className="w-20 h-20 object-cover rounded-lg"
+                                        className="max-w-full max-h-full object-contain rounded"
                                         onError={(e) => {
                                             e.currentTarget.src = '/placeholder-product.svg';
                                         }}
                                     />
+                                </div>
                                     <div className="flex-1">
                                         <h3 className="text-lg font-semibold text-gray-800">{item.name}</h3>
                                         <p className="text-gray-600 text-sm">{item.description}</p>

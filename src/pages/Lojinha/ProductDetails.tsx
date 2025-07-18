@@ -105,11 +105,11 @@ const ProductDetails: React.FC = () => {
                     <div className="lg:flex">
                         {/* Product Image */}
                         <div className="lg:w-1/2">
-                            <div className="aspect-w-1 aspect-h-1 w-full">
+                            <div className="aspect-square bg-gray-50 p-8 flex items-center justify-center rounded-lg">
                                 <img 
                                     src={getProductImageUrl(product)} 
                                     alt={product.name}
-                                    className="w-full h-96 lg:h-full object-cover"
+                                    className="max-w-full max-h-full object-contain rounded-lg shadow-md"
                                 />
                             </div>
                         </div>
