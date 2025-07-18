@@ -1,5 +1,6 @@
 import { Link } from 'react-router';
 import { useCart } from './hooks/useCart';
+import { getProductImageUrl } from './utils/imageUtils';
 
 const CartPage = () => {
     const { state, removeItem, updateQuantity, clearCart, getTotalPrice, getTotalItems } = useCart();
@@ -23,12 +24,12 @@ const CartPage = () => {
             <div className="min-h-screen bg-gray-50 py-8">
                 <div className="max-w-4xl mx-auto px-4">
                     <div className="text-center py-16">
-                        <div className="text-6xl mb-4">🛒</div>
+                        <div className="text-6xl mb-4 opacity-50">🛒</div>
                         <h2 className="text-2xl font-bold text-gray-800 mb-2">Seu carrinho está vazio</h2>
                         <p className="text-gray-600 mb-6">Adicione alguns produtos deliciosos ao seu carrinho!</p>
                         <Link 
                             to="/lojinha"
-                            className="bg-[#03B04B] hover:bg-green-600 text-white px-6 py-3 rounded-lg font-medium transition"
+                            className="bg-[#03B04B] hover:bg-green-600 opacity-90 text-white px-6 py-3 rounded-lg font-medium transition"
                         >
                             Continuar Comprando
                         </Link>
@@ -58,7 +59,7 @@ const CartPage = () => {
                             <div key={item._id} className="bg-white rounded-lg shadow-sm p-6">
                                 <div className="flex items-center space-x-4">
                                     <img 
-                                        src={item.imageUrl} 
+                                        src={getProductImageUrl(item)} 
                                         alt={item.name} 
                                         className="w-16 h-16 object-cover rounded-lg"
                                         onError={(e) => {

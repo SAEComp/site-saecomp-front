@@ -1,5 +1,6 @@
 import { Link } from 'react-router';
 import { useCart } from '../hooks/useCart';
+import { getProductImageUrl } from '../utils/imageUtils';
 
 const Cart = () => {
     const { state, removeItem, updateQuantity, clearCart, getTotalPrice, getTotalItems } = useCart();
@@ -57,7 +58,7 @@ const Cart = () => {
                             <div key={item._id} className="bg-white rounded-lg shadow-sm p-4">
                                 <div className="flex items-center space-x-4">
                                     <img 
-                                        src={item.imageUrl} 
+                                        src={getProductImageUrl(item)} 
                                         alt={item.name} 
                                         className="w-20 h-20 object-cover rounded-lg"
                                         onError={(e) => {

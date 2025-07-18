@@ -4,6 +4,7 @@ import { Product } from './types';
 import { useCart } from './hooks/useCart';
 import { productService } from './services/api';
 import StockIndicator from './components/StockIndicator';
+import { getProductImageUrl } from './utils/imageUtils';
 
 const ProductDetails: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -106,7 +107,7 @@ const ProductDetails: React.FC = () => {
                         <div className="lg:w-1/2">
                             <div className="aspect-w-1 aspect-h-1 w-full">
                                 <img 
-                                    src={product.imageUrl || '/placeholder-product.svg'} 
+                                    src={getProductImageUrl(product)} 
                                     alt={product.name}
                                     className="w-full h-96 lg:h-full object-cover"
                                 />

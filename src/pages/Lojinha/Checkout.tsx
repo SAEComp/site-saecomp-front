@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router';
 import { useCart } from './hooks/useCart';
 import { PaymentMethod } from './types';
 import { orderService, paymentService } from './services/api';
+import { getProductImageUrl } from './utils/imageUtils';
 
 const Checkout: React.FC = () => {
     const navigate = useNavigate();
@@ -124,7 +125,7 @@ const Checkout: React.FC = () => {
                         {cartItems.map((item) => (
                             <div key={item._id} className="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg">
                                 <img 
-                                    src={item.imageUrl || '/placeholder-product.svg'} 
+                                    src={getProductImageUrl(item)} 
                                     alt={item.name}
                                     className="w-16 h-16 object-cover rounded-lg"
                                 />

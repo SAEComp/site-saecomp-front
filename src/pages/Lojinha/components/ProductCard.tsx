@@ -1,6 +1,7 @@
 import { Link } from 'react-router';
 import { Product } from '../types';
 import { useCart } from '../hooks/useCart';
+import { getProductImageUrl, FALLBACK_IMAGE } from '../utils/imageUtils';
 
 interface ProductCardProps {
   product: Product;
@@ -17,11 +18,11 @@ const ProductCard = ({ product }: ProductCardProps) => {
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
       <Link to={`/lojinha/produto/${product._id}`} className="block">
         <img 
-          src={product.imageUrl} 
+          src={getProductImageUrl(product)} 
           alt={product.name} 
           className="w-full h-48 object-cover"
           onError={(e) => {
-            e.currentTarget.src = '/placeholder-product.svg';
+            e.currentTarget.src = FALLBACK_IMAGE;
           }}
         />
         <div className="p-4">

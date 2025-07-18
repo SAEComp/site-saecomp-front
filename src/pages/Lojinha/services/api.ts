@@ -10,7 +10,7 @@ import {
   ProductFilters 
 } from '../types';
 
-const API_BASE_URL = import.meta.env.VITE_LOJINHA_API_URL || 'http://localhost:5000/api';
+const API_BASE_URL = import.meta.env.VITE_LOJINHA_API_URL || 'http://localhost:5001/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -31,6 +31,9 @@ api.interceptors.response.use(
 
 // Produtos
 export const getProducts = async (filters?: ProductFilters): Promise<ApiResponse<Product[]>> => {
+  console.log('🔄 getProducts called with filters:', filters);
+  console.log('🔄 API_BASE_URL:', API_BASE_URL);
+  
   const params = new URLSearchParams();
   
   if (filters) {
@@ -43,8 +46,17 @@ export const getProducts = async (filters?: ProductFilters): Promise<ApiResponse
   
   params.append('_t', Date.now().toString());
   
-  const response = await api.get(`/products?${params.toString()}`);
-  return response.data;
+  const url = `/products?${params.toString()}`;
+  console.log('🔄 Making request to:', url);
+  
+  try {
+    const response = await api.get(url);
+    console.log('✅ API response:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('❌ API error:', error);
+    throw error;
+  }
 };
 
 export const getProductById = async (id: string): Promise<ApiResponse<Product>> => {

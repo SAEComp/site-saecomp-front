@@ -10,6 +10,9 @@ import ProductDetails from "./pages/Lojinha/ProductDetails";
 import LojinhaGerenciamento from "./pages/Lojinha/LojinhaGerenciamento";
 import LojinhaStore from "./pages/Lojinha/LojinhaStore";
 import CartPage from "./pages/Lojinha/CartPage";
+import APITest from "./pages/Lojinha/APITest";
+import SimpleProductList from "./pages/Lojinha/SimpleProductList";
+import ImageTest from "./pages/Lojinha/ImageTest";
 import TeacherFeedback from "./pages/TeacherFeedback";
 import TeacherFeedbackResults from "./pages/TeacherFeedbackResults";
 import LayoutWrapper from "./components/Layout/LayoutWrapper";
@@ -58,6 +61,10 @@ const routes = createBrowserRouter([
                         element: <LojinhaStore />,
                     },
                     {
+                        path: "loja",
+                        element: <LojinhaStore />,
+                    },
+                    {
                         path: "produto/:id",
                         element: <ProductDetails />,
                     },
@@ -78,6 +85,18 @@ const routes = createBrowserRouter([
                         element: <AuthPermissions permissions={["users:edit"]}>
                             <LojinhaGerenciamento />
                         </AuthPermissions>,
+                    },
+                    {
+                        path: "api-test",
+                        element: <APITest />,
+                    },
+                    {
+                        path: "simple-test",
+                        element: <SimpleProductList />,
+                    },
+                    {
+                        path: "image-test",
+                        element: <ImageTest />,
                     },
                 ],
             },
