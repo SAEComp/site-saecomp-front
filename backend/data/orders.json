@@ -1608,5 +1608,402 @@
     "createdAt": "2025-07-18T05:11:02.701Z",
     "updatedAt": "2025-07-18T05:11:02.739Z",
     "paymentId": "pix_1752815462701_1752815462738"
+  },
+  {
+    "items": [
+      {
+        "productId": "3",
+        "name": "Guaraná",
+        "price": 4,
+        "quantity": 2,
+        "subtotal": 8
+      }
+    ],
+    "totalAmount": 8,
+    "status": "pending",
+    "paymentStatus": "pending",
+    "_id": "1752850705966",
+    "createdAt": "2025-07-18T14:58:25.966Z",
+    "updatedAt": "2025-07-18T14:58:25.966Z"
+  },
+  {
+    "items": [
+      {
+        "productId": "4",
+        "name": "Guaraná Zero",
+        "price": 4,
+        "quantity": 1,
+        "subtotal": 4
+      }
+    ],
+    "totalAmount": 4,
+    "status": "pending",
+    "paymentStatus": "pending",
+    "_id": "1752850826562",
+    "createdAt": "2025-07-18T15:00:26.562Z",
+    "updatedAt": "2025-07-18T15:00:26.562Z"
+  },
+  {
+    "items": [
+      {
+        "productId": "2",
+        "name": "Coca-Cola Zero",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "pending",
+    "paymentStatus": "pending",
+    "_id": "1752850907135",
+    "createdAt": "2025-07-18T15:01:47.135Z",
+    "updatedAt": "2025-07-18T15:01:47.135Z"
+  },
+  {
+    "items": [
+      {
+        "productId": "2",
+        "name": "Coca-Cola Zero",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "pending",
+    "paymentStatus": "pending",
+    "_id": "1752851115274",
+    "createdAt": "2025-07-18T15:05:15.274Z",
+    "updatedAt": "2025-07-18T15:05:15.274Z"
+  },
+  {
+    "customerName": "Teste",
+    "customerCourse": "Engenharia",
+    "items": [
+      {
+        "productId": "1",
+        "name": "Coca-Cola",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "pending",
+    "paymentStatus": "pending",
+    "_id": "1752851338774",
+    "createdAt": "2025-07-18T15:08:58.774Z",
+    "updatedAt": "2025-07-18T15:10:01.701Z",
+    "paymentId": "pix_1752851338774_1752851401700"
+  },
+  {
+    "customerName": "Test User",
+    "customerCourse": "Test Course",
+    "items": [
+      {
+        "productId": "1",
+        "name": "Coca-Cola",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "pending",
+    "paymentStatus": "pending",
+    "_id": "1752851606326",
+    "createdAt": "2025-07-18T15:13:26.326Z",
+    "updatedAt": "2025-07-18T15:13:26.326Z"
+  },
+  {
+    "customerName": "Test User",
+    "customerCourse": "Test Course",
+    "items": [
+      {
+        "productId": "1",
+        "name": "Coca-Cola",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "pending",
+    "paymentStatus": "pending",
+    "_id": "1752851615787",
+    "createdAt": "2025-07-18T15:13:35.787Z",
+    "updatedAt": "2025-07-18T15:13:35.787Z"
+  },
+  {
+    "customerName": "Test User",
+    "customerCourse": "Test Course",
+    "items": [
+      {
+        "productId": "1",
+        "name": "Coca-Cola",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "pending",
+    "paymentStatus": "pending",
+    "_id": "1752851654622",
+    "createdAt": "2025-07-18T15:14:14.622Z",
+    "updatedAt": "2025-07-18T15:14:14.622Z"
+  },
+  {
+    "items": [
+      {
+        "productId": "2",
+        "name": "Coca-Cola Zero",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "pending",
+    "paymentStatus": "pending",
+    "_id": "1752855056654",
+    "createdAt": "2025-07-18T16:10:56.654Z",
+    "updatedAt": "2025-07-18T16:10:56.654Z"
+  },
+  {
+    "items": [
+      {
+        "productId": "2",
+        "name": "Coca-Cola Zero",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "pending",
+    "paymentStatus": "pending",
+    "_id": "1752855102861",
+    "createdAt": "2025-07-18T16:11:42.861Z",
+    "updatedAt": "2025-07-18T16:11:42.861Z"
+  },
+  {
+    "items": [
+      {
+        "productId": "2",
+        "name": "Coca-Cola Zero",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "pending",
+    "paymentStatus": "pending",
+    "_id": "1752855637257",
+    "createdAt": "2025-07-18T16:20:37.257Z",
+    "updatedAt": "2025-07-18T16:20:37.257Z"
+  },
+  {
+    "customerName": "Teste Frontend",
+    "customerCourse": "Engenharia",
+    "items": [
+      {
+        "productId": "1",
+        "name": "Coca-Cola",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "pending",
+    "paymentStatus": "pending",
+    "_id": "1752855645845",
+    "createdAt": "2025-07-18T16:20:45.845Z",
+    "updatedAt": "2025-07-18T16:20:45.845Z"
+  },
+  {
+    "items": [
+      {
+        "productId": "2",
+        "name": "Coca-Cola Zero",
+        "price": 4.5,
+        "quantity": 2,
+        "subtotal": 9
+      }
+    ],
+    "totalAmount": 9,
+    "status": "pending",
+    "paymentStatus": "pending",
+    "_id": "1752855837416",
+    "createdAt": "2025-07-18T16:23:57.416Z",
+    "updatedAt": "2025-07-18T16:23:57.416Z"
+  },
+  {
+    "customerName": "Teste Debug",
+    "customerCourse": "Engenharia",
+    "items": [
+      {
+        "productId": "1",
+        "name": "Coca-Cola",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "pending",
+    "paymentStatus": "pending",
+    "_id": "1752855965972",
+    "createdAt": "2025-07-18T16:26:05.972Z",
+    "updatedAt": "2025-07-18T16:26:05.975Z"
+  },
+  {
+    "customerName": "Teste",
+    "items": [
+      {
+        "productId": "1",
+        "name": "Coca-Cola",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "pending",
+    "paymentStatus": "pending",
+    "_id": "1752856092088",
+    "createdAt": "2025-07-18T16:28:12.088Z",
+    "updatedAt": "2025-07-18T16:28:12.089Z"
+  },
+  {
+    "customerName": "Teste",
+    "items": [
+      {
+        "productId": "1",
+        "name": "Coca-Cola",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "pending",
+    "paymentStatus": "pending",
+    "_id": "1752856268316",
+    "createdAt": "2025-07-18T16:31:08.316Z",
+    "updatedAt": "2025-07-18T16:31:08.316Z"
+  },
+  {
+    "customerName": "Teste",
+    "items": [
+      {
+        "productId": "1",
+        "name": "Coca-Cola",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "pending",
+    "paymentStatus": "pending",
+    "_id": "1752856316577",
+    "createdAt": "2025-07-18T16:31:56.577Z",
+    "updatedAt": "2025-07-18T16:31:56.578Z"
+  },
+  {
+    "customerName": "Teste Debug",
+    "items": [
+      {
+        "productId": "1",
+        "name": "Coca-Cola",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "pending",
+    "paymentStatus": "pending",
+    "_id": "1752856366105",
+    "createdAt": "2025-07-18T16:32:46.105Z",
+    "updatedAt": "2025-07-18T16:32:46.105Z"
+  },
+  {
+    "customerName": "João Silva",
+    "items": [
+      {
+        "productId": "1",
+        "name": "Coca-Cola",
+        "price": 4.5,
+        "quantity": 2,
+        "subtotal": 9
+      }
+    ],
+    "totalAmount": 9,
+    "status": "pending",
+    "paymentStatus": "pending",
+    "_id": "1752856425597",
+    "createdAt": "2025-07-18T16:33:45.597Z",
+    "updatedAt": "2025-07-18T16:33:45.597Z"
+  },
+  {
+    "customerName": "Maria Silva",
+    "items": [
+      {
+        "productId": "1",
+        "name": "Coca-Cola",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "pending",
+    "paymentStatus": "pending",
+    "_id": "1752856537405",
+    "createdAt": "2025-07-18T16:35:37.405Z",
+    "updatedAt": "2025-07-18T16:35:37.405Z"
+  },
+  {
+    "customerName": "a",
+    "customerCourse": "Engenharia de Computação",
+    "items": [
+      {
+        "productId": "2",
+        "name": "Coca-Cola Zero",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "pending",
+    "paymentStatus": "pending",
+    "_id": "1752856877896",
+    "createdAt": "2025-07-18T16:41:17.896Z",
+    "updatedAt": "2025-07-18T16:41:17.984Z",
+    "paymentId": "pix_1752856877896_1752856877982"
+  },
+  {
+    "items": [
+      {
+        "productId": "2",
+        "name": "Coca-Cola Zero",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "pending",
+    "paymentStatus": "pending",
+    "_id": "1752856981973",
+    "createdAt": "2025-07-18T16:43:01.973Z",
+    "updatedAt": "2025-07-18T16:43:02.051Z",
+    "paymentId": "pix_1752856981973_1752856982050"
   }
 ]

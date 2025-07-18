@@ -10,7 +10,7 @@ import {
   ProductFilters 
 } from '../types';
 
-const API_BASE_URL = import.meta.env.VITE_LOJINHA_API_URL || 'http://localhost:5001/api';
+const API_BASE_URL = import.meta.env.VITE_LOJINHA_API_URL || '/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -24,8 +24,21 @@ const api = axios.create({
 api.interceptors.response.use(
   (response: AxiosResponse) => response,
   (error) => {
-    console.error('API Error:', error.response?.data || error.message);
-    return Promise.reject(error.response?.data || { message: 'Erro de conexão' });
+    console.error('API Error:', error);
+    
+    if (error.code === 'ECONNABORTED') {
+      return Promise.reject({ message: 'Timeout: Verifique sua conexão e tente novamente' });
+    }
+    
+    if (error.code === 'ERR_NETWORK') {
+      return Promise.reject({ message: 'Erro de rede: Verifique sua conexão' });
+    }
+    
+    if (error.response?.data) {
+      return Promise.reject(error.response.data);
+    }
+    
+    return Promise.reject({ message: error.message || 'Erro de conexão' });
   }
 );
 

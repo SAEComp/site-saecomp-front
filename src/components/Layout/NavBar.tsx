@@ -6,6 +6,7 @@ import { Link } from "react-router";
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import { useAuth } from "../../auth/AuthContext.tsx";
+import { useCart } from "../../pages/Lojinha/hooks/useCart.tsx";
 import homeIcon from '../../assets/lojinha-icons/Home.png';
 import carrinhoIcon from '../../assets/lojinha-icons/carrinho.png';
 import loginIcon from '../../assets/lojinha-icons/Login.png';
@@ -15,12 +16,16 @@ const NavBar = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { user, isAuthenticated } = useAuth();
+    const { getTotalItems } = useCart();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
     
     // Verifica se estamos na página da lojinha ou suas sub-rotas
     const isLojinhaPage = location.pathname.startsWith('/lojinha');
+    
+    // Obtém a quantidade de itens no carrinho
+    const cartItemCount = getTotalItems();
 
     return (
         <div className="h-[100px] w-screen bg-[#03B04B] flex items-center justify-between z-10 px-[3%] sm:px-[5%] sticky top-0">
@@ -57,10 +62,15 @@ const NavBar = () => {
                         </Link>
                         <Link 
                             to="/lojinha/carrinho" 
-                            className="p-1 sm:p-2 hover:bg-green-600 rounded-md transition-all duration-200 group"
+                            className="p-1 sm:p-2 hover:bg-green-600 rounded-md transition-all duration-200 group relative"
                             title="Ver carrinho"
                         >
                             <img src={carrinhoIcon} alt="Carrinho" className="w-7 h-7 sm:w-8 sm:h-8 transition-transform duration-200 group-hover:scale-110" />
+                            {cartItemCount > 0 && (
+                                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 font-bold shadow-md">
+                                    {cartItemCount > 99 ? '99+' : cartItemCount}
+                                </span>
+                            )}
                         </Link>
                     </div>
                 )}

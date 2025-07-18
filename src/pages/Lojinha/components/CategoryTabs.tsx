@@ -4,16 +4,16 @@ interface CategoryTabsProps {
 }
 
 const categories = [
-  { id: 'all', name: 'Todos', icon: '🛍️' },
-  { id: 'doces', name: 'Doces', icon: '🍰' },
-  { id: 'salgados', name: 'Salgados', icon: '🥪' },
-  { id: 'bebidas', name: 'Bebidas', icon: '🥤' },
+  { id: 'all', name: 'Todos'},
+  { id: 'doces', name: 'Doces'},
+  { id: 'salgados', name: 'Salgados'},
+  { id: 'bebidas', name: 'Bebidas'},
 ] as const;
 
 const CategoryTabs = ({ selectedCategory, onCategoryChange }: CategoryTabsProps) => {
   return (
     <div className="bg-white rounded-lg shadow-sm p-2 mb-6">
-      <div className="flex space-x-2 overflow-x-auto">
+      <div className="flex justify-center space-x-2 overflow-x-auto">
         {categories.map(category => (
           <button
             key={category.id}
@@ -24,7 +24,7 @@ const CategoryTabs = ({ selectedCategory, onCategoryChange }: CategoryTabsProps)
             }`}
             onClick={() => onCategoryChange(category.id)}
           >
-            <span className="text-lg">{category.icon}</span>
+            <span className="text-lg"></span>
             <span>{category.name}</span>
           </button>
         ))}

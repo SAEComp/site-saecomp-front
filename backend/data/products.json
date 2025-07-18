@@ -6,10 +6,10 @@
     "price": 4.5,
     "imageUrl": "/images/coca.png",
     "category": "bebidas",
-    "stock": 46,
+    "stock": 42,
     "isActive": true,
     "createdAt": "2025-06-08T16:00:00.000Z",
-    "updatedAt": "2025-07-18T04:43:14.476Z"
+    "updatedAt": "2025-07-18T15:14:14.623Z"
   },
   {
     "_id": "2",
@@ -18,10 +18,10 @@
     "price": 4.5,
     "imageUrl": "/images/coca-zero.png",
     "category": "bebidas",
-    "stock": 37,
+    "stock": 32,
     "isActive": true,
     "createdAt": "2025-06-08T16:00:00.000Z",
-    "updatedAt": "2025-06-08T23:06:05.311Z"
+    "updatedAt": "2025-07-18T16:43:01.975Z"
   },
   {
     "_id": "3",
@@ -30,10 +30,10 @@
     "price": 4,
     "imageUrl": "/images/guarana.png",
     "category": "bebidas",
-    "stock": 5,
+    "stock": 3,
     "isActive": true,
     "createdAt": "2025-06-08T16:00:00.000Z",
-    "updatedAt": "2025-07-18T04:26:41.008Z"
+    "updatedAt": "2025-07-18T14:58:25.968Z"
   },
   {
     "_id": "4",
@@ -42,10 +42,10 @@
     "price": 4,
     "imageUrl": "/images/guarana-zero.png",
     "category": "bebidas",
-    "stock": 2,
+    "stock": 1,
     "isActive": true,
     "createdAt": "2025-06-08T16:00:00.000Z",
-    "updatedAt": "2025-07-18T03:57:04.894Z"
+    "updatedAt": "2025-07-18T15:00:26.564Z"
   },
   {
     "_id": "5",
