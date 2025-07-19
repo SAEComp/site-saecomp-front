@@ -5,6 +5,7 @@ import { PaymentMethod } from './types';
 import { orderService, paymentService } from './services/api';
 import { getProductImageUrl } from './utils/imageUtils';
 import erroIcon from '../../assets/lojinha-icons/perrys/ERRO.png';
+import concluirIcon from '../../assets/lojinha-icons/perrys/concluir.png';
 
 const Checkout: React.FC = () => {
     const navigate = useNavigate();
@@ -117,7 +118,17 @@ const Checkout: React.FC = () => {
     return (
         <div className="min-h-screen bg-gray-50 py-8">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                <h1 className="text-3xl font-bold text-gray-900 mb-8">Finalizar Compra</h1>
+                <div className="flex items-center justify-between mb-6">
+                    <h1 className="text-3xl font-bold text-gray-900">Finalizar Compra</h1>
+                    <img 
+                        src={concluirIcon} 
+                        alt="Perry Concluir" 
+                        className="w-20 h-20 md:w-24 md:h-24 object-contain drop-shadow-lg"
+                    />
+                </div>
+                
+                {/* Linha divisória */}
+                <div className="border-t border-gray-300 mb-8"></div>
                 
                 {/* Order Summary */}
                 <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
@@ -168,7 +179,7 @@ const Checkout: React.FC = () => {
                                     value={customerData.name}
                                     onChange={handleInputChange}
                                     placeholder="Digite seu nome"
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#03B04B] focus:border-[#03B04B]"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#03B04B] focus:border-[#03B04B] bg-white text-gray-900"
                                 />
                             </div>
 
@@ -181,7 +192,7 @@ const Checkout: React.FC = () => {
                                     name="course"
                                     value={customerData.course}
                                     onChange={handleInputChange}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#03B04B] focus:border-[#03B04B]"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#03B04B] focus:border-[#03B04B] bg-white text-gray-900"
                                 >
                                     <option value="">Selecione seu curso</option>
                                     <option value="Engenharia de Computação">Engenharia de Computação</option>
@@ -193,14 +204,11 @@ const Checkout: React.FC = () => {
                                 </select>
                             </div>
 
-                            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                            <div className="bg-green-50 border border-green-500 rounded-lg p-4">
                                 <div className="flex items-center">
-                                    <svg className="w-5 h-5 text-[#03B04B] mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                                    </svg>
-                                    <p className="font-medium text-green-900">Pagamento via PIX</p>
+                                    <p className="font-medium text-gray-900">💳 Pagamento via PIX</p>
                                 </div>
-                                <p className="text-sm text-green-700 mt-1">
+                                <p className="text-sm text-gray-700 mt-1">
                                     Após confirmar o pedido, você receberá um QR Code para pagamento via PIX.
                                 </p>
                             </div>

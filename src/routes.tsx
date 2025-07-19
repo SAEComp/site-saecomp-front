@@ -11,7 +11,6 @@ import LojinhaGerenciamento from "./pages/Lojinha/LojinhaGerenciamento";
 import Lojinha from "./pages/Lojinha/Lojinha";
 import CartPage from "./pages/Lojinha/CartPage";
 import APITest from "./pages/Lojinha/APITest";
-import SimpleProductList from "./pages/Lojinha/SimpleProductList";
 import ImageTest from "./pages/Lojinha/ImageTest";
 import TeacherFeedback from "./pages/TeacherFeedback";
 import TeacherFeedbackResults from "./pages/TeacherFeedbackResults";
@@ -89,10 +88,6 @@ const routes = createBrowserRouter([
                     {
                         path: "api-test",
                         element: <APITest />,
-                    },
-                    {
-                        path: "simple-test",
-                        element: <SimpleProductList />,
                     },
                     {
                         path: "image-test",

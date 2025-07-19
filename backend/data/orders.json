@@ -2059,5 +2059,95 @@
     "createdAt": "2025-07-19T05:35:50.767Z",
     "updatedAt": "2025-07-19T05:35:50.850Z",
     "paymentId": "pix_1752903350767_1752903350849"
+  },
+  {
+    "items": [
+      {
+        "productId": "2",
+        "name": "Coca-Cola Zero",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "pending",
+    "paymentStatus": "pending",
+    "_id": "1752903478621",
+    "createdAt": "2025-07-19T05:37:58.621Z",
+    "updatedAt": "2025-07-19T05:37:58.662Z",
+    "paymentId": "pix_1752903478621_1752903478661"
+  },
+  {
+    "items": [
+      {
+        "productId": "1",
+        "name": "Coca-Cola",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "pending",
+    "paymentStatus": "pending",
+    "_id": "1752903534831",
+    "createdAt": "2025-07-19T05:38:54.831Z",
+    "updatedAt": "2025-07-19T05:38:54.863Z",
+    "paymentId": "pix_1752903534831_1752903534862"
+  },
+  {
+    "items": [
+      {
+        "productId": "1",
+        "name": "Coca-Cola",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "pending",
+    "paymentStatus": "pending",
+    "_id": "1752903544006",
+    "createdAt": "2025-07-19T05:39:04.006Z",
+    "updatedAt": "2025-07-19T05:39:04.032Z",
+    "paymentId": "pix_1752903544006_1752903544032"
+  },
+  {
+    "items": [
+      {
+        "productId": "4",
+        "name": "Guaraná Zero",
+        "price": 4,
+        "quantity": 1,
+        "subtotal": 4
+      }
+    ],
+    "totalAmount": 4,
+    "status": "pending",
+    "paymentStatus": "pending",
+    "_id": "1752937936557",
+    "createdAt": "2025-07-19T15:12:16.557Z",
+    "updatedAt": "2025-07-19T15:12:16.649Z",
+    "paymentId": "pix_1752937936557_1752937936648"
+  },
+  {
+    "items": [
+      {
+        "productId": "1",
+        "name": "Coca-Cola",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "pending",
+    "paymentStatus": "pending",
+    "_id": "1752942020245",
+    "createdAt": "2025-07-19T16:20:20.245Z",
+    "updatedAt": "2025-07-19T16:20:20.291Z",
+    "paymentId": "pix_1752942020245_1752942020290"
   }
 ]
