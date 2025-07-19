@@ -29,7 +29,7 @@ const CartDebug: React.FC = () => {
             <p>Itens no estado: {state.items.length}</p>
             <button 
                 onClick={handleAddTestItem}
-                className="mt-2 bg-blue-500 text-white px-3 py-1 rounded"
+                className="mt-2 bg-[#03B04B] text-white px-3 py-1 rounded"
             >
                 Adicionar item teste
             </button>

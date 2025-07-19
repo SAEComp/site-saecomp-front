@@ -59,7 +59,7 @@ const CheckoutDebugger: React.FC = () => {
             <button 
                 onClick={testOrder} 
                 disabled={loading}
-                className="bg-blue-500 text-white px-3 py-1 rounded mb-2 disabled:opacity-50"
+                className="bg-[#03B04B] text-white px-3 py-1 rounded mb-2 disabled:opacity-50"
             >
                 {loading ? 'Testing...' : 'Test Order & PIX'}
             </button>

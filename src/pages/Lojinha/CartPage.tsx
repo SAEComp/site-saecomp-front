@@ -1,6 +1,7 @@
 import { Link } from 'react-router';
 import { useCart } from './hooks/useCart';
 import { getProductImageUrl } from './utils/imageUtils';
+import carrinhoIcon from '../../assets/lojinha-icons/perrys/carrinho.png';
 
 const CartPage = () => {
     const { state, removeItem, updateQuantity, clearCart, getTotalPrice, getTotalItems } = useCart();
@@ -24,7 +25,11 @@ const CartPage = () => {
             <div className="min-h-screen bg-gray-50 py-8">
                 <div className="max-w-4xl mx-auto px-4">
                     <div className="text-center py-16">
-                        <div className="text-6xl mb-4 opacity-50">🛒</div>
+                        <img 
+                            src={carrinhoIcon} 
+                            alt="Carrinho vazio" 
+                            className="w-28 h-28 md:w-32 md:h-32 mx-auto mb-4 object-contain drop-shadow-lg"
+                        />
                         <h2 className="text-2xl font-bold text-gray-800 mb-2">Seu carrinho está vazio</h2>
                         <p className="text-gray-600 mb-6">Adicione alguns produtos deliciosos ao seu carrinho!</p>
                         <Link 

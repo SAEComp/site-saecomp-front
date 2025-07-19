@@ -8,7 +8,7 @@ import OrderSuccess from "./pages/Lojinha/OrderSuccess";
 import Checkout from "./pages/Lojinha/Checkout";
 import ProductDetails from "./pages/Lojinha/ProductDetails";
 import LojinhaGerenciamento from "./pages/Lojinha/LojinhaGerenciamento";
-import LojinhaStore from "./pages/Lojinha/LojinhaStore";
+import Lojinha from "./pages/Lojinha/Lojinha";
 import CartPage from "./pages/Lojinha/CartPage";
 import APITest from "./pages/Lojinha/APITest";
 import SimpleProductList from "./pages/Lojinha/SimpleProductList";
@@ -58,11 +58,11 @@ const routes = createBrowserRouter([
                 children: [
                     {
                         index: true,
-                        element: <LojinhaStore />,
+                        element: <Lojinha />,
                     },
                     {
                         path: "loja",
-                        element: <LojinhaStore />,
+                        element: <Lojinha />,
                     },
                     {
                         path: "produto/:id",

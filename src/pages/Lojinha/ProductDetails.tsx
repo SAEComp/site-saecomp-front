@@ -5,6 +5,7 @@ import { useCart } from './hooks/useCart';
 import { productService } from './services/api';
 import StockIndicator from './components/StockIndicator';
 import { getProductImageUrl } from './utils/imageUtils';
+import erroIcon from '../../assets/lojinha-icons/perrys/ERRO.png';
 
 const ProductDetails: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -59,7 +60,7 @@ const ProductDetails: React.FC = () => {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-50">
                 <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#03B04B] mx-auto mb-4"></div>
                     <p className="text-gray-600">Carregando produto...</p>
                 </div>
             </div>
@@ -70,7 +71,11 @@ const ProductDetails: React.FC = () => {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-50">
                 <div className="text-center max-w-md mx-auto p-6">
-                    <div className="text-red-500 text-6xl mb-4">⚠️</div>
+                    <img 
+                        src={erroIcon} 
+                        alt="Erro" 
+                        className="w-28 h-28 md:w-32 md:h-32 mx-auto mb-4 object-contain drop-shadow-lg"
+                    />
                     <h2 className="text-2xl font-bold text-gray-900 mb-2">
                         {error ? 'Erro' : 'Produto não encontrado'}
                     </h2>
@@ -79,7 +84,7 @@ const ProductDetails: React.FC = () => {
                     </p>
                     <button 
                         onClick={handleBackToStore}
-                        className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                        className="bg-[#03B04B] text-white px-6 py-2 rounded-lg hover:bg-green-600 transition-colors"
                     >
                         Voltar à loja
                     </button>
@@ -89,11 +94,11 @@ const ProductDetails: React.FC = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 py-8">
+        <div className="min-h-screen bg-gray-50 py-2 md:py-8">
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
                 <button 
                     onClick={handleBackToStore}
-                    className="mb-6 flex items-center text-blue-600 hover:text-blue-700 transition-colors"
+                    className="mb-3 md:mb-6 flex items-center text-[#03B04B] hover:text-green-600 transition-colors"
                 >
                     <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -102,10 +107,10 @@ const ProductDetails: React.FC = () => {
                 </button>
                 
                 <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-                    <div className="lg:flex">
+                    <div className="flex flex-col lg:flex-row">
                         {/* Product Image */}
-                        <div className="lg:w-1/2">
-                            <div className="aspect-square bg-gray-50 p-8 flex items-center justify-center rounded-lg">
+                        <div className="w-full lg:w-1/2">
+                            <div className="aspect-[5/3] md:aspect-square bg-gray-50 p-1 md:p-8 flex items-center justify-center">
                                 <img 
                                     src={getProductImageUrl(product)} 
                                     alt={product.name}
@@ -115,34 +120,34 @@ const ProductDetails: React.FC = () => {
                         </div>
                         
                         {/* Product Info */}
-                        <div className="lg:w-1/2 p-8">
-                            <div className="mb-4">
-                                <h1 className="text-3xl font-bold text-gray-900 mb-2">{product.name}</h1>
-                                <p className="text-sm text-blue-600 font-medium uppercase tracking-wider">
+                        <div className="w-full lg:w-1/2 p-3 md:p-8">
+                            <div className="mb-2 md:mb-4">
+                                <h1 className="text-lg md:text-3xl font-bold text-gray-900 mb-1 md:mb-2">{product.name}</h1>
+                                <p className="text-xs md:text-sm text-[#03B04B] font-medium uppercase tracking-wider">
                                     {product.category}
                                 </p>
                             </div>
                             
-                            <p className="text-gray-700 mb-6 leading-relaxed">
+                            <p className="text-sm md:text-base text-gray-700 mb-3 md:mb-6 leading-relaxed">
                                 {product.description}
                             </p>
                             
-                            <div className="text-3xl font-bold text-gray-900 mb-6">
+                            <div className="text-xl md:text-3xl font-bold text-gray-900 mb-3 md:mb-6">
                                 R$ {product.price.toFixed(2)}
                             </div>
                             
-                            <div className="mb-8">
+                            <div className="mb-3 md:mb-8">
                                 <StockIndicator stock={product.stock} showWarning={true} />
                             </div>
                             
                             {product.stock > 0 && (
-                                <div className="space-y-6">
+                                <div className="space-y-3 md:space-y-6">
                                     {/* Quantity Selector */}
                                     <div>
                                         <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 mb-2">
                                             Quantidade:
                                         </label>
-                                        <div className="flex items-center space-x-3">
+                                        <div className="flex items-center space-x-3 justify-center md:justify-start">
                                             <button 
                                                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
                                                 disabled={quantity <= 1}
@@ -159,7 +164,7 @@ const ProductDetails: React.FC = () => {
                                                 max={product.stock}
                                                 value={quantity}
                                                 onChange={(e) => setQuantity(Math.min(product.stock, Math.max(1, parseInt(e.target.value) || 1)))}
-                                                className="w-20 h-10 text-center border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                                className="w-20 h-10 text-center border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#03B04B] focus:border-[#03B04B]"
                                             />
                                             <button 
                                                 onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
@@ -175,7 +180,7 @@ const ProductDetails: React.FC = () => {
                                     
                                     {/* Add to Cart Button */}
                                     <button 
-                                        className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2"
+                                        className="w-full bg-[#03B04B] text-white py-3 px-6 rounded-lg font-medium hover:bg-green-600 transition-colors flex items-center justify-center space-x-2 sticky bottom-4 md:static"
                                         onClick={handleAddToCart}
                                     >
                                         <span>Adicionar ao Carrinho</span>

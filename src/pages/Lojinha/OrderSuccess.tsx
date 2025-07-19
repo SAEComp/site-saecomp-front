@@ -62,17 +62,17 @@ const OrderSuccess = () => {
           </div>
           
           {/* Next Steps */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 text-left">
-            <h3 className="font-semibold text-blue-900 mb-2">Próximos Passos</h3>
-            <ul className="text-sm text-blue-800 space-y-1">
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6 text-left">
+            <h3 className="font-semibold text-green-900 mb-2">Próximos Passos</h3>
+            <ul className="text-sm text-green-800 space-y-1">
               <li className="flex items-start">
-                <svg className="w-4 h-4 mt-0.5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 mt-0.5 mr-2 text-[#03B04B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4" />
                 </svg>
                 Você pode retirar seu pedido na lojinha SAEComp
               </li>
               <li className="flex items-start">
-                <svg className="w-4 h-4 mt-0.5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 mt-0.5 mr-2 text-[#03B04B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4" />
                 </svg>
                 Aguarde a confirmação do pagamento
@@ -84,7 +84,7 @@ const OrderSuccess = () => {
           <div className="space-y-3">
             <button 
               onClick={handleBackToStore}
-              className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+              className="w-full bg-[#03B04B] text-white py-3 px-6 rounded-lg font-medium hover:bg-green-600 transition-colors"
             >
               Fazer Novo Pedido
             </button>

@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
-import { getProducts } from './services/api';
+import { Product } from './types';
+import { productService } from './services/api';
+import erroIcon from '../../assets/lojinha-icons/perrys/ERRO.png';
 
 const SimpleProductList = () => {
     const [products, setProducts] = useState<any[]>([]);
@@ -47,6 +49,11 @@ const SimpleProductList = () => {
     if (error) {
         return (
             <div style={{ padding: '20px', textAlign: 'center' }}>
+                <img 
+                    src={erroIcon} 
+                    alt="Erro" 
+                    style={{ width: '96px', height: '96px', margin: '0 auto 16px', display: 'block' }}
+                />
                 <h2>Erro ao carregar produtos</h2>
                 <p style={{ color: 'red' }}>{error}</p>
                 <button onClick={() => window.location.reload()}>

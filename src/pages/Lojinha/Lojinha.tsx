@@ -1,138 +1,141 @@
-import { Link } from "react-router";
-import { useAuth } from "../../auth/AuthContext";
+import { useEffect, useState, useCallback } from 'react';
+import { Link } from 'react-router';
+import { useAuth } from '../../auth/AuthContext';
+import ProductCard from './components/ProductCard';
+import CategoryTabs from './components/CategoryTabs';
+import { getProducts } from './services/api';
+import { Product, ProductFilters } from './types';
+import inicio1 from "../../assets/lojinha-icons/perrys/inicio1.png";
+import inicio2 from "../../assets/lojinha-icons/perrys/inicio2.png";
+import erroIcon from "../../assets/lojinha-icons/perrys/ERRO.png";
 
 const Lojinha = () => {
     const { user } = useAuth();
-    
-    const handleGoToStore = () => {
-        // URL da lojinha hospedada (você pode ajustar conforme necessário)
-        window.open('https://lojinha-saecomp.netlify.app', '_blank');
-    };
+    const [products, setProducts] = useState<Product[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [selectedCategory, setSelectedCategory] = useState<'all' | 'doces' | 'salgados' | 'bebidas'>('all');
+
+    const loadProducts = useCallback(async (category: 'all' | 'doces' | 'salgados' | 'bebidas') => {
+        try {
+            setLoading(true);
+            setError(null);
+            
+            const filters: ProductFilters | undefined = category !== 'all' 
+                ? { category }
+                : undefined;
+            
+            const response = await getProducts(filters);
+            
+            if (response.data) {
+                setProducts(response.data);
+            } else {
+                setProducts([]);
+            }
+        } catch (err) {
+            console.error('Error loading products:', err);
+            setError('Erro ao carregar produtos. Tente novamente.');
+            setProducts([]);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        loadProducts(selectedCategory);
+    }, [selectedCategory, loadProducts]);
+
+    const handleCategoryChange = useCallback((category: 'all' | 'doces' | 'salgados' | 'bebidas') => {
+        if (category !== selectedCategory) {
+            setSelectedCategory(category);
+        }
+    }, [selectedCategory]);
 
     return (
-        <div className="min-h-screen bg-gray-50 py-16">
-            <div className="max-w-6xl mx-auto px-4">
-                <div className="text-center mb-12">
-                    <h1 className="text-4xl font-bold text-gray-800 mb-4">
-                        Lojinha SAEComp
-                    </h1>
-                    <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                        Bem-vindo à nossa loja virtual! Aqui você encontra doces, salgados e bebidas 
-                        para tornar seus estudos ainda mais saborosos.
-                    </p>
+        <div className="min-h-screen bg-gray-50">
+            <div className="max-w-7xl mx-auto px-4 py-8">
+                <div className="text-center mb-4">
+                    <div className="flex flex-col items-center justify-center mb-4">
+                        <div className="flex items-center justify-center space-x-4 md:space-x-8 mb-4">
+                                                        <img 
+                                src={inicio1} 
+                                alt="Perry da Lojinha 1" 
+                                className="w-20 h-20 md:w-32 md:h-32 object-contain drop-shadow-lg"
+                            />
+                            <div className="text-center">
+                                <h1 className="text-2xl md:text-4xl font-bold text-gray-800 mb-2">Lojinha SAEComp</h1>
+                                <p className="text-lg md:text-xl text-gray-600 hidden sm:block">
+                                    Deliciosos doces, salgados e bebidas
+                                </p>
+                            </div>
+                                                                                    <img 
+                                src={inicio2} 
+                                alt="Perry da Lojinha 2" 
+                                className="w-20 h-20 md:w-32 md:h-32 object-contain drop-shadow-lg"
+                            />
+                        </div>
+                        {user?.permissions?.includes('users:edit') && (
+                            <Link 
+                                to="/lojinha/admin"
+                                className="bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded-lg font-medium transition duration-200 flex items-center gap-2"
+                            >
+                                Gerenciar Lojinha
+                            </Link>
+                        )}
+                    </div>
                 </div>
-
-                <div className="grid md:grid-cols-2 gap-8 items-center">
-                    <div className="space-y-6">
-                        <h2 className="text-2xl font-semibold text-gray-800">
-                            O que você encontra na nossa lojinha:
-                        </h2>
-                        <ul className="space-y-3">
-                            <li className="flex items-center text-gray-700">
-                                <span className="text-green-500 mr-2">🍪</span>
-                                Doces variados para adoçar seu dia
-                            </li>
-                            <li className="flex items-center text-gray-700">
-                                <span className="text-green-500 mr-2">🥪</span>
-                                Salgados frescos e deliciosos
-                            </li>
-                            <li className="flex items-center text-gray-700">
-                                <span className="text-green-500 mr-2">🥤</span>
-                                Bebidas refrescantes
-                            </li>
-                            <li className="flex items-center text-gray-700">
-                                <span className="text-green-500 mr-2">💰</span>
-                                Preços especiais para estudantes
-                            </li>
-                        </ul>
-                        
-                        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
-                            <div className="flex">
-                                <div className="flex-shrink-0">
-                                    <span className="text-yellow-400">ℹ️</span>
-                                </div>
-                                <div className="ml-3">
-                                    <p className="text-sm text-yellow-700">
-                                        <strong>Horário de funcionamento:</strong> Durante o período letivo, 
-                                        conforme disponibilidade dos membros da SAEComp.
+                
+                <CategoryTabs 
+                    selectedCategory={selectedCategory}
+                    onCategoryChange={handleCategoryChange}
+                />
+                
+                {loading && (
+                    <div className="text-center py-12">
+                        <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#03B04B] mb-4"></div>
+                        <p className="text-gray-600">Carregando produtos...</p>
+                    </div>
+                )}
+                
+                {error && (
+                    <div className="text-center py-12">
+                        <div className="rounded-lg p-6 max-w-md mx-auto">
+                            <img 
+                                src={erroIcon} 
+                                alt="Erro" 
+                                className="w-24 h-24 md:w-28 md:h-28 mx-auto mb-4 object-contain drop-shadow-lg"
+                            />
+                            <p className="text-red-700 mb-4">{error}</p>
+                            <button 
+                                onClick={() => loadProducts(selectedCategory)} 
+                                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition"
+                            >
+                                Tentar novamente
+                            </button>
+                        </div>
+                    </div>
+                )}
+                
+                {!loading && !error && (
+                    <div className="mb-8">
+                        {products.length === 0 ? (
+                            <div className="text-center py-12">
+                                <div className="bg-gray-100 rounded-lg p-8 max-w-md mx-auto">
+                                    <span className="text-4xl mb-4 block"></span>
+                                    <p className="text-gray-600 text-lg">
+                                        Nenhum produto encontrado nesta categoria.
                                     </p>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-
-                    <div className="text-center">
-                        <div className="bg-white rounded-lg shadow-lg p-8">
-                            <h3 className="text-xl font-semibold text-gray-800 mb-4">
-                                Faça seu pedido agora!
-                            </h3>
-                            <p className="text-gray-600 mb-6">
-                                Acesse nossa loja virtual e faça seu pedido de forma prática e rápida.
-                            </p>
-                            <button
-                                onClick={handleGoToStore}
-                                className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-8 rounded-lg transition duration-300 transform hover:scale-105 mb-4"
-                            >
-                                Acessar Lojinha Externa
-                            </button>
-                            
-                            <Link 
-                                to="/lojinha/loja"
-                                className="block bg-[#03B04B] hover:bg-green-600 text-white font-bold py-3 px-8 rounded-lg transition duration-300 transform hover:scale-105"
-                            >
-                                🛒 Loja Integrada
-                            </Link>
-                            
-                            {user?.permissions?.includes('users:edit') && (
-                                <Link 
-                                    to="/lojinha/admin"
-                                    className="block mt-4 bg-gray-700 hover:bg-gray-800 text-white font-bold py-2 px-6 rounded-lg transition duration-300"
-                                >
-                                    Gerenciar Lojinha
-                                </Link>
-                            )}
-                            
-                            <p className="text-sm text-gray-500 mt-4">
-                                Escolha entre a loja externa ou nossa nova loja integrada
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="mt-16 bg-white rounded-lg shadow-md p-8">
-                    <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
-                        Como funciona?
-                    </h2>
-                    <div className="grid md:grid-cols-3 gap-6">
-                        <div className="text-center">
-                            <div className="bg-[#03B04B] text-white rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-4">
-                                1
+                        ) : (
+                            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+                                {products.map(product => (
+                                    <ProductCard key={product._id} product={product} />
+                                ))}
                             </div>
-                            <h3 className="font-semibold text-gray-800 mb-2">Escolha seus produtos</h3>
-                            <p className="text-gray-600 text-sm">
-                                Navegue pelo catálogo e adicione os itens desejados ao carrinho
-                            </p>
-                        </div>
-                        <div className="text-center">
-                            <div className="bg-[#03B04B] text-white rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-4">
-                                2
-                            </div>
-                            <h3 className="font-semibold text-gray-800 mb-2">Finalize o pedido</h3>
-                            <p className="text-gray-600 text-sm">
-                                Confirme seus dados e finalize a compra
-                            </p>
-                        </div>
-                        <div className="text-center">
-                            <div className="bg-[#03B04B] text-white rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-4">
-                                3
-                            </div>
-                            <h3 className="font-semibold text-gray-800 mb-2">Retire na SAEComp</h3>
-                            <p className="text-gray-600 text-sm">
-                                Retire seu pedido na sala da SAEComp conforme agendado
-                            </p>
-                        </div>
+                        )}
                     </div>
-                </div>
+                )}
             </div>
         </div>
     );

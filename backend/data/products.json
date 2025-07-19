@@ -18,10 +18,10 @@
     "price": 4.5,
     "imageUrl": "/images/coca-zero.png",
     "category": "bebidas",
-    "stock": 32,
+    "stock": 30,
     "isActive": true,
     "createdAt": "2025-06-08T16:00:00.000Z",
-    "updatedAt": "2025-07-18T16:43:01.975Z"
+    "updatedAt": "2025-07-19T04:52:22.964Z"
   },
   {
     "_id": "3",

@@ -61,7 +61,7 @@ const LojinhaGerenciamento = () => {
     const getStatusColor = (status: Order['status']) => {
         switch (status) {
             case 'pending': return 'bg-yellow-100 text-yellow-800';
-            case 'preparing': return 'bg-blue-100 text-blue-800';
+            case 'preparing': return 'bg-green-100 text-green-800';
             case 'ready': return 'bg-green-100 text-green-800';
             case 'completed': return 'bg-gray-100 text-gray-800';
             default: return 'bg-gray-100 text-gray-800';
@@ -200,7 +200,7 @@ const LojinhaGerenciamento = () => {
                                                 >
                                                     {product.available ? 'Desativar' : 'Ativar'}
                                                 </button>
-                                                <button className="text-blue-600 hover:text-blue-800">Editar</button>
+                                                <button className="text-[#03B04B] hover:text-green-600">Editar</button>
                                             </td>
                                         </tr>
                                     ))}
@@ -238,7 +238,7 @@ const LojinhaGerenciamento = () => {
                                         {order.status === 'pending' && (
                                             <button
                                                 onClick={() => updateOrderStatus(order.id, 'preparing')}
-                                                className="bg-blue-100 text-blue-700 px-3 py-1 rounded text-sm font-medium hover:bg-blue-200"
+                                                className="bg-green-100 text-green-700 px-3 py-1 rounded text-sm font-medium hover:bg-green-200"
                                             >
                                                 Iniciar Preparo
                                             </button>
@@ -291,7 +291,7 @@ const LojinhaGerenciamento = () => {
                             
                             <div className="bg-white rounded-lg shadow-sm p-6">
                                 <h3 className="text-lg font-medium text-gray-900 mb-2">Produtos Disponíveis</h3>
-                                <p className="text-3xl font-bold text-blue-600">{stats.availableProducts}/{stats.totalProducts}</p>
+                                <p className="text-3xl font-bold text-[#03B04B]">{stats.availableProducts}/{stats.totalProducts}</p>
                             </div>
                         </div>
                         

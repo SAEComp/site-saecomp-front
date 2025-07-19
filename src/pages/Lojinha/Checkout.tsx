@@ -4,6 +4,7 @@ import { useCart } from './hooks/useCart';
 import { PaymentMethod } from './types';
 import { orderService, paymentService } from './services/api';
 import { getProductImageUrl } from './utils/imageUtils';
+import erroIcon from '../../assets/lojinha-icons/perrys/ERRO.png';
 
 const Checkout: React.FC = () => {
     const navigate = useNavigate();
@@ -167,7 +168,7 @@ const Checkout: React.FC = () => {
                                     value={customerData.name}
                                     onChange={handleInputChange}
                                     placeholder="Digite seu nome"
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#03B04B] focus:border-[#03B04B]"
                                 />
                             </div>
 
@@ -180,7 +181,7 @@ const Checkout: React.FC = () => {
                                     name="course"
                                     value={customerData.course}
                                     onChange={handleInputChange}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#03B04B] focus:border-[#03B04B]"
                                 >
                                     <option value="">Selecione seu curso</option>
                                     <option value="Engenharia de Computação">Engenharia de Computação</option>
@@ -192,14 +193,14 @@ const Checkout: React.FC = () => {
                                 </select>
                             </div>
 
-                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                                 <div className="flex items-center">
-                                    <svg className="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className="w-5 h-5 text-[#03B04B] mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                                     </svg>
-                                    <p className="font-medium text-blue-900">Pagamento via PIX</p>
+                                    <p className="font-medium text-green-900">Pagamento via PIX</p>
                                 </div>
-                                <p className="text-sm text-blue-700 mt-1">
+                                <p className="text-sm text-green-700 mt-1">
                                     Após confirmar o pedido, você receberá um QR Code para pagamento via PIX.
                                 </p>
                             </div>
@@ -207,9 +208,11 @@ const Checkout: React.FC = () => {
                             {error && (
                                 <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                                     <div className="flex items-center">
-                                        <svg className="w-5 h-5 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
+                                        <img 
+                                            src={erroIcon} 
+                                            alt="Erro" 
+                                            className="w-8 h-8 mr-2 object-contain"
+                                        />
                                         <p className="text-sm font-medium text-red-900">{error}</p>
                                     </div>
                                 </div>
@@ -225,7 +228,7 @@ const Checkout: React.FC = () => {
                                 </button>
                                 <button
                                     type="submit"
-                                    className="w-full sm:w-auto px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                                    className="w-full sm:w-auto px-6 py-3 bg-[#03B04B] text-white rounded-lg hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                                     disabled={loading}
                                 >
                                     {loading ? (

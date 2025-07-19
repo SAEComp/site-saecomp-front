@@ -2005,5 +2005,41 @@
     "createdAt": "2025-07-18T16:43:01.973Z",
     "updatedAt": "2025-07-18T16:43:02.051Z",
     "paymentId": "pix_1752856981973_1752856982050"
+  },
+  {
+    "items": [
+      {
+        "productId": "2",
+        "name": "Coca-Cola Zero",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "pending",
+    "paymentStatus": "pending",
+    "_id": "1752857631368",
+    "createdAt": "2025-07-18T16:53:51.368Z",
+    "updatedAt": "2025-07-18T16:53:51.455Z",
+    "paymentId": "pix_1752857631368_1752857631454"
+  },
+  {
+    "items": [
+      {
+        "productId": "2",
+        "name": "Coca-Cola Zero",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "pending",
+    "paymentStatus": "pending",
+    "_id": "1752900742962",
+    "createdAt": "2025-07-19T04:52:22.962Z",
+    "updatedAt": "2025-07-19T04:52:23.049Z",
+    "paymentId": "pix_1752900742962_1752900743048"
   }
 ]
