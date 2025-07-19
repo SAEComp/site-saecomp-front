@@ -54,7 +54,19 @@ const Lojinha = () => {
     return (
         <div className="min-h-screen bg-gray-50">
             <div className="max-w-7xl mx-auto px-4 py-8">
-                <div className="text-center mb-4">
+                <div className="text-center mb-4 relative">
+                    {/* Botão de Gerenciamento - Desktop: canto superior direito */}
+                    {user?.permissions?.includes('users:edit') && (
+                        <div className="absolute top-0 right-0 hidden md:block">
+                            <Link 
+                                to="/lojinha/admin"
+                                className="bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded-lg font-medium transition duration-200 flex items-center gap-2 text-base"
+                            >
+                                <span>Gerenciar</span>
+                            </Link>
+                        </div>
+                    )}
+                    
                     <div className="flex flex-col items-center justify-center mb-4">
                         <div className="flex items-center justify-center space-x-4 md:space-x-8 mb-4">
                                                         <img 
@@ -74,13 +86,17 @@ const Lojinha = () => {
                                 className="w-20 h-20 md:w-32 md:h-32 object-contain drop-shadow-lg"
                             />
                         </div>
+                        
+                        {/* Botão de Gerenciamento - Mobile: abaixo dos Perry, centralizado */}
                         {user?.permissions?.includes('users:edit') && (
-                            <Link 
-                                to="/lojinha/admin"
-                                className="bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded-lg font-medium transition duration-200 flex items-center gap-2"
-                            >
-                                Gerenciar Lojinha
-                            </Link>
+                            <div className="block md:hidden">
+                                <Link 
+                                    to="/lojinha/admin"
+                                    className="bg-gray-700 hover:bg-gray-800 text-white px-3 py-1.5 rounded-lg font-medium transition duration-200 flex items-center gap-1 text-sm"
+                                >
+                                    <span>Gerenciar</span>
+                                </Link>
+                            </div>
                         )}
                     </div>
                 </div>

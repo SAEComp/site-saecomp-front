@@ -47,8 +47,8 @@ const ProductDetails: React.FC = () => {
             for (let i = 0; i < quantity; i++) {
                 addItem(product);
             }
-            // Show success message or redirect
-            navigate('/lojinha/carrinho');
+            // Redirect back to main lojinha menu
+            navigate('/lojinha');
         }
     };
 

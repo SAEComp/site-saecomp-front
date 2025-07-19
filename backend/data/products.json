@@ -30,10 +30,10 @@
     "price": 4,
     "imageUrl": "/images/guarana.png",
     "category": "bebidas",
-    "stock": 3,
+    "stock": 2,
     "isActive": true,
     "createdAt": "2025-06-08T16:00:00.000Z",
-    "updatedAt": "2025-07-18T14:58:25.968Z"
+    "updatedAt": "2025-07-19T05:35:50.769Z"
   },
   {
     "_id": "4",

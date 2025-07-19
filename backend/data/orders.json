@@ -2041,5 +2041,23 @@
     "createdAt": "2025-07-19T04:52:22.962Z",
     "updatedAt": "2025-07-19T04:52:23.049Z",
     "paymentId": "pix_1752900742962_1752900743048"
+  },
+  {
+    "items": [
+      {
+        "productId": "3",
+        "name": "Guaraná",
+        "price": 4,
+        "quantity": 1,
+        "subtotal": 4
+      }
+    ],
+    "totalAmount": 4,
+    "status": "pending",
+    "paymentStatus": "pending",
+    "_id": "1752903350767",
+    "createdAt": "2025-07-19T05:35:50.767Z",
+    "updatedAt": "2025-07-19T05:35:50.850Z",
+    "paymentId": "pix_1752903350767_1752903350849"
   }
 ]
