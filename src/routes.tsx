@@ -7,7 +7,7 @@ import LojinhaLayout from "./pages/Lojinha/LojinhaLayout";
 import OrderSuccess from "./pages/Lojinha/OrderSuccess";
 import Checkout from "./pages/Lojinha/Checkout";
 import ProductDetails from "./pages/Lojinha/ProductDetails";
-import LojinhaGerenciamento from "./pages/Lojinha/LojinhaGerenciamento";
+import LojinhaGerenciamento from "./pages/Lojinha/LojinhaAdmin";
 import Lojinha from "./pages/Lojinha/Lojinha";
 import CartPage from "./pages/Lojinha/CartPage";
 import APITest from "./pages/Lojinha/APITest";

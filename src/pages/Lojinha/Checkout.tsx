@@ -107,8 +107,14 @@ const Checkout: React.FC = () => {
     };
 
     const handlePaymentComplete = () => {
-        clearCart();
-        navigate(`/lojinha/sucesso/${orderId}`, { state: { orderId } });
+        navigate(`/lojinha/sucesso/${orderId}`, { 
+            state: { orderId },
+            replace: true 
+        });
+        // Limpar carrinho após um pequeno delay para evitar conflito
+        setTimeout(() => {
+            clearCart();
+        }, 100);
     };
 
     if (cartItems.length === 0) {

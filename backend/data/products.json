@@ -6,10 +6,10 @@
     "price": 4.5,
     "imageUrl": "/images/coca.png",
     "category": "bebidas",
-    "stock": 39,
+    "stock": 37,
     "isActive": true,
     "createdAt": "2025-06-08T16:00:00.000Z",
-    "updatedAt": "2025-07-19T16:20:20.249Z"
+    "updatedAt": "2025-07-19T16:42:49.549Z"
   },
   {
     "_id": "2",
@@ -18,10 +18,10 @@
     "price": 4.5,
     "imageUrl": "/images/coca-zero.png",
     "category": "bebidas",
-    "stock": 29,
+    "stock": 18,
     "isActive": true,
     "createdAt": "2025-06-08T16:00:00.000Z",
-    "updatedAt": "2025-07-19T05:37:58.623Z"
+    "updatedAt": "2025-07-20T01:12:32.430Z"
   },
   {
     "_id": "3",
@@ -30,10 +30,10 @@
     "price": 4,
     "imageUrl": "/images/guarana.png",
     "category": "bebidas",
-    "stock": 2,
+    "stock": 1,
     "isActive": true,
     "createdAt": "2025-06-08T16:00:00.000Z",
-    "updatedAt": "2025-07-19T05:35:50.769Z"
+    "updatedAt": "2025-07-20T01:07:10.856Z"
   },
   {
     "_id": "4",
@@ -54,10 +54,10 @@
     "price": 6.5,
     "imageUrl": "/images/doritos.png",
     "category": "salgados",
-    "stock": 29,
+    "stock": 28,
     "isActive": true,
     "createdAt": "2025-06-08T16:00:00.000Z",
-    "updatedAt": "2025-06-08T23:08:55.773Z"
+    "updatedAt": "2025-07-20T01:07:10.855Z"
   },
   {
     "_id": "6",
@@ -78,10 +78,10 @@
     "price": 4.5,
     "imageUrl": "/images/Snickers.png",
     "category": "doces",
-    "stock": 18,
+    "stock": 17,
     "isActive": true,
     "createdAt": "2025-06-08T16:00:00.000Z",
-    "updatedAt": "2025-06-08T23:49:56.660Z"
+    "updatedAt": "2025-07-20T01:07:10.855Z"
   },
   {
     "_id": "8",
@@ -90,10 +90,10 @@
     "price": 5.5,
     "imageUrl": "/images/torcida.png",
     "category": "salgados",
-    "stock": 24,
+    "stock": 23,
     "isActive": true,
     "createdAt": "2025-06-08T16:00:00.000Z",
-    "updatedAt": "2025-06-08T23:08:55.774Z"
+    "updatedAt": "2025-07-20T00:55:54.723Z"
   },
   {
     "_id": "9",
@@ -114,10 +114,10 @@
     "price": 3,
     "imageUrl": "/images/Trento.png",
     "category": "doces",
-    "stock": 32,
+    "stock": 30,
     "isActive": true,
     "createdAt": "2025-06-08T16:00:00.000Z",
-    "updatedAt": "2025-07-18T03:56:51.095Z"
+    "updatedAt": "2025-07-20T00:47:02.471Z"
   },
   {
     "_id": "11",
