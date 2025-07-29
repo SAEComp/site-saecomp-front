@@ -53,7 +53,7 @@ const ResultsContainer = () => {
   return (
     <>
       {showCard && (
-        <Card evaluationId={selectedEvaluation} setShowCard={setShowCard} />
+        <Card evaluationScore={answers.score} evaluationId={selectedEvaluation} setShowCard={setShowCard} />
       )}
       <div
         className="bg-[#03B04B] w-full flex flex-col items-center justify-center py-[50px] gap-[50px]"
