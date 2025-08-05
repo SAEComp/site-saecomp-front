@@ -2,6 +2,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useEffect, useState } from "react";
 import { GetPublicAnswerDetailsOut } from "../../../schemas/teacherEvaluation/output/answer.schema";
 import { answersService } from "../../../services/answers.service";
+import { getInstituteTheme} from "./CardColors";
 
 interface CardProps {
   evaluationScore: number | null;
@@ -40,7 +41,7 @@ export default function Card({
   const loadQuestionCard = (questionId: number) => {
     setSelectedQuestion(questionId);
     setShowQuestionCard(true);
-    console.log(bgcolor);
+    console.log(cardData?.instituteCode);
   };
 
   const unloadQuestionCard = () => {
@@ -48,51 +49,7 @@ export default function Card({
     setShowQuestionCard(false);
   };
 
-  // CORES=====================================================================
-  const instituteColors = {
-    EESC: "bg-yellow-500",
-    ICMC: "bg-blue-800",
-    IAU: "bg-red-700",
-    IFSC: "bg-blue-400",
-    IQSC: "bg-green-500",
-    DEFAULT: "bg-black-400",
-  };
-
-  const auxInstituteColors = {
-    EESC: "bg-yellow-400",
-    ICMC: "bg-blue-400",
-    IAU: "bg-red-500",
-    IFSC: "bg-blue-200",
-    IQSC: "bg-green-300",
-    DEFAULT: "bg-black-200",
-  };
-
-  type InstituteCodeKey = keyof typeof instituteColors;
-  type auxInstituteCodeKey = keyof typeof auxInstituteColors;
-
-  function isInstituteKey(key: string): key is InstituteCodeKey {
-    return key in instituteColors;
-  }
-  function isAuxInstituteKey(key: string): key is auxInstituteCodeKey {
-    return key in auxInstituteColors;
-  }
-
-  let bgcolor = instituteColors.DEFAULT; // Começa com a cor padrão
-  let auxcolor = auxInstituteColors.DEFAULT;
-
-  const instituteKey = cardData?.instituteCode;
-
-  // 2. Usa a função para verificar a chave antes de acessar o objeto
-  if (
-    instituteKey &&
-    isInstituteKey(instituteKey) &&
-    isAuxInstituteKey(instituteKey)
-  ) {
-    // Dentro deste if, o TypeScript sabe que 'instituteKey' é do tipo InstituteCodeKey
-    bgcolor = instituteColors[instituteKey];
-    auxcolor = auxInstituteColors[instituteKey];
-  }
-  //===========================================================================
+  let theme = getInstituteTheme(cardData?.instituteCode);
 
   return (
     <>
@@ -103,7 +60,7 @@ export default function Card({
           className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20">
           <div //card
             onClick={(e) => e.stopPropagation()}
-            className={`relative flex justify-center items-center overflow-hidden h-[90%] w-[300px] sm:w-[300px] md:w-[300px] lg:w-[30%] xl:w-[30%] 2xl:w-[30%] z-30 rounded-3xl ${bgcolor}`}>
+            className={`relative flex justify-center items-center overflow-hidden h-[90%] w-[300px] sm:w-[300px] md:w-[300px] lg:w-[30%] xl:w-[30%] 2xl:w-[30%] z-30 rounded-3xl ${theme.bgColor}`}>
             <div className="absolute top-[30%] left-1/2 -translate-x-1/2 -translate-y-[50%] w-[40vh] h-[40vh]">
               <div className="absolute inset-0 rounded-full border-6 border-white" />
 
@@ -117,7 +74,7 @@ export default function Card({
               </div>
 
               <div
-                className={`absolute top-[60%] left-1/2 -translate-x-1/2 -translate-y-[50%] z-10 p-1 rounded-lg text-white font-inter text-sm text-center ${auxcolor}`}>
+                className={`absolute top-[60%] left-1/2 -translate-x-1/2 -translate-y-[50%] z-10 p-1 rounded-lg text-white font-inter text-sm text-center ${theme.auxColor}`}>
                 {cardData?.teacherName}
               </div>
             </div>
@@ -134,7 +91,7 @@ export default function Card({
 
               <button
                 onClick={() => setShowCard(false)}
-                className={` p-2 flex items-center justify-center rounded-full cursor-pointer z-30 ${auxcolor}`}>
+                className={` p-2 flex items-center justify-center rounded-full cursor-pointer z-30 ${theme.auxColor}`}>
                 <CloseIcon className="text-white" fontSize="small" />
               </button>
             </div>
@@ -180,7 +137,7 @@ export default function Card({
           className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20">
           <div //card
             onClick={(e) => e.stopPropagation()}
-            className={`flex flex-col gap-1 items-center overflow-auto h-[90%] w-[300px] sm:w-[300px] md:w-[300px] lg:w-[30%] xl:w-[30%] 2xl:w-[30%] z-30 rounded-3xl ${bgcolor}`}>
+            className={`flex flex-col gap-1 items-center overflow-auto h-[90%] w-[300px] sm:w-[300px] md:w-[300px] lg:w-[30%] xl:w-[30%] 2xl:w-[30%] z-30 rounded-3xl ${theme.bgColor}`}>
             <div className="h-[10%] w-[95%] px-6 py-3 flex flex-row gap-1 justify-between items-center mt-1">
               <span className="bg-white text-black font-inter rounded-full px-2.5 py-0.5">
                 {
@@ -192,7 +149,7 @@ export default function Card({
 
               <button
                 onClick={() => unloadQuestionCard()}
-                className={`p-2 flex items-center justify-center rounded-full cursor-pointer z-30 ${auxcolor}`}>
+                className={`p-2 flex items-center justify-center rounded-full cursor-pointer z-30 ${theme.auxColor}`}>
                 <CloseIcon className="text-white" fontSize="small" />
               </button>
             </div>
