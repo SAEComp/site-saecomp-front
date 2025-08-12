@@ -1,4 +1,4 @@
-import { GetAdminAnswersOut } from "../../schemas/adminAnswers.schema";
+import { GetAdminAnswersOut } from "../../schemas/teacherEvaluation/output/adminAnswer.schema";
 
 interface IReviewListProps {
   answersList: GetAdminAnswersOut | null;
@@ -14,7 +14,10 @@ detailedAnswerIndex,
 } : IReviewListProps
 ) => {
   return (
-    <div className="flex flex-col  w-full h-full p-2 overflow-auto overscroll-" >
+    <div 
+    className="flex flex-col overflow-y-scroll w-full h-full p-2"
+    style={{scrollbarWidth: "none"}}
+    >
       {answersList?.answers.map((avaliacao) => (
         <div
           onClick={() => {onReviewClick(avaliacao.evaluationId)}}
@@ -33,7 +36,7 @@ detailedAnswerIndex,
           ease-in-out
           shadow-md active:shadow-lg
           cursor-pointer select-none
-          ${detailedAnswerIndex === avaliacao.evaluationId ? "translate-x-5" : ""}
+          ${detailedAnswerIndex === avaliacao.evaluationId ? "translate-x-2" : ""}
           `}>
           <h3 className="text-lg text-black font-semibold">
             {avaliacao.teacherName}

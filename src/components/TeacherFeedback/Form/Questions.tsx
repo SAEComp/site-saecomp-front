@@ -5,74 +5,40 @@ import DropDown from "../../Inputs/DropDown";
 import { IEvaluation } from "../../../schemas/teacherEvaluation/input/evaluation.schema";
 import { Classes } from "../../../schemas/teacherEvaluation/output/evaluation.schema";
 import { IOption } from "../../Inputs/DropDown";
-import { useEffect, useState } from "react";
-import { distinct } from "../FeedbackResults/Filter";
-import questionTypes from "../../../types/questionTypes";
+import questionTypes from "../../../schemas/teacherEvaluation/questionTypes";
 import { ActiveQuestions } from "../../../schemas/teacherEvaluation/output/evaluation.schema";
+import NumberInput from "../../Inputs/NumberInput";
 
 
 export const componentTypes: Record<typeof questionTypes[number], React.ComponentType<any>> = {
     text: TextInput,
     slider: SliderInput,
-    numeric: SliderInput
+    numeric: NumberInput
 }
 
 
 interface QuestionProps {
     evaluationState: IEvaluation;
-    updateEvaluationClass: (classId: number) => void;
+    updateEvaluationClass: (classId?: number, teacherId?: number, courseId?: number) => void;
     updateAnswer: (questionId: number, answer: string) => void;
     classes: Classes[];
     questions: ActiveQuestions;
+    teacherDropdown: IOption[];
+    courseDropdown: IOption[];
+    sortTeachersClassFirst: (selectedCourse: IOption | null) => (a: IOption, b: IOption) => number;
+    sortCoursesClassFirst: (selectedTeacher: IOption | null) => (a: IOption, b: IOption) => number;
 }
 
-const Questions = ({ evaluationState, updateEvaluationClass, updateAnswer, classes, questions }: QuestionProps) => {
-    const [teachers, setTeachers] = useState<IOption[]>([]);
-    const [courses, setCourses] = useState<IOption[]>([]);
-    const [selectedTeacher, setSelectedTeacher] = useState<IOption | null>(null);
-    const [selectedCourse, setSelectedCourse] = useState<IOption | null>(null);
-
-    useEffect(() => {
-        setTeachers(
-            distinct(classes.map(q => ({
-                id: q.teacherId,
-                label: q.teacherName
-            })), 'id')
-        );
-        setCourses(
-            distinct(classes.map(q => ({
-                id: q.courseId,
-                label: q.courseName,
-                subtitle: q.courseCode
-            })), 'id')
-        );
-    }, [classes]);
+const Questions = ({ evaluationState, updateEvaluationClass, updateAnswer, classes, questions, teacherDropdown, courseDropdown, sortCoursesClassFirst, sortTeachersClassFirst }: QuestionProps) => {
 
     function changeTeacher(newTeacher: IOption | null) {
-        setSelectedTeacher(newTeacher);
-        setCourses(
-            distinct(classes.filter(q => !newTeacher ? true : q.teacherId === newTeacher.id).map(q => ({
-                id: q.courseId,
-                label: q.courseName,
-                subtitle: q.courseCode
-            })), 'id')
-        );
-        if (newTeacher && selectedCourse) {
-            updateEvaluationClass(classes.find(q => q.teacherId === newTeacher.id && q.courseId === selectedCourse.id)?.classId ?? -1);
-        }
+        const foundClass = classes.find(q => q.teacherId === newTeacher?.id && q.courseId === evaluationState.courseId);
+        updateEvaluationClass(foundClass?.classId, newTeacher?.id as number | undefined, evaluationState.courseId);
     }
 
     function changeCourse(newCourse: IOption | null) {
-        setSelectedCourse(newCourse);
-        setTeachers(
-            distinct(classes.filter(q => !newCourse ? true : q.courseId === newCourse.id).map(q => ({
-                id: q.teacherId,
-                label: q.teacherName
-            })), 'id')
-        );
-        if (newCourse && selectedTeacher) {
-            updateEvaluationClass(classes.find(q => q.teacherId === selectedTeacher.id && q.courseId === newCourse.id)?.classId ?? -1);
-        }
+        const foundClass = classes.find(q => q.teacherId === evaluationState.teacherId && q.courseId === newCourse?.id);
+        updateEvaluationClass(foundClass?.classId, evaluationState.teacherId, newCourse?.id as number | undefined);
     }
 
     return (
@@ -86,11 +52,13 @@ const Questions = ({ evaluationState, updateEvaluationClass, updateAnswer, class
                     label="Nome do Docente:"
                     component={DropDown}
                     componentProps={{
-                        options: teachers,
+                        options: teacherDropdown.sort(sortTeachersClassFirst(courseDropdown.find(el => el.id === evaluationState.courseId) ?? null)),
                         placeholder: "Sua resposta",
                         searchable: true,
-                        value: selectedTeacher,
-                        onChange: changeTeacher
+                        value: teacherDropdown.find(el => el.id === evaluationState.teacherId) ?? null,
+                        onChange: (newValue: IOption | null) => {
+                            changeTeacher(newValue);
+                        }
                     }}
                     sx={{
                         flexGrow: '1'
@@ -100,11 +68,11 @@ const Questions = ({ evaluationState, updateEvaluationClass, updateAnswer, class
                     label="Nome e/ou Código da Disciplina"
                     component={DropDown}
                     componentProps={{
-                        options: courses,
+                        options: courseDropdown.sort(sortCoursesClassFirst(teacherDropdown.find(el => el.id === evaluationState.teacherId) ?? null)),
                         placeholder: "Sua resposta",
                         searchable: true,
                         showSubtitle: true,
-                        value: selectedCourse,
+                        value: courseDropdown.find(el => el.id === evaluationState.courseId) ?? null,
                         searchFilter: (search, option) => {
                             const normalizedSearch = search.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
                             return (
@@ -112,18 +80,21 @@ const Questions = ({ evaluationState, updateEvaluationClass, updateAnswer, class
                                 option.subtitle?.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(normalizedSearch.toLowerCase())
                             ) ?? false;
                         },
-                        onChange: changeCourse
+                        onChange: (newValue: IOption | null) => {
+                            changeCourse(newValue);
+                        }
                     }}
                     sx={{
                         flexGrow: '2'
                     }}
                 />
             </div>
-            {questions && questions.map(question => (
+            {questions && questions.sort((a, b) => a.order - b.order).map(question => (
                 <QuestionComponent
                     key={question.id}
                     label={question.question}
                     component={componentTypes[question.type]}
+                    required={question.required}
                     componentProps={{
                         multiline: true,
                         rows: 4,
@@ -131,7 +102,10 @@ const Questions = ({ evaluationState, updateEvaluationClass, updateAnswer, class
                         value: evaluationState.answers.find(an => an.questionId === question.id)?.answer || '',
                         onChange: (newValue: string) => {
                             updateAnswer(question.id, String(newValue));
-                        }
+                        },
+                        mobile: true,
+                        className: 'w-full flex justify-center',
+                        defaultValue: null,
                     }}
                 />
             ))}

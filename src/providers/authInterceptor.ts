@@ -3,7 +3,7 @@ import { redirect } from "react-router";
 import { verifyLogin } from "../auth/verifyLogin";
 
 
-const interceptor = (publicRoutes: string[]): (config: InternalAxiosRequestConfig) => Promise<InternalAxiosRequestConfig> => {
+const authInterceptor = (publicRoutes: string[]): (config: InternalAxiosRequestConfig) => Promise<InternalAxiosRequestConfig> => {
     return async (config: InternalAxiosRequestConfig): Promise<InternalAxiosRequestConfig> => {
 
         const isPublic = publicRoutes.some((path) =>
@@ -23,4 +23,4 @@ const interceptor = (publicRoutes: string[]): (config: InternalAxiosRequestConfi
     }
 }
 
-export default interceptor;
+export default authInterceptor;

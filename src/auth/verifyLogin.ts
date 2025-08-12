@@ -17,7 +17,8 @@ export async function verifyLogin(): Promise<IUser> {
         _user.accessToken = accessToken;
         const accessUser = decodeAccessToken(accessToken);
         _user.id = Number(accessUser.sub);
-        _user.role = accessUser.role as 'admin' | 'user';
+        _user.role = accessUser.role;
+        _user.permissions = accessUser.permissions;
         saveUser(_user);
     }
     return _user;

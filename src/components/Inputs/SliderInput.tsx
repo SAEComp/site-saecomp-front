@@ -111,7 +111,8 @@ const SliderInput = ({ value, onChange, sx }: ISliderInputProps) => {
                 max={10}
                 track="inverted"
                 sx={{
-                    width: '90%'
+                    width: '90%',
+                    '& .MuiSlider-thumb': { display: !value && value !== 0 ? 'none' : 'block' }
                 }}
             />
         </Box>

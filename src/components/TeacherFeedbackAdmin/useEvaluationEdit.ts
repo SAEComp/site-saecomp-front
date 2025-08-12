@@ -1,6 +1,6 @@
 
 import { useReducer, useCallback } from "react";
-import { GetAdminAnswerDetailsOut } from "../../schemas/adminAnswers.schema";
+import { GetAdminAnswerDetailsOut } from "../../schemas/teacherEvaluation/output/adminAnswer.schema";
 
 type Action =
     | { type: 'SET_STATE'; newState: GetAdminAnswerDetailsOut }

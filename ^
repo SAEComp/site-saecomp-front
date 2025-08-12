@@ -1,0 +1,20 @@
+finalmente
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# On branch feature/questions-edition
+# Changes to be committed:
+#	modified:   package-lock.json
+#	modified:   package.json
+#	modified:   src/components/TeacherFeedback/Form/reducer.ts
+#	modified:   src/components/TeacherFeedback/Form/types.ts
+#	new file:   src/components/TeacherFeedback/FormMaker/FormMaker.tsx
+#	new file:   src/components/TeacherFeedback/FormMaker/QuestionEditComponents.tsx
+#	new file:   src/components/TeacherFeedback/FormMaker/QuestionsEdit.tsx
+#	new file:   src/components/TeacherFeedback/FormMaker/useQuestionEdit.ts
+#	new file:   src/pages/AdminQuestions/index.tsx
+#	modified:   src/routes.tsx
+#	new file:   src/schemas/adminQuestions.schema.ts
+#	new file:   src/services/adminQuestions.service.ts
+#	new file:   src/types/questionTypes.ts
+#

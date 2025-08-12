@@ -24,26 +24,26 @@ const teacherEvaluationMenu = () => {
                 <p className="text-center font-bold select-none mb-2">
                     Escolha a página
                 </p>
-                <Button 
+                {user?.permissions.includes('evaluation:create') && (<Button 
                     to="./avaliacao"
                     text="Avaliação"
                     color="green"
-                />
-                <Button 
+                />)}
+                {user?.permissions.includes('evaluation:results') && (<Button 
                     to="./resultados"
                     text="Resultados"
                     color="green"
-                />
-                <Button 
+                />)}
+                {user?.permissions.includes('evaluation:edit') && (<Button 
                     to="./admin/questoes"
                     text="Questões"
                     color="red"
-                />
-                <Button 
+                />)}
+                {user?.permissions.includes('evaluation:review') && (<Button 
                     to="./admin/resultados"
                     text="Resultados"
                     color="red"
-                />
+                />)}
             </div>
         </div>
     )

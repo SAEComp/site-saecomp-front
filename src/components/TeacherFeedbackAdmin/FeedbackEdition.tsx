@@ -3,18 +3,15 @@ import ReviewList from "./ReviewList";
 import CardEdition from "./CardEdition";
 import { teacherEvalService } from "../../services/teacherEval.service";
 import { useState, useEffect } from "react";
-import { IGetTeachersCourses } from "../../interfaces/teacherEvalService.interface";
+import { Classes } from "../../schemas/teacherEvaluation/output/evaluation.schema";
 import { IOption } from "../Inputs/DropDown";
 import { distinct } from "../../utils/distinct";
 import { Status } from "../../services/teacherEval.service";
-import {
-    GetAdminAnswersOut,
-    GetAdminAnswerDetailsOut,
-} from "../../schemas/adminAnswers.schema";
+import { GetAdminAnswersOut, GetAdminAnswerDetailsOut } from "../../schemas/teacherEvaluation/output/adminAnswer.schema";
 
 const FeedbackEdition = () => {
     const [teachersCoursesDropdown, setTeachersCoursesDropdown] = useState<
-        IGetTeachersCourses[]
+        Classes[]
     >([]);
     const [techersDropdownList, setTeachersDropdownList] = useState<IOption[]>(
         []

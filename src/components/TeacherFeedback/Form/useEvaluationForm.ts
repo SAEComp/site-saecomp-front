@@ -12,7 +12,7 @@ type Action =
     | { type: 'SET_CURRENT_EVALUATION'; currentEvaluationIndex: number }
     | { type: 'SET_TOTAL_EVALUATIONS'; totalEvaluations: number }
     | { type: 'REMOVE_EVALUATION'; evaluationIndex: number }
-    | { type: 'UPDATE_EVALUATION_CLASS'; evaluationIndex: number; classId: number }
+    | { type: 'UPDATE_EVALUATION_CLASS'; evaluationIndex: number; classId?: number; teacherId?: number; courseId?: number }
     | { type: 'UPDATE_ANSWER'; evaluationIndex: number; questionId: number; answer: string }
     | { type: 'RESET_FORM' };
 
@@ -76,7 +76,9 @@ const formReducer = (state: IForm, action: Action): IForm => {
                 ...state,
                 evaluations: state.evaluations.map((ev, i) => ({
                     ...ev,
-                    classId: i === action.evaluationIndex ? action.classId : ev.classId
+                    classId: i === action.evaluationIndex ? action.classId : ev.classId,
+                    teacherId: i === action.evaluationIndex ? action.teacherId : ev.teacherId,
+                    courseId: i === action.evaluationIndex ? action.courseId : ev.courseId,
                 }))
             }
         case 'UPDATE_ANSWER':
@@ -124,8 +126,8 @@ export default function useEvaluationForm() {
     );
 
     const updateEvaluationClass = useCallback(
-        (evaluationIndex: number, classId: number) =>
-            dispatch({ type: "UPDATE_EVALUATION_CLASS", evaluationIndex, classId }),
+        (evaluationIndex: number, classId?: number, teacherId?: number, courseId?: number) =>
+            dispatch({ type: "UPDATE_EVALUATION_CLASS", evaluationIndex, classId, teacherId, courseId }),
         []
     );
 

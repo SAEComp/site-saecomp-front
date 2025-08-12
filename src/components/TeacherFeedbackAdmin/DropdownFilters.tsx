@@ -1,13 +1,8 @@
 import DropDown, { IOption } from "../Inputs/DropDown";
-import { docentes, disciplinas, status, semestre } from "./mock";
+import { semestre } from "./mock";
 import SearchIcon from "@mui/icons-material/Search";
 import { Status } from "../../services/teacherEval.service";
-import { semester } from "../../services/mock";
-// import { useState, useEffect } from "react";
-// import { IAnswersFilter, TAutocompleteOptions } from "./types";
-// const distinct = <T,>(list: T[], key: keyof T): T[] => {
-//   return [...new Map(list.map((item) => [item[key], item])).values()];
-// };
+
 interface IDropdownFiltersProps {
   teachersDropdownList: IOption[];
   coursesDropdownList: IOption[];
@@ -167,7 +162,7 @@ const DropdownFilters = ({
         }}
       />
       <div onClick={searchAnswers}
-      className="active:scale-95 transition duration-150 ease-in-out shadow-md active:shadow-lg w-full md:w-[108px]  bg-black text-center flex items-center justify-center h-12 rounded-md">
+      className="active:scale-95 cursor-pointer transition duration-150 ease-in-out shadow-md active:shadow-lg w-full md:w-[108px]  bg-black text-center flex items-center justify-center h-12 rounded-md">
         <SearchIcon htmlColor="white" />
       </div>
     </div>

@@ -21,6 +21,7 @@ interface IDecodedGoogleToken {
 interface IDecodedAccessToken {
     sub: string;
     role: string;
+    permissions: string[];
     iat: number;
     exp: number;
 }

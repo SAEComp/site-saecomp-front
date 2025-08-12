@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, memo } from "react";
+import { createPortal } from "react-dom";
 import { FixedSizeList as List } from "react-window";
 
 export interface IOption {
@@ -24,11 +25,24 @@ const DropDown = ({ options, showSubtitle = false, placeholder, searchable = tru
     const [search, setSearch] = useState<IOption[]>([]);
     const [searchValue, setSearchValue] = useState<string>('');
     const inputRef = useRef<HTMLInputElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
+    const [dropdownPos, setDropdownPos] = useState<{top: number, left: number, width: number}>({top: 0, left: 0, width: 0});
 
     useEffect(() => {
         setSearch(options);
         setSearchValue(value?.label ?? '')
     }, [options]);
+
+    useEffect(() => {
+        if (isOpen && containerRef.current) {
+            const rect = containerRef.current.getBoundingClientRect();
+            setDropdownPos({
+                top: rect.bottom + window.scrollY,
+                left: rect.left + window.scrollX,
+                width: rect.width,
+            });
+        }
+    }, [isOpen, options]);
 
     const toggleDropdown = (open: boolean) => {
         setIsOpen(open);
@@ -100,7 +114,7 @@ const DropDown = ({ options, showSubtitle = false, placeholder, searchable = tru
     });
 
     return (
-        <div className={className + " group relative min-w-3 min-h-5 font-inter overflow-visible"}>
+        <div ref={containerRef} className={className + " group relative min-w-3 min-h-5 font-inter overflow-visible"}>
             <input
                 ref={inputRef}
                 className="focus:outline-none focus:ring-0 focus:border-0 font-inter font-normal w-full h-full rounded-lg pr-16 py-3 pl-3 whitespace-nowrap overflow-hidden text-ellipsis placeholder-gray-400 placeholder-opacity-100 focus:placeholder-opacity-30"
@@ -171,8 +185,16 @@ const DropDown = ({ options, showSubtitle = false, placeholder, searchable = tru
                     <path d="M7 10l5 5 5-5z"></path>
                 </svg>
             </div>
-            {isOpen && (
-                <div className="absolute z-[999999] w-full mt-1 bg-white rounded-lg shadow-sm py-2">
+            {isOpen && typeof window !== "undefined" && createPortal(
+                <div
+                    className="z-[999999] bg-white rounded-lg shadow-sm py-2"
+                    style={{
+                        position: "absolute",
+                        top: dropdownPos.top + 4, // margem de 4px entre o input e as opções
+                        left: dropdownPos.left,
+                        width: dropdownPos.width,
+                    }}
+                >
                     <List
                         height={Math.min(search.length * 60, 240)}
                         itemCount={search.length}
@@ -181,7 +203,8 @@ const DropDown = ({ options, showSubtitle = false, placeholder, searchable = tru
                     >
                         {renderOption}
                     </List>
-                </div>
+                </div>,
+                document.body
             )}
         </div>
     );

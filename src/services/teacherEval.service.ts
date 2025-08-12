@@ -1,12 +1,18 @@
 import { teacherEvaluationProvider } from "../providers";
-import { IGetSemesters, IGetTeachersCourses } from "../interfaces/teacherEvalService.interface";
+import { Classes } from "../schemas/teacherEvaluation/output/evaluation.schema";
 import { semester } from "./mock";
-import { getAdminAnswersOutSchema, GetAdminAnswersOut, GetAdminAnswerDetailsOut, getAdminAnswerDetailsOutSchema, UpdateAnswerPayload } from "../schemas/adminAnswers.schema";
+import { getAdminAnswersOutSchema, GetAdminAnswersOut, GetAdminAnswerDetailsOut, getAdminAnswerDetailsOutSchema } from "../schemas/teacherEvaluation/output/adminAnswer.schema";
+import { UpdateAnswerPayload } from "../schemas/teacherEvaluation/input/adminAnswer.schema";
 
 export type Status = 'approved' | 'rejected' | 'pending';
 
+interface IGetSemesters {
+    id: number; 
+    value: string;
+}
+
 class TeacherEvalService {
-    async getTeachersCourses(idealYear?: number): Promise<IGetTeachersCourses[] | null> {
+    async getTeachersCourses(idealYear?: number): Promise<Classes[] | null> {
         try {
             const response = await teacherEvaluationProvider.get('/classes', { params: { idealYear } });
             if (response.status !== 200) return null;
