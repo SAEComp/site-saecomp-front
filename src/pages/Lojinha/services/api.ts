@@ -44,9 +44,6 @@ api.interceptors.response.use(
 
 // Produtos
 export const getProducts = async (filters?: ProductFilters): Promise<ApiResponse<Product[]>> => {
-  console.log('🔄 getProducts called with filters:', filters);
-  console.log('🔄 API_BASE_URL:', API_BASE_URL);
-  
   const params = new URLSearchParams();
   
   if (filters) {
@@ -60,11 +57,9 @@ export const getProducts = async (filters?: ProductFilters): Promise<ApiResponse
   params.append('_t', Date.now().toString());
   
   const url = `/products?${params.toString()}`;
-  console.log('🔄 Making request to:', url);
   
   try {
     const response = await api.get(url);
-    console.log('✅ API response:', response.data);
     return response.data;
   } catch (error) {
     console.error('❌ API error:', error);

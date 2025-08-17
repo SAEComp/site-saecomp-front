@@ -10,8 +10,6 @@ import ProductDetails from "./pages/Lojinha/ProductDetails";
 import LojinhaGerenciamento from "./pages/Lojinha/LojinhaAdmin";
 import Lojinha from "./pages/Lojinha/Lojinha";
 import CartPage from "./pages/Lojinha/CartPage";
-import APITest from "./pages/Lojinha/APITest";
-import ImageTest from "./pages/Lojinha/ImageTest";
 import TeacherFeedback from "./pages/TeacherFeedback";
 import TeacherFeedbackResults from "./pages/TeacherFeedbackResults";
 import LayoutWrapper from "./components/Layout/LayoutWrapper";
@@ -84,14 +82,6 @@ const routes = createBrowserRouter([
                         element: <AuthPermissions permissions={["users:edit"]}>
                             <LojinhaGerenciamento />
                         </AuthPermissions>,
-                    },
-                    {
-                        path: "api-test",
-                        element: <APITest />,
-                    },
-                    {
-                        path: "image-test",
-                        element: <ImageTest />,
                     },
                 ],
             },
