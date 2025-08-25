@@ -23,7 +23,6 @@ const CardEdition = ({ detailedAnswer, setDetailedAnswer }: ICardEditionProps) =
         { id: 2, label: "Rejeitado", subtitle: 'rejected' },
         { id: 3, label: "Pendente", subtitle: 'pending' },
     ];
-
     useEffect(() => {
         if (detailedAnswer) {
             evaluationEdit.setEvaluation(detailedAnswer);
@@ -50,7 +49,7 @@ const CardEdition = ({ detailedAnswer, setDetailedAnswer }: ICardEditionProps) =
     }
 
     return (
-        <div className="flex flex-col gap-4 p-3 w-full h-full bg-white rounded-lg shadow-lg">
+        <div className="flex flex-col gap-4 p-3 w-full h-fit bg-white rounded-lg shadow-lg">
             <h2 className="text-lg font-semibold text-black">
                 Edição de Avaliação
             </h2>

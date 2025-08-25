@@ -27,6 +27,6 @@ export default {
 
     },
     plugins: [],
-    important: true, // por causa do bootstrap
+    // important: true, // por causa do bootstrap
 }
 
