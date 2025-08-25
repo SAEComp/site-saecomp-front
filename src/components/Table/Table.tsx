@@ -14,7 +14,7 @@ function Table({ tableHeaders, tableData }: TableProps) {
                             {tableHeaders.map(h => (
                                 <th
                                     key={h}
-                                    className="px-4 py-2 text-center font-bold text-gray-700 border-b"
+                                    className="px-4 py-2 text-center font-bold text-gray-700 border-b select-none"
                                 >
                                     {h}
                                 </th>
