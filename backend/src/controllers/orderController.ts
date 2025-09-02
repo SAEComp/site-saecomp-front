@@ -123,8 +123,8 @@ export const createOrder = async (req: Request, res: Response) => {
       customerCourse,
       items: validatedItems,
       totalAmount,
-      status: 'pending' as const,
-      paymentStatus: 'pending' as const,
+      status: 'pendente' as const,
+      paymentStatus: 'pendente' as const,
       notes
     };
 
@@ -155,7 +155,7 @@ export const updateOrderStatus = async (req: Request, res: Response) => {
     const { id } = req.params;
     const { status } = req.body;
 
-    if (!['pending', 'confirmed', 'preparing', 'ready', 'delivered', 'cancelled'].includes(status)) {
+    if (!['pendente', 'concluído', 'cancelado'].includes(status)) {
       return res.status(400).json({
         success: false,
         message: 'Status inválido'
@@ -199,7 +199,7 @@ export const cancelOrder = async (req: Request, res: Response) => {
       });
     }
 
-    if (order.status === 'delivered') {
+    if (order.status === 'concluído') {
       return res.status(400).json({
         success: false,
         message: 'Não é possível cancelar um pedido já entregue'
@@ -208,8 +208,8 @@ export const cancelOrder = async (req: Request, res: Response) => {
 
     // Update order status
     await Order.findByIdAndUpdate(id, { 
-      status: 'cancelled',
-      paymentStatus: 'cancelled'
+      status: 'cancelado',
+      paymentStatus: 'cancelado'
     });
 
     // Restore product stock

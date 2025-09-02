@@ -228,7 +228,7 @@ export const getAdminStats = async (): Promise<ApiResponse<{
   const orders = ordersResponse.data || [];
   
   const completedOrders = orders.filter(order => 
-    order.status === 'delivered' || order.paymentStatus === 'completed'
+    order.status === 'concluído' || order.paymentStatus === 'completo'
   );
   
   const totalRevenue = completedOrders.reduce((sum, order) => sum + order.totalAmount, 0);
@@ -275,7 +275,7 @@ export const getAdminStats = async (): Promise<ApiResponse<{
       totalOrders: orders.length,
       totalRevenue,
       completedOrders: completedOrders.length,
-      pendingOrders: orders.filter(order => order.status === 'pending').length,
+      pendingOrders: orders.filter(order => order.status === 'pendente').length,
       totalProductsInStock,
       totalItemsInStock,
       topProducts,

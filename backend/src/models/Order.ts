@@ -13,8 +13,8 @@ export interface IOrder {
   customerCourse?: string;
   items: IOrderItem[];
   totalAmount: number;
-  status: 'pending' | 'confirmed' | 'preparing' | 'ready' | 'delivered' | 'cancelled';
-  paymentStatus: 'pending' | 'completed' | 'failed' | 'cancelled';
+  status: 'pendente' | 'concluído' | 'cancelado';
+  paymentStatus: 'pendente' | 'completo' | 'falhado' | 'cancelado';
   paymentMethod?: 'pix';
   paymentId?: string;
   qrCodeData?: string;
@@ -90,7 +90,7 @@ export class Order {
   static async updateStatus(id: string, status: IOrder['status']) {
     const updates: Partial<IOrder> = { status };
     
-    if (status === 'confirmed') {
+    if (status === 'concluído') {
       updates.confirmedAt = new Date().toISOString();
     }
     

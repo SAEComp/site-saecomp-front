@@ -12,7 +12,7 @@
       }
     ],
     "totalAmount": 7,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749055061110",
     "createdAt": "2025-06-04T16:37:41.110Z",
@@ -30,7 +30,7 @@
       }
     ],
     "totalAmount": 4,
-    "status": "confirmed",
+    "status": "concluído",
     "paymentStatus": "completed",
     "_id": "1749055080889",
     "createdAt": "2025-06-04T16:38:00.889Z",
@@ -47,7 +47,7 @@
       }
     ],
     "totalAmount": 7,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749312628081",
     "createdAt": "2025-06-07T16:10:28.081Z",
@@ -64,7 +64,7 @@
       }
     ],
     "totalAmount": 7,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749312643901",
     "createdAt": "2025-06-07T16:10:43.901Z",
@@ -83,7 +83,7 @@
       }
     ],
     "totalAmount": 3.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749312669479",
     "createdAt": "2025-06-07T16:11:09.479Z",
@@ -100,7 +100,7 @@
       }
     ],
     "totalAmount": 3.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749312690426",
     "createdAt": "2025-06-07T16:11:30.426Z",
@@ -119,7 +119,7 @@
       }
     ],
     "totalAmount": 8,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749312698214",
     "createdAt": "2025-06-07T16:11:38.214Z",
@@ -137,7 +137,7 @@
       }
     ],
     "totalAmount": 3.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749312818022",
     "createdAt": "2025-06-07T16:13:38.022Z",
@@ -155,7 +155,7 @@
       }
     ],
     "totalAmount": 4,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749312818205",
     "createdAt": "2025-06-07T16:13:38.205Z",
@@ -174,7 +174,7 @@
       }
     ],
     "totalAmount": 7,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749312818329",
     "createdAt": "2025-06-07T16:13:38.329Z",
@@ -191,7 +191,7 @@
       }
     ],
     "totalAmount": 3.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749312826236",
     "createdAt": "2025-06-07T16:13:46.236Z",
@@ -208,7 +208,7 @@
       }
     ],
     "totalAmount": 3.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749312834228",
     "createdAt": "2025-06-07T16:13:54.228Z",
@@ -227,7 +227,7 @@
       }
     ],
     "totalAmount": 8,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749332479459",
     "createdAt": "2025-06-07T21:41:19.459Z",
@@ -246,7 +246,7 @@
       }
     ],
     "totalAmount": 8,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749332485199",
     "createdAt": "2025-06-07T21:41:25.199Z",
@@ -263,7 +263,7 @@
       }
     ],
     "totalAmount": 4,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749332500027",
     "createdAt": "2025-06-07T21:41:40.027Z",
@@ -280,7 +280,7 @@
       }
     ],
     "totalAmount": 4,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749332504371",
     "createdAt": "2025-06-07T21:41:44.371Z",
@@ -297,7 +297,7 @@
       }
     ],
     "totalAmount": 4,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749332510338",
     "createdAt": "2025-06-07T21:41:50.338Z",
@@ -314,7 +314,7 @@
       }
     ],
     "totalAmount": 8,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749332541639",
     "createdAt": "2025-06-07T21:42:21.639Z",
@@ -331,7 +331,7 @@
       }
     ],
     "totalAmount": 8,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749332546611",
     "createdAt": "2025-06-07T21:42:26.611Z",
@@ -348,7 +348,7 @@
       }
     ],
     "totalAmount": 4,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749334360863",
     "createdAt": "2025-06-07T22:12:40.863Z",
@@ -367,7 +367,7 @@
       }
     ],
     "totalAmount": 3.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749334531707",
     "createdAt": "2025-06-07T22:15:31.707Z",
@@ -385,7 +385,7 @@
       }
     ],
     "totalAmount": 3.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749334557173",
     "createdAt": "2025-06-07T22:15:57.173Z",
@@ -403,7 +403,7 @@
       }
     ],
     "totalAmount": 3.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749334571534",
     "createdAt": "2025-06-07T22:16:11.534Z",
@@ -422,7 +422,7 @@
       }
     ],
     "totalAmount": 7,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749334644062",
     "createdAt": "2025-06-07T22:17:24.062Z",
@@ -440,7 +440,7 @@
       }
     ],
     "totalAmount": 3.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749334664496",
     "createdAt": "2025-06-07T22:17:44.496Z",
@@ -458,7 +458,7 @@
       }
     ],
     "totalAmount": 15,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749334767190",
     "createdAt": "2025-06-07T22:19:27.190Z",
@@ -478,7 +478,7 @@
       }
     ],
     "totalAmount": 3.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749335094943",
     "createdAt": "2025-06-07T22:24:54.943Z",
@@ -498,7 +498,7 @@
       }
     ],
     "totalAmount": 3.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749335230692",
     "createdAt": "2025-06-07T22:27:10.692Z",
@@ -516,7 +516,7 @@
       }
     ],
     "totalAmount": 3,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749335343468",
     "createdAt": "2025-06-07T22:29:03.468Z",
@@ -536,7 +536,7 @@
       }
     ],
     "totalAmount": 3.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749335395187",
     "createdAt": "2025-06-07T22:29:55.187Z",
@@ -555,7 +555,7 @@
       }
     ],
     "totalAmount": 3.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749335418362",
     "createdAt": "2025-06-07T22:30:18.362Z",
@@ -573,7 +573,7 @@
       }
     ],
     "totalAmount": 3.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749336779782",
     "createdAt": "2025-06-07T22:52:59.782Z",
@@ -593,7 +593,7 @@
       }
     ],
     "totalAmount": 3.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "notes": "Test order for PIX checkout",
     "_id": "1749337222818",
@@ -621,7 +621,7 @@
       }
     ],
     "totalAmount": 9,
-    "status": "delivered",
+    "status": "concluído",
     "paymentStatus": "pending",
     "_id": "1749337356398",
     "createdAt": "2025-06-07T23:02:36.398Z",
@@ -639,7 +639,7 @@
       }
     ],
     "totalAmount": 9,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749337435162",
     "createdAt": "2025-06-07T23:03:55.162Z",
@@ -657,7 +657,7 @@
       }
     ],
     "totalAmount": 6,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749340132400",
     "createdAt": "2025-06-07T23:48:52.400Z",
@@ -675,7 +675,7 @@
       }
     ],
     "totalAmount": 5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749340879113",
     "createdAt": "2025-06-08T00:01:19.113Z",
@@ -693,7 +693,7 @@
       }
     ],
     "totalAmount": 3,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749340917523",
     "createdAt": "2025-06-08T00:01:57.523Z",
@@ -711,7 +711,7 @@
       }
     ],
     "totalAmount": 3.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749352864314",
     "createdAt": "2025-06-08T03:21:04.314Z",
@@ -730,7 +730,7 @@
       }
     ],
     "totalAmount": 3.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749352874063",
     "createdAt": "2025-06-08T03:21:14.063Z",
@@ -749,7 +749,7 @@
       }
     ],
     "totalAmount": 3.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749352880659",
     "createdAt": "2025-06-08T03:21:20.659Z",
@@ -766,7 +766,7 @@
       }
     ],
     "totalAmount": 3.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749352901005",
     "createdAt": "2025-06-08T03:21:41.005Z",
@@ -783,7 +783,7 @@
       }
     ],
     "totalAmount": 3,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749352921921",
     "createdAt": "2025-06-08T03:22:01.921Z",
@@ -801,7 +801,7 @@
       }
     ],
     "totalAmount": 3.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749353100075",
     "createdAt": "2025-06-08T03:25:00.075Z",
@@ -820,7 +820,7 @@
       }
     ],
     "totalAmount": 6,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "notes": "Test order with stock available",
     "_id": "1749354164224",
@@ -847,7 +847,7 @@
       }
     ],
     "totalAmount": 11,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "notes": "Pedido completo com múltiplos itens",
     "_id": "1749354199654",
@@ -867,7 +867,7 @@
       }
     ],
     "totalAmount": 3,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "notes": "Teste final",
     "_id": "1749354239469",
@@ -894,7 +894,7 @@
       }
     ],
     "totalAmount": 13,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "notes": "Pedido de teste final completo",
     "_id": "1749354398910",
@@ -914,7 +914,7 @@
       }
     ],
     "totalAmount": 3,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749354532522",
     "createdAt": "2025-06-08T03:48:52.522Z",
@@ -932,7 +932,7 @@
       }
     ],
     "totalAmount": 3,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749354573668",
     "createdAt": "2025-06-08T03:49:33.668Z",
@@ -952,7 +952,7 @@
       }
     ],
     "totalAmount": 3,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749354855423",
     "createdAt": "2025-06-08T03:54:15.423Z",
@@ -972,7 +972,7 @@
       }
     ],
     "totalAmount": 12,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749355267994",
     "createdAt": "2025-06-08T04:01:07.994Z",
@@ -990,7 +990,7 @@
       }
     ],
     "totalAmount": 3,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749355371667",
     "createdAt": "2025-06-08T04:02:51.667Z",
@@ -1015,7 +1015,7 @@
       }
     ],
     "totalAmount": 21,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749395409289",
     "createdAt": "2025-06-08T15:10:09.289Z",
@@ -1033,7 +1033,7 @@
       }
     ],
     "totalAmount": 3,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749395589906",
     "createdAt": "2025-06-08T15:13:09.906Z",
@@ -1051,7 +1051,7 @@
       }
     ],
     "totalAmount": 3,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749395728641",
     "createdAt": "2025-06-08T15:15:28.641Z",
@@ -1069,7 +1069,7 @@
       }
     ],
     "totalAmount": 12,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749396198921",
     "createdAt": "2025-06-08T15:23:18.921Z",
@@ -1087,7 +1087,7 @@
       }
     ],
     "totalAmount": 6,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749396429957",
     "createdAt": "2025-06-08T15:27:09.957Z",
@@ -1105,7 +1105,7 @@
       }
     ],
     "totalAmount": 3,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749396601754",
     "createdAt": "2025-06-08T15:30:01.754Z",
@@ -1123,7 +1123,7 @@
       }
     ],
     "totalAmount": 3,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749398753579",
     "createdAt": "2025-06-08T16:05:53.579Z",
@@ -1141,7 +1141,7 @@
       }
     ],
     "totalAmount": 3,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749399180109",
     "createdAt": "2025-06-08T16:13:00.109Z",
@@ -1159,7 +1159,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749404636232",
     "createdAt": "2025-06-08T17:43:56.232Z",
@@ -1177,7 +1177,7 @@
       }
     ],
     "totalAmount": 3.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749404991118",
     "createdAt": "2025-06-08T17:49:51.118Z",
@@ -1196,7 +1196,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749408615102",
     "createdAt": "2025-06-08T18:50:15.102Z",
@@ -1221,7 +1221,7 @@
       }
     ],
     "totalAmount": 7,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749410342407",
     "createdAt": "2025-06-08T19:19:02.407Z",
@@ -1241,7 +1241,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749411275049",
     "createdAt": "2025-06-08T19:34:35.049Z",
@@ -1260,7 +1260,7 @@
       }
     ],
     "totalAmount": 4,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749411944771",
     "createdAt": "2025-06-08T19:45:44.771Z",
@@ -1278,7 +1278,7 @@
       }
     ],
     "totalAmount": 4,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749412010127",
     "createdAt": "2025-06-08T19:46:50.127Z",
@@ -1304,7 +1304,7 @@
       }
     ],
     "totalAmount": 8.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749423965309",
     "createdAt": "2025-06-08T23:06:05.309Z",
@@ -1330,7 +1330,7 @@
       }
     ],
     "totalAmount": 12,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749424135772",
     "createdAt": "2025-06-08T23:08:55.772Z",
@@ -1349,7 +1349,7 @@
       }
     ],
     "totalAmount": 4,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749426487424",
     "createdAt": "2025-06-08T23:48:07.424Z",
@@ -1367,7 +1367,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1749426596658",
     "createdAt": "2025-06-08T23:49:56.658Z",
@@ -1385,7 +1385,7 @@
       }
     ],
     "totalAmount": 2.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752710805911",
     "createdAt": "2025-07-17T00:06:45.911Z",
@@ -1403,7 +1403,7 @@
       }
     ],
     "totalAmount": 9,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752811011094",
     "createdAt": "2025-07-18T03:56:51.094Z",
@@ -1421,7 +1421,7 @@
       }
     ],
     "totalAmount": 4,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752811024892",
     "createdAt": "2025-07-18T03:57:04.892Z",
@@ -1440,7 +1440,7 @@
       }
     ],
     "totalAmount": 4,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752812405488",
     "createdAt": "2025-07-18T04:20:05.488Z",
@@ -1458,7 +1458,7 @@
       }
     ],
     "totalAmount": 4,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752812801007",
     "createdAt": "2025-07-18T04:26:41.007Z",
@@ -1476,7 +1476,7 @@
       }
     ],
     "totalAmount": 9,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752813791935",
     "createdAt": "2025-07-18T04:43:11.935Z",
@@ -1494,7 +1494,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752813794474",
     "createdAt": "2025-07-18T04:43:14.475Z",
@@ -1512,7 +1512,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752814003126",
     "createdAt": "2025-07-18T04:46:43.126Z",
@@ -1531,7 +1531,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752814090382",
     "createdAt": "2025-07-18T04:48:10.382Z",
@@ -1548,7 +1548,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752814552226",
     "createdAt": "2025-07-18T04:55:52.226Z",
@@ -1566,7 +1566,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752814641305",
     "createdAt": "2025-07-18T04:57:21.305Z",
@@ -1584,7 +1584,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752814877947",
     "createdAt": "2025-07-18T05:01:17.947Z",
@@ -1602,7 +1602,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "delivered",
+    "status": "concluído",
     "paymentStatus": "pending",
     "_id": "1752815462701",
     "createdAt": "2025-07-18T05:11:02.701Z",
@@ -1620,7 +1620,7 @@
       }
     ],
     "totalAmount": 8,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752850705966",
     "createdAt": "2025-07-18T14:58:25.966Z",
@@ -1637,7 +1637,7 @@
       }
     ],
     "totalAmount": 4,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752850826562",
     "createdAt": "2025-07-18T15:00:26.562Z",
@@ -1654,7 +1654,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752850907135",
     "createdAt": "2025-07-18T15:01:47.135Z",
@@ -1671,7 +1671,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752851115274",
     "createdAt": "2025-07-18T15:05:15.274Z",
@@ -1690,7 +1690,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752851338774",
     "createdAt": "2025-07-18T15:08:58.774Z",
@@ -1710,7 +1710,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752851606326",
     "createdAt": "2025-07-18T15:13:26.326Z",
@@ -1729,7 +1729,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752851615787",
     "createdAt": "2025-07-18T15:13:35.787Z",
@@ -1748,7 +1748,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752851654622",
     "createdAt": "2025-07-18T15:14:14.622Z",
@@ -1765,7 +1765,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752855056654",
     "createdAt": "2025-07-18T16:10:56.654Z",
@@ -1782,7 +1782,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752855102861",
     "createdAt": "2025-07-18T16:11:42.861Z",
@@ -1799,7 +1799,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752855637257",
     "createdAt": "2025-07-18T16:20:37.257Z",
@@ -1818,7 +1818,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752855645845",
     "createdAt": "2025-07-18T16:20:45.845Z",
@@ -1835,7 +1835,7 @@
       }
     ],
     "totalAmount": 9,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752855837416",
     "createdAt": "2025-07-18T16:23:57.416Z",
@@ -1854,7 +1854,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752855965972",
     "createdAt": "2025-07-18T16:26:05.972Z",
@@ -1872,7 +1872,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752856092088",
     "createdAt": "2025-07-18T16:28:12.088Z",
@@ -1890,7 +1890,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752856268316",
     "createdAt": "2025-07-18T16:31:08.316Z",
@@ -1908,7 +1908,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752856316577",
     "createdAt": "2025-07-18T16:31:56.577Z",
@@ -1926,7 +1926,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752856366105",
     "createdAt": "2025-07-18T16:32:46.105Z",
@@ -1944,7 +1944,7 @@
       }
     ],
     "totalAmount": 9,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752856425597",
     "createdAt": "2025-07-18T16:33:45.597Z",
@@ -1962,7 +1962,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752856537405",
     "createdAt": "2025-07-18T16:35:37.405Z",
@@ -1981,7 +1981,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752856877896",
     "createdAt": "2025-07-18T16:41:17.896Z",
@@ -1999,7 +1999,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752856981973",
     "createdAt": "2025-07-18T16:43:01.973Z",
@@ -2017,7 +2017,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752857631368",
     "createdAt": "2025-07-18T16:53:51.368Z",
@@ -2035,7 +2035,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752900742962",
     "createdAt": "2025-07-19T04:52:22.962Z",
@@ -2053,7 +2053,7 @@
       }
     ],
     "totalAmount": 4,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752903350767",
     "createdAt": "2025-07-19T05:35:50.767Z",
@@ -2071,7 +2071,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752903478621",
     "createdAt": "2025-07-19T05:37:58.621Z",
@@ -2089,7 +2089,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752903534831",
     "createdAt": "2025-07-19T05:38:54.831Z",
@@ -2107,7 +2107,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752903544006",
     "createdAt": "2025-07-19T05:39:04.006Z",
@@ -2125,7 +2125,7 @@
       }
     ],
     "totalAmount": 4,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752937936557",
     "createdAt": "2025-07-19T15:12:16.557Z",
@@ -2143,7 +2143,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752942020245",
     "createdAt": "2025-07-19T16:20:20.245Z",
@@ -2161,7 +2161,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752942104850",
     "createdAt": "2025-07-19T16:21:44.850Z",
@@ -2179,7 +2179,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752942364443",
     "createdAt": "2025-07-19T16:26:04.443Z",
@@ -2197,7 +2197,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752942415394",
     "createdAt": "2025-07-19T16:26:55.394Z",
@@ -2215,7 +2215,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752942533209",
     "createdAt": "2025-07-19T16:28:53.209Z",
@@ -2233,7 +2233,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752942609117",
     "createdAt": "2025-07-19T16:30:09.117Z",
@@ -2251,7 +2251,7 @@
       }
     ],
     "totalAmount": 3,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752943087382",
     "createdAt": "2025-07-19T16:38:07.382Z",
@@ -2269,7 +2269,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752943214569",
     "createdAt": "2025-07-19T16:40:14.569Z",
@@ -2287,7 +2287,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752943250689",
     "createdAt": "2025-07-19T16:40:50.689Z",
@@ -2305,7 +2305,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752943369547",
     "createdAt": "2025-07-19T16:42:49.547Z",
@@ -2323,7 +2323,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "delivered",
+    "status": "concluído",
     "paymentStatus": "pending",
     "_id": "1752943710935",
     "createdAt": "2025-07-19T16:48:30.935Z",
@@ -2341,7 +2341,7 @@
       }
     ],
     "totalAmount": 3,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752972422463",
     "createdAt": "2025-07-20T00:47:02.463Z",
@@ -2366,7 +2366,7 @@
       }
     ],
     "totalAmount": 10,
-    "status": "delivered",
+    "status": "concluído",
     "paymentStatus": "pending",
     "_id": "1752972954719",
     "createdAt": "2025-07-20T00:55:54.719Z",
@@ -2386,7 +2386,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752972986308",
     "createdAt": "2025-07-20T00:56:26.308Z",
@@ -2427,7 +2427,7 @@
       }
     ],
     "totalAmount": 19.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752973630851",
     "createdAt": "2025-07-20T01:07:10.851Z",
@@ -2446,7 +2446,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pending",
     "_id": "1752973952427",
     "createdAt": "2025-07-20T01:12:32.427Z",

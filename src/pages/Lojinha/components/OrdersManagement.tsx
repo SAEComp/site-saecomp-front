@@ -9,9 +9,25 @@ const OrdersManagement: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
     const [statusFilter, setStatusFilter] = useState<string>('all');
+    const [currentPage, setCurrentPage] = useState(1);
+    const ORDERS_PER_PAGE = 40;
+    
+    // Estados para o modal de filtros
+    const [showFilterModal, setShowFilterModal] = useState(false);
+    const [filters, setFilters] = useState({
+        customerName: '',
+        items: [] as string[],
+        minTotal: '',
+        maxTotal: '',
+        startDate: '',
+        endDate: '',
+        status: 'all'
+    });
+    const [itemInputs, setItemInputs] = useState(['']); // Array de inputs para itens
 
     useEffect(() => {
         loadOrders();
+        setCurrentPage(1); // Reset para primeira página quando filtro muda
     }, [statusFilter]);
 
     const loadOrders = async () => {
@@ -66,6 +82,106 @@ const OrdersManagement: React.FC = () => {
         });
     };
 
+    // Lógica de paginação
+    const totalPages = Math.ceil(orders.length / ORDERS_PER_PAGE);
+    const startIndex = (currentPage - 1) * ORDERS_PER_PAGE;
+    const endIndex = startIndex + ORDERS_PER_PAGE;
+    const currentOrders = orders.slice(startIndex, endIndex);
+
+    const goToPage = (page: number) => {
+        setCurrentPage(page);
+    };
+
+    const goToPreviousPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
+
+    const goToNextPage = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
+
+    // Funções para gerenciar filtros
+    const addNewItemInput = () => {
+        setItemInputs(prev => [...prev, '']);
+    };
+
+    const updateItemInput = (index: number, value: string) => {
+        const newInputs = [...itemInputs];
+        newInputs[index] = value;
+        setItemInputs(newInputs);
+        
+        // Atualizar a lista de itens removendo vazios
+        const validItems = newInputs.filter(item => item.trim() !== '');
+        setFilters(prev => ({ ...prev, items: validItems }));
+    };
+
+    const removeItemInput = (index: number) => {
+        if (itemInputs.length > 1) {
+            const newInputs = itemInputs.filter((_, i) => i !== index);
+            setItemInputs(newInputs);
+            
+            // Atualizar a lista de itens
+            const validItems = newInputs.filter(item => item.trim() !== '');
+            setFilters(prev => ({ ...prev, items: validItems }));
+        }
+    };
+
+    // Função para formatar valores monetários
+    const formatCurrencyInput = (value: string) => {
+        // Remove tudo que não é número
+        const numbers = value.replace(/\D/g, '');
+        
+        // Se vazio, retorna vazio
+        if (!numbers) return '';
+        
+        // Converte para número e divide por 100 para ter centavos
+        const amount = parseFloat(numbers) / 100;
+        
+        // Formata como moeda brasileira
+        return amount.toLocaleString('pt-BR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    };
+
+    const handleMinTotalChange = (value: string) => {
+        const formatted = formatCurrencyInput(value);
+        setFilters(prev => ({ ...prev, minTotal: formatted }));
+    };
+
+    const handleMaxTotalChange = (value: string) => {
+        const formatted = formatCurrencyInput(value);
+        setFilters(prev => ({ ...prev, maxTotal: formatted }));
+    };
+
+    const applyFilters = () => {
+        setStatusFilter(filters.status);
+        setCurrentPage(1);
+        setShowFilterModal(false);
+        // Aqui você pode implementar a lógica de filtro personalizada
+        // Por enquanto, vamos manter a funcionalidade básica de status
+    };
+
+    const clearFilters = () => {
+        setFilters({
+            customerName: '',
+            items: [],
+            minTotal: '',
+            maxTotal: '',
+            startDate: '',
+            endDate: '',
+            status: 'all'
+        });
+        setItemInputs(['']); // Reset para uma caixa vazia
+        setStatusFilter('all');
+        setCurrentPage(1);
+        setShowFilterModal(false);
+    };
+
     if (loading) {
         return (
             <div className="flex items-center justify-center py-12">
@@ -112,15 +228,51 @@ const OrdersManagement: React.FC = () => {
                     </p>
                 </div>
                 
-                <select
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                    className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#03B04B] focus:border-[#03B04B]"
-                >
-                    <option value="all">Todos os status</option>
-                    <option value="pending">Pendente</option>
-                    <option value="delivered">Concluído</option>
-                </select>
+                <div className="flex items-center space-x-4">
+                    {/* Paginação no topo */}
+                    {totalPages > 1 && (
+                        <div className="flex items-center space-x-2">
+                            <button
+                                onClick={goToPreviousPage}
+                                disabled={currentPage === 1}
+                                className={`p-2 rounded-md ${
+                                    currentPage === 1
+                                        ? 'text-gray-300 cursor-not-allowed'
+                                        : 'text-gray-600 hover:bg-gray-100'
+                                }`}
+                            >
+                                <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clipRule="evenodd" />
+                                </svg>
+                            </button>
+                            
+                            <span className="text-sm text-gray-600">
+                                {currentPage} / {totalPages}
+                            </span>
+                            
+                            <button
+                                onClick={goToNextPage}
+                                disabled={currentPage === totalPages}
+                                className={`p-2 rounded-md ${
+                                    currentPage === totalPages
+                                        ? 'text-gray-300 cursor-not-allowed'
+                                        : 'text-gray-600 hover:bg-gray-100'
+                                }`}
+                            >
+                                <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clipRule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+                    )}
+                    
+                    <button
+                        onClick={() => setShowFilterModal(true)}
+                        className="bg-[#03B04B] hover:bg-green-600 text-white border border-green-500 px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2 shadow-sm"
+                    >
+                        <span>Adicionar filtros</span>
+                    </button>
+                </div>
             </div>
 
             {/* Lista de pedidos */}
@@ -156,7 +308,7 @@ const OrdersManagement: React.FC = () => {
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white divide-y divide-gray-200">
-                                    {orders.map((order) => (
+                                    {currentOrders.map((order) => (
                                         <tr key={order._id}>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="text-sm font-mono font-medium text-gray-900">
@@ -184,16 +336,16 @@ const OrdersManagement: React.FC = () => {
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <select
-                                                    value={order.status === 'delivered' ? 'delivered' : 'pending'}
+                                                    value={order.status === 'concluído' ? 'concluído' : 'pendente'}
                                                     onChange={(e) => handleStatusChange(order._id, e.target.value)}
                                                     className={`text-xs font-semibold rounded-full px-2 py-1 border-0 focus:ring-1 focus:ring-[#03B04B] ${
-                                                        order.status === 'delivered' 
+                                                        order.status === 'concluído' 
                                                             ? 'bg-green-100 text-green-800'
                                                             : 'bg-yellow-100 text-yellow-800'
                                                     }`}
                                                 >
-                                                    <option value="pending">Pendente</option>
-                                                    <option value="delivered">Concluído</option>
+                                                    <option value="pendente">Pendente</option>
+                                                    <option value="concluído">Concluído</option>
                                                 </select>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -215,7 +367,7 @@ const OrdersManagement: React.FC = () => {
 
                         {/* Versão mobile */}
                         <div className="md:hidden">
-                            {orders.map((order) => (
+                            {currentOrders.map((order) => (
                                 <div key={order._id} className="p-4 border-b border-gray-200 last:border-b-0">
                                     <div className="flex items-center justify-between mb-2">
                                         <span className="text-sm font-mono text-gray-900">#{order._id.slice(-8)}</span>
@@ -237,13 +389,13 @@ const OrdersManagement: React.FC = () => {
                                             value={order.status === 'delivered' ? 'delivered' : 'pending'}
                                             onChange={(e) => handleStatusChange(order._id, e.target.value)}
                                             className={`text-xs font-semibold rounded-full px-2 py-1 border-0 focus:ring-1 focus:ring-[#03B04B] ${
-                                                order.status === 'delivered' 
+                                                order.status === 'concluído' 
                                                     ? 'bg-green-100 text-green-800'
                                                     : 'bg-yellow-100 text-yellow-800'
                                             }`}
                                         >
-                                            <option value="pending">Pendente</option>
-                                            <option value="delivered">Concluído</option>
+                                            <option value="pendente">Pendente</option>
+                                            <option value="concluído">Concluído</option>
                                         </select>
                                         <button
                                             onClick={() => setSelectedOrder(order)}
@@ -262,6 +414,245 @@ const OrdersManagement: React.FC = () => {
                     </div>
                 )}
             </div>
+
+            {/* Componente de Paginação */}
+            {totalPages > 1 && (
+                <div className="flex justify-center">
+                    <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+                        <button
+                            onClick={goToPreviousPage}
+                            disabled={currentPage === 1}
+                            className={`relative inline-flex items-center rounded-l-md px-2 py-2 ${
+                                currentPage === 1
+                                    ? 'text-gray-300 cursor-not-allowed'
+                                    : 'text-gray-400 hover:bg-gray-50'
+                            } ring-1 ring-inset ring-gray-300 focus:z-20 focus:outline-offset-0`}
+                        >
+                            <span className="sr-only">Anterior</span>
+                            <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fillRule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clipRule="evenodd" />
+                            </svg>
+                        </button>
+
+                        {/* Números das páginas */}
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                            // Mostrar no máximo 7 páginas: primeira, última, atual e algumas ao redor
+                            const showPage = page === 1 || page === totalPages || 
+                                           (page >= currentPage - 2 && page <= currentPage + 2);
+                            
+                            if (!showPage) {
+                                // Mostrar "..." apenas uma vez entre grupos
+                                if (page === currentPage - 3 || page === currentPage + 3) {
+                                    return (
+                                        <span key={page} className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300">
+                                            ...
+                                        </span>
+                                    );
+                                }
+                                return null;
+                            }
+
+                            return (
+                                <button
+                                    key={page}
+                                    onClick={() => goToPage(page)}
+                                    className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${
+                                        page === currentPage
+                                            ? 'z-10 bg-[#03B04B] text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#03B04B]'
+                                            : 'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0'
+                                    }`}
+                                >
+                                    {page}
+                                </button>
+                            );
+                        })}
+
+                        <button
+                            onClick={goToNextPage}
+                            disabled={currentPage === totalPages}
+                            className={`relative inline-flex items-center rounded-r-md px-2 py-2 ${
+                                currentPage === totalPages
+                                    ? 'text-gray-300 cursor-not-allowed'
+                                    : 'text-gray-400 hover:bg-gray-50'
+                            } ring-1 ring-inset ring-gray-300 focus:z-20 focus:outline-offset-0`}
+                        >
+                            <span className="sr-only">Próxima</span>
+                            <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fillRule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clipRule="evenodd" />
+                            </svg>
+                        </button>
+                    </nav>
+                </div>
+            )}
+
+            {/* Modal de Filtros */}
+            {showFilterModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+                    <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                        <div className="p-6">
+                            <div className="flex items-center justify-between mb-6">
+                                <h2 className="text-xl font-semibold text-gray-900">Filtros Avançados</h2>
+                                <button
+                                    onClick={() => setShowFilterModal(false)}
+                                    className="text-gray-400 hover:text-gray-600 transition-colors"
+                                >
+                                    <span className="text-2xl">×</span>
+                                </button>
+                            </div>
+
+                            <div className="space-y-6">
+                                {/* Nome do Cliente */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Nome do Cliente
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={filters.customerName}
+                                        onChange={(e) => setFilters(prev => ({ ...prev, customerName: e.target.value }))}
+                                        placeholder="Digite o nome do cliente"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#03B04B] focus:border-[#03B04B]"
+                                    />
+                                </div>
+
+                                {/* Status */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Status do Pedido
+                                    </label>
+                                    <select
+                                        value={filters.status}
+                                        onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#03B04B] focus:border-[#03B04B] bg-white"
+                                    >
+                                        <option value="all">Todos os status</option>
+                                        <option value="pendente">Pendente</option>
+                                        <option value="concluído">Concluído</option>
+                                    </select>
+                                </div>
+
+                                {/* Itens */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-3">
+                                        Produtos no Pedido
+                                    </label>
+                                    <div className="space-y-3">
+                                        <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                                            {itemInputs.map((item, index) => (
+                                                <div key={index} className="flex items-center space-x-3">
+                                                    <div className="flex-1">
+                                                        <input
+                                                            type="text"
+                                                            value={item}
+                                                            onChange={(e) => updateItemInput(index, e.target.value)}
+                                                            placeholder={`Produto ${index + 1}`}
+                                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#03B04B] focus:border-[#03B04B] bg-white text-sm"
+                                                        />
+                                                    </div>
+                                                    {itemInputs.length > 1 && (
+                                                        <button
+                                                            onClick={() => removeItemInput(index)}
+                                                            className="w-8 h-8 bg-red-100 text-red-600 rounded-full hover:bg-red-200 transition-colors flex items-center justify-center text-sm font-medium"
+                                                            title="Remover produto"
+                                                        >
+                                                            ×
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                        
+                                        <div className="flex justify-start">
+                                            <button
+                                                onClick={addNewItemInput}
+                                                className="inline-flex items-center px-4 py-2 bg-gray-200 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-gray-400 transition-colors"
+                                            >
+                                                Adicionar Produto 
+                                                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Valor Total */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Valor Total
+                                    </label>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <input
+                                            type="text"
+                                            value={filters.minTotal}
+                                            onChange={(e) => handleMinTotalChange(e.target.value)}
+                                            placeholder="Mínimo"
+                                            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#03B04B] focus:border-[#03B04B]"
+                                        />
+                                        <input
+                                            type="text"
+                                            value={filters.maxTotal}
+                                            onChange={(e) => handleMaxTotalChange(e.target.value)}
+                                            placeholder="Máximo"
+                                            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#03B04B] focus:border-[#03B04B]"
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Data */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Período
+                                    </label>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label className="block text-xs text-gray-500 mb-1">De</label>
+                                            <input
+                                                type="date"
+                                                value={filters.startDate}
+                                                onChange={(e) => setFilters(prev => ({ ...prev, startDate: e.target.value }))}
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#03B04B] focus:border-[#03B04B]"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs text-gray-500 mb-1">Até</label>
+                                            <input
+                                                type="date"
+                                                value={filters.endDate}
+                                                onChange={(e) => setFilters(prev => ({ ...prev, endDate: e.target.value }))}
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#03B04B] focus:border-[#03B04B]"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="flex justify-between pt-6 border-t border-gray-200 mt-6">
+                                <button
+                                    onClick={clearFilters}
+                                    className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+                                >
+                                    Limpar Filtros
+                                </button>
+                                <div className="flex space-x-3">
+                                    <button
+                                        onClick={() => setShowFilterModal(false)}
+                                        className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                                    >
+                                        Cancelar
+                                    </button>
+                                    <button
+                                        onClick={applyFilters}
+                                        className="px-4 py-2 bg-[#03B04B] text-white rounded-lg hover:bg-green-600 transition-colors"
+                                    >
+                                        Aplicar Filtros
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Modal de detalhes */}
             {selectedOrder && (

@@ -38,8 +38,8 @@ export interface Order {
   customerCourse?: string;
   items: OrderItem[];
   totalAmount: number;
-  status: 'pending' | 'confirmed' | 'preparing' | 'ready' | 'delivered' | 'cancelled';
-  paymentStatus: 'pending' | 'completed' | 'failed' | 'cancelled';
+  status: 'pendente' | 'concluído' | 'cancelado';
+  paymentStatus: 'pendente' | 'completo' | 'falhado' | 'cancelado';
   paymentMethod?: PaymentMethod;
   paymentId?: string;
   qrCodeData?: string;

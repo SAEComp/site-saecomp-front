@@ -76,7 +76,7 @@ export const generatePix = async (req: Request, res: Response) => {
     // Update order with payment info
     await Order.findByIdAndUpdate(orderId, {
       paymentId,
-      paymentStatus: 'pending'
+      paymentStatus: 'pendente'
     });
 
     const paymentData: PixPaymentResponse = {
