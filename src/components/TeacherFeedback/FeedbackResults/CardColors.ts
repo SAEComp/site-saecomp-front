@@ -1,5 +1,3 @@
-// src/utils/instituteTheme.ts
-
 // As constantes de cores são mantidas aqui, internas a este módulo.
 export const instituteColors = {
   EESC: "bg-yellow-500",
@@ -7,7 +5,7 @@ export const instituteColors = {
   IAU: "bg-red-700",
   IFSC: "bg-blue-400",
   IQSC: "bg-green-500",
-  DEFAULT: "bg-gray-600", // Alterado de black-400 para gray-600 para melhor visualização
+  DEFAULT: "bg-gray-600",
 };
 
 export const auxInstituteColors = {

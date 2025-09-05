@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import arrow from "../../../assets/svg/arrow.svg";
 import Card from "./Card";
 import Filter from "./Filter";
 import Spinner from "../../Spinner/Spinner";
@@ -8,7 +7,6 @@ import { evaluationService } from "../../../services/evaluation.service";
 import { Classes } from "../../../schemas/teacherEvaluation/output/evaluation.schema";
 import { GetPublicAnswersOut } from "../../../schemas/teacherEvaluation/output/answer.schema";
 import { getInstituteTheme } from "./CardColors";
-import { data } from "react-router";
 
 const ResultsContainer = () => {
   const [loadingTeachers, setLoadingTeachers] = useState<boolean>(false);
@@ -17,8 +15,7 @@ const ResultsContainer = () => {
   const [classes, setClasses] = useState<Classes[]>([]);
   const [answers, setAnswers] = useState<GetPublicAnswersOut>({
     isLastPage: false,
-    score: 0,
-    evaluations: [],
+    teacherGeneralInfo: [],
   });
   const [selectedEvaluation, setSelectedEvaluation] = useState<number | null>(
     null
@@ -54,10 +51,10 @@ const ResultsContainer = () => {
 
   return (
     <>
-      {showCard && (
+      {showCard && selectedEvaluation !== null && (
         <Card
-          evaluationScore={answers.score}
-          evaluationId={selectedEvaluation}
+          classInfo={answers.teacherGeneralInfo.find(turma => turma.classId === selectedEvaluation)}
+          classId={selectedEvaluation}
           setShowCard={setShowCard}
         />
       )}
@@ -68,33 +65,36 @@ const ResultsContainer = () => {
         }}>
         <Filter classes={classes} setAnswers={setAnswers} />
         <div className="flex flex-wrap mx-[1vw] sm:mx-[10vw] md:mx-[5vw] lg:mx-[5vw] xl:mx-[10vw] justify-center items-center">
-          {answers.evaluations.length ? (
-            answers.evaluations.map((evaluation) => {
-              let theme = getInstituteTheme(evaluation.courseName);
-              console.log(evaluation.score);
+          {answers.teacherGeneralInfo.length ? (
+            answers.teacherGeneralInfo.map((evaluation) => {
+              let theme = getInstituteTheme(evaluation.instituteCode);
               return (
                 <div
-                  key={evaluation.evaluationId}
-                  className={`h-[50vh] w-[85vw] sm:w-[60vw] md:w-[40vw] lg:w-[25vw] xl:w-[20vw] ${theme.bgColor} rounded-[30px] m-[10px] flex flex-col items-center justify-center gap-[5%] transform transition-transform duration-300 hover:-translate-y-2 cursor-pointer`}
-                  onClick={() => loadCard(evaluation.evaluationId)}>
+                  key={evaluation.classId}
+                  className={`h-[50vh] w-[80vw] sm:w-[60vw] md:w-[40vw] lg:w-[25vw] xl:w-[20vw] ${theme.bgColor} rounded-[30px] m-[10px] flex flex-col items-center justify-center gap-[5%] transform transition-transform duration-300 hover:-translate-y-2 cursor-pointer px-3 py-2`}
+                  onClick={() => loadCard(evaluation.classId)}>
                   <div className="w-[60%] aspect-square bg-[#d9d9d9] rounded-full overflow-hidden">
                     <img
                       className="w-full h-full object-cover"
-                      src={`${import.meta.env.VITE_FILES}/${
-                        evaluation.teacherId
-                      }.jpg`}
+                      src={`${import.meta.env.VITE_FILES}/${evaluation.teacherId
+                        }.jpg`}
                     />
                   </div>
 
-                  <p className="font-inter bg-[#d9d9d9] text-slate-700 rounded-[12px] px-[10px] py-[5px] font-medium">
+                  <p className="font-inter bg-[#d9d9d9] text-slate-700 rounded-[12px] px-[10px] py-[5px] font-medium text-sm">
                     {evaluation.teacherName}
                   </p>
-                  <p className="font-inter bg-[#d9d9d9] text-slate-700 text-center rounded-[12px] px-[10px] py-[5px] font-medium">
+                  <p className="font-inter bg-[#d9d9d9] text-slate-700 text-center rounded-[12px] px-[10px] py-[5px] font-medium text-sm">
                     {evaluation.courseCode} <br /> {evaluation.courseName}
                   </p>
-                  <p className="font-inter bg-[#d9d9d9] text-slate-700 rounded-[12px] px-[10px] py-[5px] font-medium">
-                    {evaluation.score}
+                  <p className="font-inter bg-[#d9d9d9] text-slate-700 rounded-[12px] px-[10px] py-[5px] font-medium text-sm">
+                    {evaluation.semesterCode}
                   </p>
+                  <p className="font-inter bg-[#d9d9d9] text-slate-700 rounded-[12px] px-[10px] py-[5px] font-medium text-sm">
+                    {evaluation.averageScore}
+                  </p>
+
+
                 </div>
               );
             })
