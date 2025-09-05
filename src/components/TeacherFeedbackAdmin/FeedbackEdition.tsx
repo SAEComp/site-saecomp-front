@@ -277,6 +277,7 @@ const FeedbackEdition = () => {
                     </div>
                 </div>
             )}
+            </div>
         </div>
     );
 };
