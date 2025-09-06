@@ -14,18 +14,6 @@ export const createOrderValidation = [
     .isInt({ min: 1 })
     .withMessage('Quantidade deve ser um número inteiro maior que 0'),
   
-  body('customerName')
-    .optional()
-    .trim()
-    .isLength({ min: 2, max: 100 })
-    .withMessage('Nome do cliente deve ter entre 2 e 100 caracteres'),
-  
-  body('customerCourse')
-    .optional()
-    .trim()
-    .isLength({ min: 2, max: 100 })
-    .withMessage('Curso deve ter entre 2 e 100 caracteres'),
-  
   body('paymentMethod')
     .optional()
     .equals('pix')

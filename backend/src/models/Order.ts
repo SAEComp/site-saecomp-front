@@ -9,8 +9,7 @@ export interface IOrderItem {
 
 export interface IOrder {
   _id: string;
-  customerName?: string;
-  customerCourse?: string;
+  customerName: string;
   items: IOrderItem[];
   totalAmount: number;
   status: 'pendente' | 'concluído' | 'cancelado';

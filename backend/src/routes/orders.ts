@@ -13,6 +13,7 @@ import {
   getOrdersValidation,
   getOrdersByStatusValidation
 } from '../validators/orderValidators';
+import { authenticateToken } from '../middleware/auth';
 
 const router = Router();
 
@@ -39,8 +40,8 @@ router.post('/test', (req, res) => {
   }
 });
 
-// POST /api/orders - Create new order (temporarily without validation)
-router.post('/', createOrder);
+// POST /api/orders - Create new order with authentication middleware
+router.post('/', authenticateToken, createOrder);
 
 // PUT /api/orders/:id/status - Update order status
 router.put('/:id/status', updateOrderStatusValidation, updateOrderStatus);

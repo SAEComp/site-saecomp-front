@@ -35,7 +35,6 @@ export interface OrderItem {
 export interface Order {
   _id: string;
   customerName?: string;
-  customerCourse?: string;
   items: OrderItem[];
   totalAmount: number;
   status: 'pendente' | 'concluído' | 'cancelado';

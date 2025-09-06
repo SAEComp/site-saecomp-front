@@ -4,6 +4,23 @@ import { Product, Order } from '../types';
 import { getProductImageUrl } from '../utils/imageUtils';
 import erroIcon from '../../../assets/lojinha-icons/perrys/ERRO.png';
 
+// Função utilitária para extrair primeiro e último nome
+const getFirstAndLastName = (fullName: string): string => {
+    if (!fullName || fullName.trim() === '' || fullName === 'Cliente Anônimo') {
+        return 'Cliente Anônimo';
+    }
+    
+    const nameParts = fullName.trim().split(' ').filter(part => part.length > 0);
+    
+    if (nameParts.length === 0) {
+        return 'Cliente Anônimo';
+    } else if (nameParts.length === 1) {
+        return nameParts[0];
+    } else {
+        return `${nameParts[0]} ${nameParts[nameParts.length - 1]}`;
+    }
+};
+
 interface StatsData {
     totalOrders: number;
     totalRevenue: number;
@@ -390,21 +407,18 @@ const StatsManagement: React.FC = () => {
                                                     #{order._id.slice(-8)}
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                    {order.customerName || 'Cliente Anônimo'}
-                                                    {order.customerCourse && (
-                                                        <div className="text-xs text-gray-500">{order.customerCourse}</div>
-                                                    )}
+                                                    {getFirstAndLastName(order.customerName || '')}
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                                     {formatCurrency(order.totalAmount)}
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                                                        order.status === 'delivered'
+                                                        order.status === 'concluído'
                                                             ? 'bg-green-100 text-green-800'
                                                             : 'bg-yellow-100 text-yellow-800'
                                                     }`}>
-                                                        {order.status === 'delivered' ? 'Concluído' : 'Pendente'}
+                                                        {order.status === 'concluído' ? 'Concluído' : 'Pendente'}
                                                     </span>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -424,11 +438,11 @@ const StatsManagement: React.FC = () => {
                                             <div className="flex items-center space-x-2">
                                                 <span className="text-sm font-mono text-gray-900">#{order._id.slice(-8)}</span>
                                                 <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                                                    order.status === 'delivered'
+                                                    order.status === 'concluído'
                                                         ? 'bg-green-100 text-green-800'
                                                         : 'bg-yellow-100 text-yellow-800'
                                                 }`}>
-                                                    {order.status === 'delivered' ? 'Concluído' : 'Pendente'}
+                                                    {order.status === 'concluído' ? 'Concluído' : 'Pendente'}
                                                 </span>
                                             </div>
                                             <span className="text-sm font-medium text-gray-900">
@@ -436,10 +450,7 @@ const StatsManagement: React.FC = () => {
                                             </span>
                                         </div>
                                         <div className="text-sm text-gray-900 mb-1">
-                                            {order.customerName || 'Cliente Anônimo'}
-                                            {order.customerCourse && (
-                                                <span className="text-xs text-gray-500 ml-2">• {order.customerCourse}</span>
-                                            )}
+                                            {getFirstAndLastName(order.customerName || '')}
                                         </div>
                                         <div className="text-xs text-gray-500">
                                             {formatDate(order.createdAt)}

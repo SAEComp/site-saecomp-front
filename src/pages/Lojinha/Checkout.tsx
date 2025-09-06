@@ -4,25 +4,66 @@ import { useCart } from './hooks/useCart';
 import { PaymentMethod } from './types';
 import { orderService, paymentService } from './services/api';
 import { getProductImageUrl } from './utils/imageUtils';
+import { useAuth } from '../../auth/AuthContext';
 import erroIcon from '../../assets/lojinha-icons/perrys/ERRO.png';
 import concluirIcon from '../../assets/lojinha-icons/perrys/concluir.png';
+import profileIcon from '../../assets/lojinha-icons/perrys/profile.png';
 
 const Checkout: React.FC = () => {
     const navigate = useNavigate();
     const { state, clearCart, getTotalPrice } = useCart();
+    const { user } = useAuth();
     const cartItems = state.items;
     const totalAmount = getTotalPrice();
-    
-    // Form states
-    const [customerData, setCustomerData] = useState({
-        name: '',
-        course: ''
-    });
     
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [qrCodeData, setQrCodeData] = useState<string | null>(null);
+    const [pixCopyPaste, setPixCopyPaste] = useState<string | null>(null);
     const [orderId, setOrderId] = useState<string | null>(null);
+    const [timeLeft, setTimeLeft] = useState<number | null>(null);
+    const [isExpired, setIsExpired] = useState(false);
+    const [copied, setCopied] = useState(false);
+
+    // Get customer name from authenticated user or set as anonymous
+    const customerName = user?.name || 'Cliente Anônimo';
+
+    // Timer effect for 20 minutes (1200 seconds)
+    useEffect(() => {
+        if (timeLeft === null || timeLeft <= 0) return;
+
+        const timer = setInterval(() => {
+            setTimeLeft(prev => {
+                if (prev === null || prev <= 1) {
+                    setIsExpired(true);
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, [timeLeft]);
+
+    // Format time left as MM:SS
+    const formatTimeLeft = (seconds: number) => {
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = seconds % 60;
+        return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+    };
+
+    // Copy PIX code to clipboard
+    const handleCopyPix = async () => {
+        if (pixCopyPaste) {
+            try {
+                await navigator.clipboard.writeText(pixCopyPaste);
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+            } catch (err) {
+                console.error('Failed to copy:', err);
+            }
+        }
+    };
 
     // Redirect if cart is empty
     useEffect(() => {
@@ -31,33 +72,14 @@ const Checkout: React.FC = () => {
         }
     }, [cartItems, navigate]);
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
-        setCustomerData(prev => ({
-            ...prev,
-            [name]: value
-        }));
-    };
-
-    const validateForm = (): boolean => {
-        // No validation needed since all fields are optional
-        return true;
-    };
-
     const handleSubmitOrder = async () => {
         setError(null);
-        
-        if (!validateForm()) {
-            return;
-        }
-
         setLoading(true);
+        setIsExpired(false);
 
         try {
             // Create order
             const orderData = {
-                customerName: customerData.name.trim() || undefined,
-                customerCourse: customerData.course.trim() || undefined,
                 items: cartItems.map(item => ({
                     productId: item._id,
                     quantity: item.quantity,
@@ -79,10 +101,14 @@ const Checkout: React.FC = () => {
             const pixResponse = await paymentService.generatePix({
                 orderId: newOrderId,
                 amount: totalAmount,
-                customerName: customerData.name.trim() || undefined
+                customerName: customerName
             });
             if (pixResponse.data?.qrCode) {
                 setQrCodeData(pixResponse.data.qrCode);
+                // Simulate PIX copy-paste code (in real implementation, this would come from the payment service)
+                setPixCopyPaste(pixResponse.data.qrCode);
+                // Start 20-minute timer (1200 seconds)
+                setTimeLeft(1200);
             } else {
                 throw new Error('Falha ao gerar código PIX');
             }
@@ -169,109 +195,183 @@ const Checkout: React.FC = () => {
                 </div>
 
                 {!qrCodeData ? (
-                    /* Customer Form */
-                    <div className="bg-white rounded-lg shadow-lg p-6">
-                        <h2 className="text-xl font-semibold text-gray-900 mb-6">Dados do Cliente</h2>
+                    /* Order Information */
+                    <div className="bg-white rounded-lg shadow-md p-6">
+                        <h2 className="text-xl font-semibold text-gray-900 mb-6">Informações do Pedido</h2>
                         
-                        <form onSubmit={(e) => { e.preventDefault(); handleSubmitOrder(); }} className="space-y-6">
-                            <div>
-                                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                                    Nome
-                                </label>
-                                <input
-                                    type="text"
-                                    id="name"
-                                    name="name"
-                                    value={customerData.name}
-                                    onChange={handleInputChange}
-                                    placeholder="Digite seu nome"
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#03B04B] focus:border-[#03B04B] bg-white text-gray-900"
-                                />
+                        <div className="space-y-4 mb-6">
+                            <div className="bg-gray-50 rounded-lg p-4">
+                                <div className="flex items-center space-x-3">
+                                    <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-gray-300 flex-shrink-0">
+                                        <img 
+                                            src={profileIcon} 
+                                            alt="Perfil do cliente" 
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-gray-600 font-medium">Cliente</p>
+                                        <p className="text-gray-900">{customerName}</p>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div>
-                                <label htmlFor="course" className="block text-sm font-medium text-gray-700 mb-2">
-                                    Curso que faz
-                                </label>
-                                <select
-                                    id="course"
-                                    name="course"
-                                    value={customerData.course}
-                                    onChange={handleInputChange}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#03B04B] focus:border-[#03B04B] bg-white text-gray-900"
-                                >
-                                    <option value="">Selecione seu curso</option>
-                                    <option value="Engenharia de Computação">Engenharia de Computação</option>
-                                    <option value="Engenharia Ambiental">Engenharia Ambiental</option>
-                                    <option value="Engenharia Aeronáutica">Engenharia Aeronáutica</option>
-                                    <option value="Engenharia de Materiais">Engenharia de Materiais</option>
-                                    <option value="Professores/Funcionários">Professores/Funcionários</option>
-                                    <option value="Outros">Outros</option>
-                                </select>
-                            </div>
-
-                            <div className="bg-green-50 border border-green-500 rounded-lg p-4">
+                            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                                 <div className="flex items-center">
                                     <p className="font-medium text-gray-900">💳 Pagamento via PIX</p>
                                 </div>
                                 <p className="text-sm text-gray-700 mt-1">
-                                    Após confirmar o pedido, você receberá um QR Code para pagamento via PIX.
+                                    Após confirmar o pedido, você receberá um QR Code para pagamento via PIX com validade de 20 minutos.
                                 </p>
                             </div>
+                        </div>
 
-                            {error && (
-                                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                                    <div className="flex items-center">
-                                        <img 
-                                            src={erroIcon} 
-                                            alt="Erro" 
-                                            className="w-8 h-8 mr-2 object-contain"
-                                        />
-                                        <p className="text-sm font-medium text-red-900">{error}</p>
-                                    </div>
+                        {error && (
+                            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+                                <div className="flex items-center">
+                                    <img 
+                                        src={erroIcon} 
+                                        alt="Erro" 
+                                        className="w-8 h-8 mr-3 object-contain"
+                                    />
+                                    <p className="text-sm font-medium text-red-900">{error}</p>
                                 </div>
-                            )}
+                            </div>
+                        )}
 
-                            <div className="flex flex-col-reverse sm:flex-row sm:justify-between sm:space-x-4 space-y-4 space-y-reverse sm:space-y-0">
+                        <div className="flex flex-col-reverse sm:flex-row sm:justify-between sm:space-x-4 space-y-4 space-y-reverse sm:space-y-0">
+                            <button
+                                type="button"
+                                onClick={() => navigate('/lojinha')}
+                                className="w-full sm:w-auto px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                            >
+                                Voltar à Loja
+                            </button>
+                            <button
+                                onClick={handleSubmitOrder}
+                                className="w-full sm:w-auto px-6 py-3 bg-[#03B04B] text-white rounded-lg hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center font-medium"
+                                disabled={loading}
+                            >
+                                {loading ? (
+                                    <>
+                                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        Processando...
+                                    </>
+                                ) : (
+                                    'Finalizar Pedido'
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                ) : isExpired ? (
+                    /* Payment Expired */
+                    <div className="bg-white rounded-lg shadow-lg p-6">
+                        <div className="text-center">
+                            <img 
+                                src={erroIcon} 
+                                alt="Perry Erro" 
+                                className="w-16 h-16 mx-auto mb-4"
+                            />
+                            <h2 className="text-2xl font-bold text-red-600 mb-4">Tempo Expirado!</h2>
+                            <p className="text-gray-600 mb-6">
+                                O tempo para pagamento do PIX expirou (20 minutos). 
+                                Você precisará gerar um novo código para finalizar seu pedido.
+                            </p>
+                            <div className="flex flex-col sm:flex-row gap-4 justify-center">
                                 <button
-                                    type="button"
-                                    onClick={() => navigate('/lojinha')}
-                                    className="w-full sm:w-auto px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                                    onClick={() => {
+                                        setQrCodeData(null);
+                                        setPixCopyPaste(null);
+                                        setIsExpired(false);
+                                        setTimeLeft(null);
+                                    }}
+                                    className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                                 >
-                                    Voltar à Loja
+                                    Gerar Novo PIX
                                 </button>
                                 <button
-                                    type="submit"
-                                    className="w-full sm:w-auto px-6 py-3 bg-[#03B04B] text-white rounded-lg hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-                                    disabled={loading}
+                                    onClick={() => navigate('/lojinha')}
+                                    className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
                                 >
-                                    {loading ? (
-                                        <>
-                                            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                            </svg>
-                                            Processando...
-                                        </>
-                                    ) : (
-                                        'Finalizar Pedido'
-                                    )}
+                                    Voltar à Lojinha
                                 </button>
                             </div>
-                        </form>
+                        </div>
                     </div>
                 ) : (
                     /* PIX Payment */
                     <div className="bg-white rounded-lg shadow-lg p-6">
-                        <h2 className="text-xl font-semibold text-gray-900 mb-6">Pagamento PIX</h2>
-                        <p className="text-gray-600 mb-6">Escaneie o QR Code abaixo para realizar o pagamento:</p>
+                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-xl font-semibold text-gray-900">Pagamento PIX</h2>
+                            {timeLeft !== null && timeLeft > 0 && (
+                                <div className="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm font-medium">
+                                    ⏰ {formatTimeLeft(timeLeft)}
+                                </div>
+                            )}
+                        </div>
                         
-                        <div className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-8 text-center mb-6">
-                            <div className="bg-white rounded-lg p-4 inline-block">
-                                <p className="font-mono text-sm break-all">{qrCodeData}</p>
-                                <small className="text-gray-500 block mt-2">QR Code gerado para pagamento PIX</small>
+                        <p className="text-gray-600 mb-4">
+                            Escaneie o QR Code ou copie o código PIX abaixo para realizar o pagamento:
+                        </p>
+                        
+                        {timeLeft !== null && timeLeft > 0 && (
+                            <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+                                <div className="flex items-center">
+                                    <div className="text-yellow-800 text-sm">
+                                        <strong>Atenção:</strong> Você tem <strong>{formatTimeLeft(timeLeft)}</strong> para completar o pagamento.
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                        
+                        {/* QR Code */}
+                        <div className="text-center mb-6">
+                            <div className="bg-white rounded-lg border-2 border-gray-200 p-4 inline-block shadow-sm">
+                                <div className="font-mono text-xs break-all bg-gray-50 p-2 rounded border w-48 h-48 flex items-center justify-center">
+                                    <span className="text-gray-600 text-center">
+                                        QR Code PIX
+                                        <br />
+                                        <small>{qrCodeData?.substring(0, 20)}...</small>
+                                    </span>
+                                </div>
+                                <p className="text-sm text-gray-600 mt-2 font-medium">Escaneie com seu celular</p>
                             </div>
                         </div>
+                        
+                        {/* PIX Copy-Paste */}
+                        {pixCopyPaste && (
+                            <div className="mb-6 max-w-2xl mx-auto px-4">
+                                <label className="block text-sm font-medium text-gray-700 mb-2 text-center">
+                                    ou copie o código PIX:
+                                </label>
+                                <div className="bg-gray-50 rounded-lg p-3 border">
+                                    <div className="flex items-center space-x-2">
+                                        <input
+                                            type="text"
+                                            value={pixCopyPaste}
+                                            readOnly
+                                            className="flex-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-mono text-center"
+                                        />
+                                        <button
+                                            onClick={handleCopyPix}
+                                            className={`px-4 py-2 rounded-lg font-medium transition-colors min-w-[80px] ${
+                                                copied 
+                                                    ? 'bg-green-600 text-white' 
+                                                    : 'bg-[#03B04B] hover:bg-green-600 text-white'
+                                            }`}
+                                        >
+                                            {copied ? '✓' : 'Copiar'}
+                                        </button>
+                                    </div>
+                                    <p className="text-xs text-gray-500 mt-2 text-center">
+                                        Cole no seu app do banco para pagar
+                                    </p>
+                                </div>
+                            </div>
+                        )}
                         
                         <div className="bg-gray-50 rounded-lg p-4 mb-6">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -288,15 +388,21 @@ const Checkout: React.FC = () => {
                         
                         <div className="flex flex-col-reverse sm:flex-row sm:justify-between sm:space-x-4 space-y-4 space-y-reverse sm:space-y-0">
                             <button
-                                onClick={() => setQrCodeData(null)}
+                                onClick={() => {
+                                    setQrCodeData(null);
+                                    setPixCopyPaste(null);
+                                    setTimeLeft(null);
+                                    setIsExpired(false);
+                                }}
                                 className="w-full sm:w-auto px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
                             >
                                 Voltar
                             </button>
                             <button
                                 onClick={handlePaymentComplete}
-                                className="w-full sm:w-auto px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                                className="w-full sm:w-auto px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
                             >
+                                <img src={concluirIcon} alt="Concluir" className="w-5 h-5" />
                                 Confirmar Pagamento
                             </button>
                         </div>

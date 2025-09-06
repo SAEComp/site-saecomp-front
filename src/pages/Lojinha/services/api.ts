@@ -9,6 +9,7 @@ import {
   ApiResponse, 
   ProductFilters 
 } from '../types';
+import authInterceptor from '../../../providers/authInterceptor';
 
 const API_BASE_URL = import.meta.env.VITE_LOJINHA_API_URL || '/api';
 
@@ -19,6 +20,10 @@ const api = axios.create({
   },
   timeout: 30000,
 });
+
+// Interceptor de autenticação para enviar o token do usuário logado
+// Rotas públicas que não precisam de autenticação
+api.interceptors.request.use(authInterceptor(['/products', '/payments']));
 
 // Interceptors para tratamento de erros
 api.interceptors.response.use(
@@ -106,8 +111,6 @@ export const fetchProducts = async (filters?: ProductFilters): Promise<Product[]
 
 // Pedidos
 export const createOrder = async (orderData: {
-  customerName?: string;
-  customerCourse?: string;
   items: {
     productId: string;
     quantity: number;

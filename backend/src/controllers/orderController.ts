@@ -80,7 +80,18 @@ export const createOrder = async (req: Request, res: Response) => {
       return;
     }
 
-    const { items, customerName, customerCourse, notes } = req.body;
+    const { items, notes } = req.body;
+
+    // Get customer name from authenticated user or set as anonymous
+    const customerName = (req as any).user?.name || 'Cliente Anônimo';
+    
+    // Debug log
+    console.log('Creating order with customer info:', {
+      hasUser: !!(req as any).user,
+      userName: (req as any).user?.name,
+      userEmail: (req as any).user?.email,
+      customerName: customerName
+    });
 
     // Validate items and check stock
     const products = await Product.find();
@@ -120,7 +131,6 @@ export const createOrder = async (req: Request, res: Response) => {
     // Create order
     const orderData = {
       customerName,
-      customerCourse,
       items: validatedItems,
       totalAmount,
       status: 'pendente' as const,

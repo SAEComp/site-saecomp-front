@@ -3,6 +3,23 @@ import { orderService } from '../services/api';
 import { Order } from '../types';
 import erroIcon from '../../../assets/lojinha-icons/perrys/ERRO.png';
 
+// Função utilitária para extrair primeiro e último nome
+const getFirstAndLastName = (fullName: string): string => {
+    if (!fullName || fullName.trim() === '' || fullName === 'Cliente Anônimo') {
+        return 'Cliente Anônimo';
+    }
+    
+    const nameParts = fullName.trim().split(' ').filter(part => part.length > 0);
+    
+    if (nameParts.length === 0) {
+        return 'Cliente Anônimo';
+    } else if (nameParts.length === 1) {
+        return nameParts[0];
+    } else {
+        return `${nameParts[0]} ${nameParts[nameParts.length - 1]}`;
+    }
+};
+
 const OrdersManagement: React.FC = () => {
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
@@ -317,11 +334,8 @@ const OrdersManagement: React.FC = () => {
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="text-sm font-medium text-gray-900">
-                                                    {order.customerName || 'Cliente Anônimo'}
+                                                    {getFirstAndLastName(order.customerName || '')}
                                                 </div>
-                                                {order.customerCourse && (
-                                                    <div className="text-sm text-gray-500">{order.customerCourse}</div>
-                                                )}
                                             </td>
                                             <td className="px-6 py-4">
                                                 <div className="text-sm text-gray-900">
@@ -376,17 +390,14 @@ const OrdersManagement: React.FC = () => {
                                         </span>
                                     </div>
                                     <div className="text-sm text-gray-900 mb-1">
-                                        {order.customerName || 'Cliente Anônimo'}
-                                        {order.customerCourse && (
-                                            <span className="text-xs text-gray-500 ml-2">• {order.customerCourse}</span>
-                                        )}
+                                        {getFirstAndLastName(order.customerName || '')}
                                     </div>
                                     <div className="text-xs text-gray-500 mb-2">
                                         {order.items.length} item{order.items.length !== 1 ? 's' : ''} • {formatDate(order.createdAt)}
                                     </div>
                                     <div className="flex items-center justify-between">
                                         <select
-                                            value={order.status === 'delivered' ? 'delivered' : 'pending'}
+                                            value={order.status === 'concluído' ? 'concluído' : 'pendente'}
                                             onChange={(e) => handleStatusChange(order._id, e.target.value)}
                                             className={`text-xs font-semibold rounded-full px-2 py-1 border-0 focus:ring-1 focus:ring-[#03B04B] ${
                                                 order.status === 'concluído' 
@@ -676,14 +687,10 @@ const OrdersManagement: React.FC = () => {
                                 <div>
                                     <h3 className="text-lg font-medium text-gray-900 mb-3">Informações do Cliente</h3>
                                     <div className="bg-gray-50 rounded-lg p-4">
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="grid grid-cols-1 gap-4">
                                             <div>
-                                                <p className="text-sm font-medium text-gray-500">Nome</p>
-                                                <p className="text-sm text-gray-900">{selectedOrder.customerName || 'Não informado'}</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-sm font-medium text-gray-500">Curso</p>
-                                                <p className="text-sm text-gray-900">{selectedOrder.customerCourse || 'Não informado'}</p>
+                                                <p className="text-sm font-medium text-gray-500">Cliente</p>
+                                                <p className="text-sm text-gray-900">{getFirstAndLastName(selectedOrder.customerName || '')}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -727,11 +734,11 @@ const OrdersManagement: React.FC = () => {
                                     <h3 className="text-lg font-medium text-gray-900 mb-3">Status do Pedido</h3>
                                     <div className="bg-gray-50 rounded-lg p-4">
                                         <span className={`inline-flex px-3 py-1 text-sm font-semibold rounded-full ${
-                                            selectedOrder.status === 'delivered' 
+                                            selectedOrder.status === 'concluído' 
                                                 ? 'bg-green-100 text-green-800'
                                                 : 'bg-yellow-100 text-yellow-800'
                                         }`}>
-                                            {selectedOrder.status === 'delivered' ? 'Concluído' : 'Pendente'}
+                                            {selectedOrder.status === 'concluído' ? 'Concluído' : 'Pendente'}
                                         </span>
                                     </div>
                                 </div>
