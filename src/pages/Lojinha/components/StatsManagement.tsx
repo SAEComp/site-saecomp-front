@@ -136,7 +136,7 @@ const StatsManagement: React.FC = () => {
         <div className="space-y-8">
             {/* Métricas principais */}
             <div>
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">Visão Geral</h2>
+                <h2 className="text-xl font-medium text-gray-900 mb-4">Visão Geral</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
                     {/* Primeira linha */}
                     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 md:p-6">
@@ -186,7 +186,7 @@ const StatsManagement: React.FC = () => {
 
             {/* Produtos mais vendidos */}
             <div>
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">Top 3 Produtos</h2>
+                <h2 className="text-xl font-medium text-gray-900 mb-4">Top 3 Produtos</h2>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {/* Mais vendidos por quantidade */}
                     <div className="bg-white rounded-lg shadow overflow-hidden">
@@ -232,7 +232,7 @@ const StatsManagement: React.FC = () => {
                                                         </div>
                                                     </td>
                                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                        <span className="font-semibold">{item.totalSold}</span> unidades
+                                                        <span className="font-medium">{item.totalSold}</span> unidades
                                                     </td>
                                                 </tr>
                                             ))}
@@ -262,7 +262,7 @@ const StatsManagement: React.FC = () => {
                                                                 #{index + 1}
                                                             </p>
                                                         </div>
-                                                        <div className="text-sm font-semibold text-gray-900">
+                                                        <div className="text-sm font-medium text-gray-900">
                                                             {item.totalSold} un.
                                                         </div>
                                                     </div>
@@ -374,7 +374,7 @@ const StatsManagement: React.FC = () => {
 
             {/* Pedidos recentes */}
             <div>
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">Pedidos Recentes</h2>
+                <h2 className="text-xl font-medium text-gray-900 mb-4">Pedidos Recentes</h2>
                 <div className="bg-white rounded-lg shadow overflow-hidden">
                     {stats.recentOrders.length > 0 ? (
                         <>
@@ -413,7 +413,7 @@ const StatsManagement: React.FC = () => {
                                                     {formatCurrency(order.totalAmount)}
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
-                                                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                                                    <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
                                                         order.status === 'concluído'
                                                             ? 'bg-green-100 text-green-800'
                                                             : 'bg-yellow-100 text-yellow-800'
@@ -437,7 +437,7 @@ const StatsManagement: React.FC = () => {
                                         <div className="flex items-center justify-between mb-2">
                                             <div className="flex items-center space-x-2">
                                                 <span className="text-sm font-mono text-gray-900">#{order._id.slice(-8)}</span>
-                                                <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                                                <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
                                                     order.status === 'concluído'
                                                         ? 'bg-green-100 text-green-800'
                                                         : 'bg-yellow-100 text-yellow-800'

@@ -48,7 +48,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
       </div>
       {product.stock < 5 && product.stock > 0 && (
         <div className="px-2 sm:px-3 pb-2 sm:pb-3">
-          <p className="text-xs text-orange-600 bg-orange-50 px-2 py-1 rounded">
+          <p className="text-xs text-orange-600">
             Restam apenas {product.stock} unidades
           </p>
         </div>

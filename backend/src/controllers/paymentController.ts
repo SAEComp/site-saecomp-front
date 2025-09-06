@@ -46,7 +46,7 @@ export const generatePix = async (req: Request, res: Response) => {
       return res.status(404).json(response);
     }
 
-    if (order.status !== 'pending') {
+    if (order.status !== 'pendente') {
       const response: ApiResponse<null> = {
         success: false,
         message: 'Pedido não pode ser pago (status inválido)'
@@ -135,10 +135,10 @@ export const confirmPayment = async (req: Request, res: Response) => {
     const updates: any = { paymentStatus: status };
     
     if (status === 'completed') {
-      updates.status = 'confirmed';
+      updates.status = 'concluído';
       updates.confirmedAt = new Date().toISOString();
     } else if (status === 'failed') {
-      updates.status = 'cancelled';
+      updates.status = 'cancelado';
     }
 
     const updatedOrder = await Order.findByIdAndUpdate(order._id, updates);

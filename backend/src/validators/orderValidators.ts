@@ -17,7 +17,13 @@ export const createOrderValidation = [
   body('paymentMethod')
     .optional()
     .equals('pix')
-    .withMessage('Método de pagamento deve ser pix')
+    .withMessage('Método de pagamento deve ser pix'),
+  
+  body('customerName')
+    .optional()
+    .isString()
+    .trim()
+    .withMessage('Nome do cliente deve ser uma string válida')
 ];
 
 export const updateOrderStatusValidation = [

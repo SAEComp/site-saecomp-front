@@ -240,8 +240,8 @@ export const db = {
     const newOrder = {
       ...order,
       _id: Date.now().toString(),
-      status: 'pending',
-      paymentStatus: 'pending',
+      status: order.status || 'pendente',
+      paymentStatus: order.paymentStatus || 'pendente',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
@@ -261,6 +261,18 @@ export const db = {
       };
       db.saveOrders(orders);
       return orders[index];
+    }
+    return null;
+  },
+
+  deleteOrder: (id: string) => {
+    const orders = db.getOrders();
+    const index = orders.findIndex((o: any) => o._id === id);
+    if (index !== -1) {
+      const deletedOrder = orders[index];
+      orders.splice(index, 1);
+      db.saveOrders(orders);
+      return deletedOrder;
     }
     return null;
   },

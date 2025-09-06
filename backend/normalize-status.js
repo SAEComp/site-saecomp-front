@@ -36,6 +36,34 @@ ordersData.forEach(order => {
             console.log(`Status desconhecido encontrado: ${order.status}`);
             order.status = 'pendente'; // Default para pendente
     }
+    
+    // Normaliza também o paymentStatus
+    if (order.paymentStatus) {
+        switch(order.paymentStatus) {
+            case 'pending':
+                order.paymentStatus = 'pendente';
+                break;
+            case 'completed':
+            case 'complete':
+                order.paymentStatus = 'completo';
+                break;
+            case 'failed':
+                order.paymentStatus = 'falhado';
+                break;
+            case 'cancelled':
+                order.paymentStatus = 'cancelado';
+                break;
+            // Se já estiver normalizado, mantém
+            case 'pendente':
+            case 'completo':
+            case 'falhado':
+            case 'cancelado':
+                break;
+            default:
+                console.log(`PaymentStatus desconhecido encontrado: ${order.paymentStatus}`);
+                order.paymentStatus = 'pendente'; // Default para pendente
+        }
+    }
 });
 
 console.log('\nStatus após a normalização:');

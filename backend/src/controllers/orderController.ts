@@ -80,24 +80,26 @@ export const createOrder = async (req: Request, res: Response) => {
       return;
     }
 
-    const { items, notes } = req.body;
+    const { items, notes, customerName: requestCustomerName } = req.body;
 
-    // Get customer name from authenticated user or set as anonymous
-    const customerName = (req as any).user?.name || 'Cliente Anônimo';
+    // Get customer name from request body first, then from authenticated user, or set as anonymous
+    const customerName = requestCustomerName || (req as any).user?.name || 'Cliente Anônimo';
     
     // Debug log
     console.log('Creating order with customer info:', {
       hasUser: !!(req as any).user,
       userName: (req as any).user?.name,
       userEmail: (req as any).user?.email,
-      customerName: customerName
+      requestCustomerName: requestCustomerName,
+      finalCustomerName: customerName
     });
 
-    // Validate items and check stock
+    // Validate items and check stock (with double-check to prevent race conditions)
     const products = await Product.find();
     const validatedItems = [];
     let totalAmount = 0;
 
+    // First pass: validate all items and check stock
     for (const item of items) {
       const product = products.find((p: IProduct) => p._id === item.productId);
       
@@ -109,10 +111,12 @@ export const createOrder = async (req: Request, res: Response) => {
         return;
       }
 
-      if (product.stock < item.quantity) {
+      // Re-check current stock to prevent race conditions
+      const currentProduct = await Product.findById(item.productId);
+      if (!currentProduct || currentProduct.stock < item.quantity) {
         res.status(400).json({
           success: false,
-          message: `Estoque insuficiente para ${product.name}. Disponível: ${product.stock}`
+          message: `Estoque insuficiente para ${product.name}. Disponível: ${currentProduct?.stock || 0}`
         });
         return;
       }
@@ -140,9 +144,23 @@ export const createOrder = async (req: Request, res: Response) => {
 
     const order = await Order.create(orderData);
 
-    // Update product stock
-    for (const item of validatedItems) {
-      await Product.updateStock(item.productId, item.quantity);
+    // Update product stock (reserve inventory immediately when order is created)
+    try {
+      console.log('Reserving stock for order:', order._id);
+      for (const item of validatedItems) {
+        console.log(`Reserving ${item.quantity} units of ${item.name} (ID: ${item.productId})`);
+        await Product.updateStock(item.productId, item.quantity);
+      }
+      console.log('✅ Stock reserved successfully for order:', order._id);
+    } catch (stockError) {
+      // If stock update fails, we need to delete the created order
+      console.error('❌ Error updating stock after order creation:', stockError);
+      await Order.findByIdAndDelete(order._id);
+      res.status(400).json({
+        success: false,
+        message: 'Erro ao reservar estoque. Pedido cancelado.'
+      });
+      return;
     }
 
     res.status(201).json({
@@ -159,7 +177,7 @@ export const createOrder = async (req: Request, res: Response) => {
   }
 };
 
-// Update order status
+// Update order status with stock management
 export const updateOrderStatus = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -172,7 +190,7 @@ export const updateOrderStatus = async (req: Request, res: Response) => {
       });
     }
 
-    const order = await Order.findByIdAndUpdate(id, { status });
+    const order = await Order.findById(id);
     
     if (!order) {
       return res.status(404).json({
@@ -181,9 +199,25 @@ export const updateOrderStatus = async (req: Request, res: Response) => {
       });
     }
 
+    const oldStatus = order.status;
+    const newStatus = status;
+
+    console.log(`🔄 Updating order ${id} status: ${oldStatus} → ${newStatus}`);
+
+    // Handle stock changes based on status transitions
+    await handleStatusTransition(order, oldStatus, newStatus);
+
+    // Update order status
+    const updatedOrder = await Order.findByIdAndUpdate(id, { 
+      status: newStatus,
+      updatedAt: new Date().toISOString()
+    });
+
+    console.log(`✅ Order ${id} status updated successfully`);
+
     res.json({
       success: true,
-      data: order,
+      data: updatedOrder,
       message: 'Status do pedido atualizado'
     });
   } catch (error) {
@@ -195,7 +229,58 @@ export const updateOrderStatus = async (req: Request, res: Response) => {
   }
 };
 
-// Cancel order
+// Handle stock changes based on status transitions
+async function handleStatusTransition(order: any, oldStatus: string, newStatus: string) {
+  // Status transition matrix:
+  // pendente → concluído: No stock change (already reserved)
+  // pendente → cancelado: Restore stock (cancel reservation)
+  // concluído → cancelado: Restore stock (return items)
+  // cancelado → pendente: Reserve stock (re-reserve)
+  // cancelado → concluído: Reserve stock (re-reserve)
+  // concluído → pendente: No change (keep reservation)
+
+  if (oldStatus === newStatus) {
+    return; // No change needed
+  }
+
+  console.log(`📦 Processing stock changes for status transition: ${oldStatus} → ${newStatus}`);
+
+  try {
+    if (oldStatus === 'pendente' && newStatus === 'cancelado') {
+      // Cancel pending order - restore stock
+      console.log('📤 Restoring stock (pending → cancelled)');
+      for (const item of order.items) {
+        await Product.restoreStock(item.productId, item.quantity);
+        console.log(`✅ Restored ${item.quantity} units of ${item.name}`);
+      }
+    } 
+    else if (oldStatus === 'concluído' && newStatus === 'cancelado') {
+      // Cancel completed order - restore stock
+      console.log('📤 Restoring stock (completed → cancelled)');
+      for (const item of order.items) {
+        await Product.restoreStock(item.productId, item.quantity);
+        console.log(`✅ Restored ${item.quantity} units of ${item.name}`);
+      }
+    }
+    else if (oldStatus === 'cancelado' && (newStatus === 'pendente' || newStatus === 'concluído')) {
+      // Reactivate cancelled order - reserve stock
+      console.log('📥 Reserving stock (cancelled → active)');
+      for (const item of order.items) {
+        await Product.updateStock(item.productId, item.quantity);
+        console.log(`✅ Reserved ${item.quantity} units of ${item.name}`);
+      }
+    }
+    // pendente → concluído and concluído → pendente don't require stock changes
+    // since stock is already properly reserved/managed
+
+    console.log('✅ Stock transition completed successfully');
+  } catch (stockError: any) {
+    console.error('❌ Error in stock transition:', stockError);
+    throw new Error(`Erro ao gerenciar estoque: ${stockError.message || 'Erro desconhecido'}`);
+  }
+}
+
+// Cancel order (restores stock automatically)
 export const cancelOrder = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -212,8 +297,24 @@ export const cancelOrder = async (req: Request, res: Response) => {
     if (order.status === 'concluído') {
       return res.status(400).json({
         success: false,
-        message: 'Não é possível cancelar um pedido já entregue'
+        message: 'Não é possível cancelar um pedido já concluído'
       });
+    }
+
+    // Only restore stock if order was pending (hadn't been completed)
+    if (order.status === 'pendente') {
+      console.log('Restoring stock for cancelled order:', id);
+      // Restore product stock
+      for (const item of order.items) {
+        try {
+          console.log(`Restoring ${item.quantity} units of ${item.name} (ID: ${item.productId})`);
+          await Product.restoreStock(item.productId, item.quantity);
+        } catch (restoreError) {
+          console.error(`Failed to restore stock for product ${item.productId}:`, restoreError);
+          // Continue with other items even if one fails
+        }
+      }
+      console.log('✅ Stock restored successfully for order:', id);
     }
 
     // Update order status
@@ -221,16 +322,6 @@ export const cancelOrder = async (req: Request, res: Response) => {
       status: 'cancelado',
       paymentStatus: 'cancelado'
     });
-
-    // Restore product stock
-    for (const item of order.items) {
-      const product = await Product.findById(item.productId);
-      if (product) {
-        await Product.findByIdAndUpdate(item.productId, { 
-          stock: product.stock + item.quantity 
-        });
-      }
-    }
 
     res.json({
       success: true,
@@ -266,6 +357,61 @@ export const getOrdersByStatus = async (req: Request, res: Response) => {
     res.status(500).json({
       success: false,
       message: 'Erro ao buscar pedidos por status'
+    });
+  }
+};
+
+// Cancel order by timeout (specifically for PIX payment expiration)
+export const cancelOrderByTimeout = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    
+    const order = await Order.findById(id);
+    
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: 'Pedido não encontrado'
+      });
+    }
+
+    // Only cancel if order is still pending
+    if (order.status !== 'pendente') {
+      return res.status(400).json({
+        success: false,
+        message: 'Pedido não pode ser cancelado (status inválido)'
+      });
+    }
+
+    // Restore product stock
+    console.log('Restoring stock due to PIX timeout for order:', id);
+    for (const item of order.items) {
+      try {
+        console.log(`Restoring ${item.quantity} units of ${item.name} (ID: ${item.productId})`);
+        await Product.restoreStock(item.productId, item.quantity);
+      } catch (restoreError) {
+        console.error(`Failed to restore stock for product ${item.productId}:`, restoreError);
+        // Continue with other items even if one fails
+      }
+    }
+    console.log('✅ Stock restored successfully due to timeout for order:', id);
+
+    // Update order status to cancelled due to timeout
+    await Order.findByIdAndUpdate(id, { 
+      status: 'cancelado',
+      paymentStatus: 'cancelado',
+      notes: (order.notes || '') + ' [Cancelado por timeout do PIX]'
+    });
+
+    res.json({
+      success: true,
+      message: 'Pedido cancelado por timeout - estoque restaurado'
+    });
+  } catch (error) {
+    console.error('Error cancelling order by timeout:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erro ao cancelar pedido por timeout'
     });
   }
 };

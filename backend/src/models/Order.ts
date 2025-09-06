@@ -80,6 +80,10 @@ export class Order {
     return db.updateOrder(id, updates);
   }
 
+  static async findByIdAndDelete(id: string) {
+    return db.deleteOrder(id);
+  }
+
   static async countDocuments(filter: any = {}) {
     const orders = await this.find(filter);
     return orders.length;

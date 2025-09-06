@@ -23,7 +23,7 @@ const api = axios.create({
 
 // Interceptor de autenticação para enviar o token do usuário logado
 // Rotas públicas que não precisam de autenticação
-api.interceptors.request.use(authInterceptor(['/products', '/payments']));
+api.interceptors.request.use(authInterceptor(['/products', '/payments', '/orders']));
 
 // Interceptors para tratamento de erros
 api.interceptors.response.use(
@@ -118,6 +118,7 @@ export const createOrder = async (orderData: {
   }[];
   paymentMethod?: PaymentMethod;
   totalAmount: number;
+  customerName?: string;
   notes?: string;
 }): Promise<ApiResponse<Order>> => {
   const response = await api.post('/orders', orderData);
@@ -156,6 +157,16 @@ export const getOrdersByStatus = async (status: string): Promise<ApiResponse<Ord
 
 export const updateOrderStatus = async (id: string, status: string): Promise<ApiResponse<Order>> => {
   const response = await api.put(`/orders/${id}/status`, { status });
+  return response.data;
+};
+
+export const cancelOrder = async (id: string): Promise<ApiResponse<any>> => {
+  const response = await api.put(`/orders/${id}/cancel`);
+  return response.data;
+};
+
+export const cancelOrderByTimeout = async (id: string): Promise<ApiResponse<any>> => {
+  const response = await api.put(`/orders/${id}/timeout`);
   return response.data;
 };
 
@@ -202,7 +213,9 @@ export const orderService = {
   getById: getOrderById,
   getAll: getAllOrders,
   getByStatus: getOrdersByStatus,
-  updateStatus: updateOrderStatus
+  updateStatus: updateOrderStatus,
+  cancel: cancelOrder,
+  cancelByTimeout: cancelOrderByTimeout
 };
 
 export const paymentService = {
@@ -231,7 +244,8 @@ export const getAdminStats = async (): Promise<ApiResponse<{
   const orders = ordersResponse.data || [];
   
   const completedOrders = orders.filter(order => 
-    order.status === 'concluído' || order.paymentStatus === 'completo'
+    (order.status === 'concluído' || order.paymentStatus === 'completo') && 
+    order.status !== 'cancelado'
   );
   
   const totalRevenue = completedOrders.reduce((sum, order) => sum + order.totalAmount, 0);

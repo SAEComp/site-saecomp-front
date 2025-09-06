@@ -11,8 +11,8 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
-    "paymentStatus": "pending",
+    "status": "pendente",
+    "paymentStatus": "pendente",
     "_id": "1757127430117",
     "createdAt": "2025-09-06T02:57:10.117Z",
     "updatedAt": "2025-09-06T02:57:10.117Z"
@@ -55,7 +55,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pendente",
     "_id": "1757128199639",
     "createdAt": "2025-09-06T03:09:59.639Z",
@@ -74,7 +74,7 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pendente",
     "_id": "1757128356588",
     "createdAt": "2025-09-06T03:12:36.588Z",
@@ -100,7 +100,7 @@
       }
     ],
     "totalAmount": 8,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pendente",
     "_id": "1757128986384",
     "createdAt": "2025-09-06T03:23:06.384Z",
@@ -119,11 +119,1087 @@
       }
     ],
     "totalAmount": 4.5,
-    "status": "pending",
+    "status": "pendente",
     "paymentStatus": "pendente",
     "_id": "1757129483249",
     "createdAt": "2025-09-06T03:31:23.249Z",
     "updatedAt": "2025-09-06T03:31:23.278Z",
     "paymentId": "pix_1757129483249_1757129483278"
+  },
+  {
+    "customerName": "Cliente Anônimo",
+    "items": [
+      {
+        "productId": "2",
+        "name": "Coca-Cola Zero",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "pendente",
+    "paymentStatus": "pendente",
+    "_id": "1757129546939",
+    "createdAt": "2025-09-06T03:32:26.939Z",
+    "updatedAt": "2025-09-06T03:32:26.966Z",
+    "paymentId": "pix_1757129546939_1757129546965"
+  },
+  {
+    "customerName": "Cliente Anônimo",
+    "items": [
+      {
+        "productId": "7",
+        "name": "Snickers",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "pendente",
+    "paymentStatus": "pendente",
+    "_id": "1757130491981",
+    "createdAt": "2025-09-06T03:48:11.981Z",
+    "updatedAt": "2025-09-06T03:48:12.077Z",
+    "paymentId": "pix_1757130491981_1757130492077"
+  },
+  {
+    "customerName": "Cliente Anônimo",
+    "items": [
+      {
+        "productId": "2",
+        "name": "Coca-Cola Zero",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "pendente",
+    "paymentStatus": "pendente",
+    "_id": "1757130570036",
+    "createdAt": "2025-09-06T03:49:30.036Z",
+    "updatedAt": "2025-09-06T03:49:30.084Z",
+    "paymentId": "pix_1757130570036_1757130570084"
+  },
+  {
+    "customerName": "Cliente Anônimo",
+    "items": [
+      {
+        "productId": "2",
+        "name": "Coca-Cola Zero",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "pendente",
+    "paymentStatus": "pendente",
+    "_id": "1757131042177",
+    "createdAt": "2025-09-06T03:57:22.177Z",
+    "updatedAt": "2025-09-06T03:57:22.216Z",
+    "paymentId": "pix_1757131042177_1757131042216"
+  },
+  {
+    "customerName": "Cliente Anônimo",
+    "items": [
+      {
+        "productId": "2",
+        "name": "Coca-Cola Zero",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "pendente",
+    "paymentStatus": "pendente",
+    "_id": "1757131634369",
+    "createdAt": "2025-09-06T04:07:14.369Z",
+    "updatedAt": "2025-09-06T04:07:14.369Z"
+  },
+  {
+    "customerName": "Cliente Anônimo",
+    "items": [
+      {
+        "productId": "2",
+        "name": "Coca-Cola Zero",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "cancelado",
+    "paymentStatus": "pendente",
+    "_id": "1757131765520",
+    "createdAt": "2025-09-06T04:09:25.520Z",
+    "updatedAt": "2025-09-06T04:10:41.980Z"
+  },
+  {
+    "customerName": "Cliente Anônimo",
+    "items": [
+      {
+        "productId": "2",
+        "name": "Coca-Cola Zero",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "concluído",
+    "paymentStatus": "pendente",
+    "_id": "1757131813408",
+    "createdAt": "2025-09-06T04:10:13.408Z",
+    "updatedAt": "2025-09-06T04:10:40.229Z"
+  },
+  {
+    "customerName": "Cliente Anônimo",
+    "items": [
+      {
+        "productId": "2",
+        "name": "Coca-Cola Zero",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "concluído",
+    "paymentStatus": "pendente",
+    "_id": "1757131814130",
+    "createdAt": "2025-09-06T04:10:14.130Z",
+    "updatedAt": "2025-09-06T04:10:36.820Z"
+  },
+  {
+    "customerName": "Cliente Anônimo",
+    "items": [
+      {
+        "productId": "1",
+        "name": "Coca-Cola",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "pendente",
+    "paymentStatus": "pendente",
+    "_id": "1757132306605",
+    "createdAt": "2025-09-06T04:18:26.605Z",
+    "updatedAt": "2025-09-06T04:18:26.605Z"
+  },
+  {
+    "customerName": "Cliente Anônimo",
+    "items": [
+      {
+        "productId": "1",
+        "name": "Coca-Cola",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "pendente",
+    "paymentStatus": "pendente",
+    "_id": "1757132423830",
+    "createdAt": "2025-09-06T04:20:23.831Z",
+    "updatedAt": "2025-09-06T04:20:23.831Z"
+  },
+  {
+    "customerName": "Cliente Anônimo",
+    "items": [
+      {
+        "productId": "5",
+        "name": "Doritos",
+        "price": 6.5,
+        "quantity": 1,
+        "subtotal": 6.5
+      }
+    ],
+    "totalAmount": 6.5,
+    "status": "pendente",
+    "paymentStatus": "pendente",
+    "_id": "1757132514590",
+    "createdAt": "2025-09-06T04:21:54.590Z",
+    "updatedAt": "2025-09-06T04:21:54.590Z"
+  },
+  {
+    "customerName": "Cliente Anônimo",
+    "items": [
+      {
+        "productId": "5",
+        "name": "Doritos",
+        "price": 6.5,
+        "quantity": 1,
+        "subtotal": 6.5
+      },
+      {
+        "productId": "7",
+        "name": "Snickers",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 11,
+    "status": "pendente",
+    "paymentStatus": "pendente",
+    "_id": "1757132525372",
+    "createdAt": "2025-09-06T04:22:05.372Z",
+    "updatedAt": "2025-09-06T04:22:05.372Z"
+  },
+  {
+    "customerName": "Cliente Anônimo",
+    "items": [
+      {
+        "productId": "5",
+        "name": "Doritos",
+        "price": 6.5,
+        "quantity": 1,
+        "subtotal": 6.5
+      },
+      {
+        "productId": "7",
+        "name": "Snickers",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 11,
+    "status": "pendente",
+    "paymentStatus": "pendente",
+    "_id": "1757132565920",
+    "createdAt": "2025-09-06T04:22:45.920Z",
+    "updatedAt": "2025-09-06T04:23:01.051Z"
+  },
+  {
+    "customerName": "Cliente Anônimo",
+    "items": [
+      {
+        "productId": "5",
+        "name": "Doritos",
+        "price": 6.5,
+        "quantity": 1,
+        "subtotal": 6.5
+      },
+      {
+        "productId": "7",
+        "name": "Snickers",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 11,
+    "status": "pendente",
+    "paymentStatus": "pendente",
+    "_id": "1757132589300",
+    "createdAt": "2025-09-06T04:23:09.300Z",
+    "updatedAt": "2025-09-06T04:32:36.871Z"
+  },
+  {
+    "customerName": "Cliente Anônimo",
+    "items": [
+      {
+        "productId": "5",
+        "name": "Doritos",
+        "price": 6.5,
+        "quantity": 1,
+        "subtotal": 6.5
+      }
+    ],
+    "totalAmount": 6.5,
+    "status": "cancelado",
+    "paymentStatus": "pendente",
+    "_id": "1757132867566",
+    "createdAt": "2025-09-06T04:27:47.566Z",
+    "updatedAt": "2025-09-06T04:33:03.204Z",
+    "paymentId": "pix_1757132867566_1757132867652"
+  },
+  {
+    "customerName": "Cliente Anônimo",
+    "items": [
+      {
+        "productId": "1",
+        "name": "Coca-Cola",
+        "price": 4.5,
+        "quantity": 2,
+        "subtotal": 9
+      },
+      {
+        "productId": "8",
+        "name": "Torcida",
+        "price": 5.5,
+        "quantity": 1,
+        "subtotal": 5.5
+      }
+    ],
+    "totalAmount": 14.5,
+    "status": "concluído",
+    "paymentStatus": "pendente",
+    "_id": "1757133382177",
+    "createdAt": "2025-09-06T04:36:22.177Z",
+    "updatedAt": "2025-09-06T04:36:27.539Z",
+    "paymentId": "pix_1757133382177_1757133382265"
+  },
+  {
+    "customerName": "Cliente Anônimo",
+    "items": [
+      {
+        "productId": "5",
+        "name": "Doritos",
+        "price": 6.5,
+        "quantity": 1,
+        "subtotal": 6.5
+      }
+    ],
+    "totalAmount": 6.5,
+    "status": "pendente",
+    "paymentStatus": "pendente",
+    "_id": "1757133627073",
+    "createdAt": "2025-09-06T04:40:27.073Z",
+    "updatedAt": "2025-09-06T04:40:27.073Z"
+  },
+  {
+    "customerName": "Cliente Anônimo",
+    "items": [
+      {
+        "productId": "2",
+        "name": "Coca-Cola Zero",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      },
+      {
+        "productId": "1",
+        "name": "Coca-Cola",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 9,
+    "status": "pendente",
+    "paymentStatus": "pendente",
+    "_id": "1757133675116",
+    "createdAt": "2025-09-06T04:41:15.116Z",
+    "updatedAt": "2025-09-06T04:41:15.197Z",
+    "paymentId": "pix_1757133675116_1757133675196"
+  },
+  {
+    "customerName": "Cliente Anônimo",
+    "items": [
+      {
+        "productId": "2",
+        "name": "Coca-Cola Zero",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      },
+      {
+        "productId": "1",
+        "name": "Coca-Cola",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 9,
+    "status": "pendente",
+    "paymentStatus": "pendente",
+    "_id": "1757133690731",
+    "createdAt": "2025-09-06T04:41:30.731Z",
+    "updatedAt": "2025-09-06T04:44:29.416Z",
+    "paymentId": "pix_1757133690731_1757133690788"
+  },
+  {
+    "customerName": "Cliente Anônimo",
+    "items": [
+      {
+        "productId": "7",
+        "name": "Snickers",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "pendente",
+    "paymentStatus": "pendente",
+    "_id": "1757134056130",
+    "createdAt": "2025-09-06T04:47:36.130Z",
+    "updatedAt": "2025-09-06T04:47:36.130Z"
+  },
+  {
+    "customerName": "Cliente Anônimo",
+    "items": [
+      {
+        "productId": "1",
+        "name": "Coca-Cola",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "concluído",
+    "paymentStatus": "pendente",
+    "_id": "1757134098894",
+    "createdAt": "2025-09-06T04:48:18.894Z",
+    "updatedAt": "2025-09-06T04:48:25.994Z",
+    "paymentId": "pix_1757134098894_1757134098980"
+  },
+  {
+    "customerName": "Rodrigo Kurosawa",
+    "items": [
+      {
+        "productId": "2",
+        "name": "Coca-Cola Zero",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "concluído",
+    "paymentStatus": "pendente",
+    "_id": "1757134283131",
+    "createdAt": "2025-09-06T04:51:23.131Z",
+    "updatedAt": "2025-09-06T04:51:24.943Z",
+    "paymentId": "pix_1757134283131_1757134283212"
+  },
+  {
+    "customerName": "Rodrigo Kurosawa",
+    "items": [
+      {
+        "productId": "1",
+        "name": "Coca-Cola",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "concluído",
+    "paymentStatus": "pendente",
+    "_id": "1757134950433",
+    "createdAt": "2025-09-06T05:02:30.433Z",
+    "updatedAt": "2025-09-06T05:02:32.532Z",
+    "paymentId": "pix_1757134950433_1757134950511"
+  },
+  {
+    "customerName": "Rodrigo Kurosawa",
+    "items": [
+      {
+        "productId": "1",
+        "name": "Coca-Cola",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "pendente",
+    "paymentStatus": "pendente",
+    "_id": "1757134970015",
+    "createdAt": "2025-09-06T05:02:50.015Z",
+    "updatedAt": "2025-09-06T05:02:50.056Z",
+    "paymentId": "pix_1757134970015_1757134970056"
+  },
+  {
+    "customerName": "Rodrigo Kurosawa",
+    "items": [
+      {
+        "productId": "1",
+        "name": "Coca-Cola",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "cancelado",
+    "paymentStatus": "cancelado",
+    "_id": "1757135125130",
+    "createdAt": "2025-09-06T05:05:25.130Z",
+    "updatedAt": "2025-09-06T05:08:51.917Z",
+    "paymentId": "pix_1757135125130_1757135125162"
+  },
+  {
+    "customerName": "Rodrigo Kurosawa",
+    "items": [
+      {
+        "productId": "1",
+        "name": "Coca-Cola",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "cancelado",
+    "paymentStatus": "cancelado",
+    "_id": "1757135360908",
+    "createdAt": "2025-09-06T05:09:20.908Z",
+    "updatedAt": "2025-09-06T05:09:24.284Z",
+    "paymentId": "pix_1757135360908_1757135360945"
+  },
+  {
+    "customerName": "Rodrigo Kurosawa",
+    "items": [
+      {
+        "productId": "5",
+        "name": "Doritos",
+        "price": 6.5,
+        "quantity": 1,
+        "subtotal": 6.5
+      }
+    ],
+    "totalAmount": 6.5,
+    "status": "cancelado",
+    "paymentStatus": "cancelado",
+    "_id": "1757135448614",
+    "createdAt": "2025-09-06T05:10:48.614Z",
+    "updatedAt": "2025-09-06T05:11:19.109Z",
+    "paymentId": "pix_1757135448614_1757135448650",
+    "notes": " [Cancelado por timeout do PIX]"
+  },
+  {
+    "customerName": "Rodrigo Kurosawa",
+    "items": [
+      {
+        "productId": "5",
+        "name": "Doritos",
+        "price": 6.5,
+        "quantity": 1,
+        "subtotal": 6.5
+      }
+    ],
+    "totalAmount": 6.5,
+    "status": "cancelado",
+    "paymentStatus": "cancelado",
+    "_id": "1757136041139",
+    "createdAt": "2025-09-06T05:20:41.139Z",
+    "updatedAt": "2025-09-06T05:21:12.538Z",
+    "paymentId": "pix_1757136041139_1757136041166",
+    "notes": " [Cancelado por timeout do PIX]"
+  },
+  {
+    "customerName": "Rodrigo Kurosawa",
+    "items": [
+      {
+        "productId": "5",
+        "name": "Doritos",
+        "price": 6.5,
+        "quantity": 1,
+        "subtotal": 6.5
+      }
+    ],
+    "totalAmount": 6.5,
+    "status": "cancelado",
+    "paymentStatus": "cancelado",
+    "_id": "1757136080407",
+    "createdAt": "2025-09-06T05:21:20.407Z",
+    "updatedAt": "2025-09-06T05:21:50.833Z",
+    "paymentId": "pix_1757136080407_1757136080440",
+    "notes": " [Cancelado por timeout do PIX]"
+  },
+  {
+    "customerName": "Rodrigo Kurosawa",
+    "items": [
+      {
+        "productId": "5",
+        "name": "Doritos",
+        "price": 6.5,
+        "quantity": 1,
+        "subtotal": 6.5
+      }
+    ],
+    "totalAmount": 6.5,
+    "status": "cancelado",
+    "paymentStatus": "cancelado",
+    "_id": "1757136186647",
+    "createdAt": "2025-09-06T05:23:06.647Z",
+    "updatedAt": "2025-09-06T05:23:36.954Z",
+    "paymentId": "pix_1757136186647_1757136186688",
+    "notes": " [Cancelado por timeout do PIX]"
+  },
+  {
+    "customerName": "Rodrigo Kurosawa",
+    "items": [
+      {
+        "productId": "5",
+        "name": "Doritos",
+        "price": 6.5,
+        "quantity": 1,
+        "subtotal": 6.5
+      }
+    ],
+    "totalAmount": 6.5,
+    "status": "cancelado",
+    "paymentStatus": "cancelado",
+    "_id": "1757136226366",
+    "createdAt": "2025-09-06T05:23:46.366Z",
+    "updatedAt": "2025-09-06T05:24:17.271Z",
+    "paymentId": "pix_1757136226366_1757136226401",
+    "notes": " [Cancelado por timeout do PIX]"
+  },
+  {
+    "customerName": "Rodrigo Kurosawa",
+    "items": [
+      {
+        "productId": "5",
+        "name": "Doritos",
+        "price": 6.5,
+        "quantity": 1,
+        "subtotal": 6.5
+      }
+    ],
+    "totalAmount": 6.5,
+    "status": "cancelado",
+    "paymentStatus": "cancelado",
+    "_id": "1757136271165",
+    "createdAt": "2025-09-06T05:24:31.165Z",
+    "updatedAt": "2025-09-06T05:24:42.524Z",
+    "paymentId": "pix_1757136271165_1757136271205"
+  },
+  {
+    "customerName": "Rodrigo Kurosawa",
+    "items": [
+      {
+        "productId": "1",
+        "name": "Coca-Cola",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "cancelado",
+    "paymentStatus": "cancelado",
+    "_id": "1757136295433",
+    "createdAt": "2025-09-06T05:24:55.433Z",
+    "updatedAt": "2025-09-06T05:25:26.561Z",
+    "paymentId": "pix_1757136295433_1757136295471",
+    "notes": " [Cancelado por timeout do PIX]"
+  },
+  {
+    "customerName": "Rodrigo Kurosawa",
+    "items": [
+      {
+        "productId": "1",
+        "name": "Coca-Cola",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "pendente",
+    "paymentStatus": "pendente",
+    "_id": "1757136333513",
+    "createdAt": "2025-09-06T05:25:33.513Z",
+    "updatedAt": "2025-09-06T05:25:33.544Z",
+    "paymentId": "pix_1757136333513_1757136333544"
+  },
+  {
+    "customerName": "Rodrigo Kurosawa",
+    "items": [
+      {
+        "productId": "1",
+        "name": "Coca-Cola",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "cancelado",
+    "paymentStatus": "cancelado",
+    "_id": "1757136386757",
+    "createdAt": "2025-09-06T05:26:26.757Z",
+    "updatedAt": "2025-09-06T05:26:57.182Z",
+    "paymentId": "pix_1757136386757_1757136386787",
+    "notes": " [Cancelado por timeout do PIX]"
+  },
+  {
+    "customerName": "Rodrigo Kurosawa",
+    "items": [
+      {
+        "productId": "1",
+        "name": "Coca-Cola",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "pendente",
+    "paymentStatus": "pendente",
+    "_id": "1757136438626",
+    "createdAt": "2025-09-06T05:27:18.626Z",
+    "updatedAt": "2025-09-06T05:27:18.655Z",
+    "paymentId": "pix_1757136438626_1757136438655"
+  },
+  {
+    "customerName": "Rodrigo Kurosawa",
+    "items": [
+      {
+        "productId": "1",
+        "name": "Coca-Cola",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "pendente",
+    "paymentStatus": "pendente",
+    "_id": "1757136464209",
+    "createdAt": "2025-09-06T05:27:44.209Z",
+    "updatedAt": "2025-09-06T05:27:44.238Z",
+    "paymentId": "pix_1757136464209_1757136464237"
+  },
+  {
+    "customerName": "Rodrigo Kurosawa",
+    "items": [
+      {
+        "productId": "1",
+        "name": "Coca-Cola",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "cancelado",
+    "paymentStatus": "cancelado",
+    "_id": "1757136513699",
+    "createdAt": "2025-09-06T05:28:33.699Z",
+    "updatedAt": "2025-09-06T05:29:04.120Z",
+    "paymentId": "pix_1757136513699_1757136513726",
+    "notes": " [Cancelado por timeout do PIX]"
+  },
+  {
+    "customerName": "Rodrigo Kurosawa",
+    "items": [
+      {
+        "productId": "1",
+        "name": "Coca-Cola",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "cancelado",
+    "paymentStatus": "cancelado",
+    "_id": "1757136575815",
+    "createdAt": "2025-09-06T05:29:35.815Z",
+    "updatedAt": "2025-09-06T05:30:06.163Z",
+    "paymentId": "pix_1757136575815_1757136575840",
+    "notes": " [Cancelado por timeout do PIX]"
+  },
+  {
+    "customerName": "Rodrigo Kurosawa",
+    "items": [
+      {
+        "productId": "1",
+        "name": "Coca-Cola",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "cancelado",
+    "paymentStatus": "cancelado",
+    "_id": "1757136700545",
+    "createdAt": "2025-09-06T05:31:40.545Z",
+    "updatedAt": "2025-09-06T05:32:11.018Z",
+    "paymentId": "pix_1757136700545_1757136700577",
+    "notes": " [Cancelado por timeout do PIX]"
+  },
+  {
+    "customerName": "Rodrigo Kurosawa",
+    "items": [
+      {
+        "productId": "1",
+        "name": "Coca-Cola",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "concluído",
+    "paymentStatus": "cancelado",
+    "_id": "1757137057926",
+    "createdAt": "2025-09-06T05:37:37.926Z",
+    "updatedAt": "2025-09-06T05:43:04.029Z",
+    "paymentId": "pix_1757137057926_1757137057951",
+    "notes": " [Cancelado por timeout do PIX]"
+  },
+  {
+    "customerName": "Rodrigo Kurosawa",
+    "items": [
+      {
+        "productId": "1",
+        "name": "Coca-Cola",
+        "price": 4.5,
+        "quantity": 2,
+        "subtotal": 9
+      },
+      {
+        "productId": "7",
+        "name": "Snickers",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 13.5,
+    "status": "cancelado",
+    "paymentStatus": "cancelado",
+    "_id": "1757137211550",
+    "createdAt": "2025-09-06T05:40:11.550Z",
+    "updatedAt": "2025-09-06T05:40:18.602Z",
+    "paymentId": "pix_1757137211550_1757137211582"
+  },
+  {
+    "customerName": "Rodrigo Kurosawa",
+    "items": [
+      {
+        "productId": "1",
+        "name": "Coca-Cola",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "concluído",
+    "paymentStatus": "cancelado",
+    "_id": "1757137268750",
+    "createdAt": "2025-09-06T05:41:08.750Z",
+    "updatedAt": "2025-09-06T05:42:28.133Z",
+    "paymentId": "pix_1757137268750_1757137268791",
+    "notes": " [Cancelado por timeout do PIX]"
+  },
+  {
+    "customerName": "Rodrigo Kurosawa",
+    "items": [
+      {
+        "productId": "1",
+        "name": "Coca-Cola",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "concluído",
+    "paymentStatus": "cancelado",
+    "_id": "1757137326355",
+    "createdAt": "2025-09-06T05:42:06.355Z",
+    "updatedAt": "2025-09-06T05:42:21.467Z",
+    "paymentId": "pix_1757137326355_1757137326379"
+  },
+  {
+    "customerName": "Rodrigo Kurosawa",
+    "items": [
+      {
+        "productId": "2",
+        "name": "Coca-Cola Zero",
+        "price": 4.5,
+        "quantity": 2,
+        "subtotal": 9
+      }
+    ],
+    "totalAmount": 9,
+    "status": "concluído",
+    "paymentStatus": "cancelado",
+    "_id": "1757137406838",
+    "createdAt": "2025-09-06T05:43:26.838Z",
+    "updatedAt": "2025-09-06T05:44:56.407Z",
+    "paymentId": "pix_1757137406838_1757137406865"
+  },
+  {
+    "customerName": "Rodrigo Kurosawa",
+    "items": [
+      {
+        "productId": "2",
+        "name": "Coca-Cola Zero",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "cancelado",
+    "paymentStatus": "cancelado",
+    "_id": "1757137419554",
+    "createdAt": "2025-09-06T05:43:39.554Z",
+    "updatedAt": "2025-09-06T05:44:37.968Z",
+    "paymentId": "pix_1757137419554_1757137419578"
+  },
+  {
+    "customerName": "Rodrigo Kurosawa",
+    "items": [
+      {
+        "productId": "1",
+        "name": "Coca-Cola",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "cancelado",
+    "paymentStatus": "cancelado",
+    "_id": "1757138266040",
+    "createdAt": "2025-09-06T05:57:46.040Z",
+    "updatedAt": "2025-09-06T05:58:18.425Z",
+    "paymentId": "pix_1757138266040_1757138266074",
+    "notes": " [Cancelado por timeout do PIX]"
+  },
+  {
+    "customerName": "Rodrigo Kurosawa",
+    "items": [
+      {
+        "productId": "1",
+        "name": "Coca-Cola",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "cancelado",
+    "paymentStatus": "cancelado",
+    "_id": "1757138452052",
+    "createdAt": "2025-09-06T06:00:52.052Z",
+    "updatedAt": "2025-09-06T06:01:05.153Z",
+    "paymentId": "pix_1757138452052_1757138452082"
+  },
+  {
+    "customerName": "Rodrigo Kurosawa",
+    "items": [
+      {
+        "productId": "8",
+        "name": "Torcida",
+        "price": 5.5,
+        "quantity": 1,
+        "subtotal": 5.5
+      }
+    ],
+    "totalAmount": 5.5,
+    "status": "cancelado",
+    "paymentStatus": "cancelado",
+    "_id": "1757138645114",
+    "createdAt": "2025-09-06T06:04:05.114Z",
+    "updatedAt": "2025-09-06T06:04:36.361Z",
+    "paymentId": "pix_1757138645114_1757138645140",
+    "notes": " [Cancelado por timeout do PIX]"
+  },
+  {
+    "customerName": "Rodrigo Kurosawa",
+    "items": [
+      {
+        "productId": "8",
+        "name": "Torcida",
+        "price": 5.5,
+        "quantity": 1,
+        "subtotal": 5.5
+      }
+    ],
+    "totalAmount": 5.5,
+    "status": "cancelado",
+    "paymentStatus": "cancelado",
+    "_id": "1757138780570",
+    "createdAt": "2025-09-06T06:06:20.570Z",
+    "updatedAt": "2025-09-06T06:06:52.773Z",
+    "paymentId": "pix_1757138780570_1757138780604",
+    "notes": " [Cancelado por timeout do PIX]"
+  },
+  {
+    "customerName": "Rodrigo Kurosawa",
+    "items": [
+      {
+        "productId": "8",
+        "name": "Torcida",
+        "price": 5.5,
+        "quantity": 1,
+        "subtotal": 5.5
+      }
+    ],
+    "totalAmount": 5.5,
+    "status": "cancelado",
+    "paymentStatus": "cancelado",
+    "_id": "1757138897846",
+    "createdAt": "2025-09-06T06:08:17.846Z",
+    "updatedAt": "2025-09-06T06:08:49.443Z",
+    "paymentId": "pix_1757138897846_1757138897876",
+    "notes": " [Cancelado por timeout do PIX]"
+  },
+  {
+    "customerName": "Rodrigo Kurosawa",
+    "items": [
+      {
+        "productId": "8",
+        "name": "Torcida",
+        "price": 5.5,
+        "quantity": 1,
+        "subtotal": 5.5
+      },
+      {
+        "productId": "1",
+        "name": "Coca-Cola",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 10,
+    "status": "cancelado",
+    "paymentStatus": "cancelado",
+    "_id": "1757139313971",
+    "createdAt": "2025-09-06T06:15:13.971Z",
+    "updatedAt": "2025-09-06T06:15:44.370Z",
+    "paymentId": "pix_1757139313971_1757139314008",
+    "notes": " [Cancelado por timeout do PIX]"
+  },
+  {
+    "customerName": "Rodrigo Kurosawa",
+    "items": [
+      {
+        "productId": "8",
+        "name": "Torcida",
+        "price": 5.5,
+        "quantity": 1,
+        "subtotal": 5.5
+      },
+      {
+        "productId": "1",
+        "name": "Coca-Cola",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 10,
+    "status": "cancelado",
+    "paymentStatus": "cancelado",
+    "_id": "1757140012145",
+    "createdAt": "2025-09-06T06:26:52.145Z",
+    "updatedAt": "2025-09-06T06:27:22.903Z",
+    "paymentId": "pix_1757140012145_1757140012199",
+    "notes": " [Cancelado por timeout do PIX]"
   }
 ]

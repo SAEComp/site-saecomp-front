@@ -74,6 +74,32 @@ const OrdersManagement: React.FC = () => {
 
     const handleStatusChange = async (orderId: string, newStatus: string) => {
         try {
+            // Find the order to get its current status
+            const order = orders.find(o => o._id === orderId);
+            if (!order) return;
+
+            const oldStatus = order.status;
+            
+            // Show confirmation for status changes that affect stock
+            const needsConfirmation = (
+                (oldStatus === 'pendente' && newStatus === 'cancelado') ||
+                (oldStatus === 'concluído' && newStatus === 'cancelado') ||
+                (oldStatus === 'cancelado' && (newStatus === 'pendente' || newStatus === 'concluído'))
+            );
+
+            if (needsConfirmation) {
+                let message = '';
+                if (oldStatus === 'cancelado' && (newStatus === 'pendente' || newStatus === 'concluído')) {
+                    message = `Ao alterar de "${oldStatus}" para "${newStatus}", os itens serão descontados do estoque novamente. Continuar?`;
+                } else if (newStatus === 'cancelado') {
+                    message = `Ao alterar para "${newStatus}", os itens serão devolvidos ao estoque. Continuar?`;
+                }
+                
+                if (!confirm(message)) {
+                    return; // User cancelled
+                }
+            }
+
             await orderService.updateStatus(orderId, newStatus);
             await loadOrders(); // Recarregar lista
         } catch (err: any) {
@@ -350,16 +376,19 @@ const OrdersManagement: React.FC = () => {
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <select
-                                                    value={order.status === 'concluído' ? 'concluído' : 'pendente'}
+                                                    value={order.status}
                                                     onChange={(e) => handleStatusChange(order._id, e.target.value)}
-                                                    className={`text-xs font-semibold rounded-full px-2 py-1 border-0 focus:ring-1 focus:ring-[#03B04B] ${
+                                                    className={`text-xs font-medium rounded-full px-2 py-1 border-0 focus:ring-1 focus:ring-[#03B04B] ${
                                                         order.status === 'concluído' 
                                                             ? 'bg-green-100 text-green-800'
+                                                            : order.status === 'cancelado'
+                                                            ? 'bg-red-100 text-red-800'
                                                             : 'bg-yellow-100 text-yellow-800'
                                                     }`}
                                                 >
                                                     <option value="pendente">Pendente</option>
                                                     <option value="concluído">Concluído</option>
+                                                    <option value="cancelado">Cancelado</option>
                                                 </select>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -397,16 +426,19 @@ const OrdersManagement: React.FC = () => {
                                     </div>
                                     <div className="flex items-center justify-between">
                                         <select
-                                            value={order.status === 'concluído' ? 'concluído' : 'pendente'}
+                                            value={order.status}
                                             onChange={(e) => handleStatusChange(order._id, e.target.value)}
-                                            className={`text-xs font-semibold rounded-full px-2 py-1 border-0 focus:ring-1 focus:ring-[#03B04B] ${
+                                            className={`text-xs font-medium rounded-full px-2 py-1 border-0 focus:ring-1 focus:ring-[#03B04B] ${
                                                 order.status === 'concluído' 
                                                     ? 'bg-green-100 text-green-800'
+                                                    : order.status === 'cancelado'
+                                                    ? 'bg-red-100 text-red-800'
                                                     : 'bg-yellow-100 text-yellow-800'
                                             }`}
                                         >
                                             <option value="pendente">Pendente</option>
                                             <option value="concluído">Concluído</option>
+                                            <option value="cancelado">Cancelado</option>
                                         </select>
                                         <button
                                             onClick={() => setSelectedOrder(order)}
@@ -539,6 +571,7 @@ const OrdersManagement: React.FC = () => {
                                         <option value="all">Todos os status</option>
                                         <option value="pendente">Pendente</option>
                                         <option value="concluído">Concluído</option>
+                                        <option value="cancelado">Cancelado</option>
                                     </select>
                                 </div>
 
@@ -736,9 +769,12 @@ const OrdersManagement: React.FC = () => {
                                         <span className={`inline-flex px-3 py-1 text-sm font-semibold rounded-full ${
                                             selectedOrder.status === 'concluído' 
                                                 ? 'bg-green-100 text-green-800'
+                                                : selectedOrder.status === 'cancelado'
+                                                ? 'bg-red-100 text-red-800'
                                                 : 'bg-yellow-100 text-yellow-800'
                                         }`}>
-                                            {selectedOrder.status === 'concluído' ? 'Concluído' : 'Pendente'}
+                                            {selectedOrder.status === 'concluído' ? 'Concluído' : 
+                                             selectedOrder.status === 'cancelado' ? 'Cancelado' : 'Pendente'}
                                         </span>
                                     </div>
                                 </div>

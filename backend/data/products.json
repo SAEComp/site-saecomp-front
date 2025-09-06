@@ -6,10 +6,10 @@
     "price": 4.5,
     "imageUrl": "/images/coca.png",
     "category": "bebidas",
-    "stock": 32,
+    "stock": 17,
     "isActive": true,
     "createdAt": "2025-06-08T16:00:00.000Z",
-    "updatedAt": "2025-09-06T03:06:11.569Z"
+    "updatedAt": "2025-09-06T06:27:22.902Z"
   },
   {
     "_id": "2",
@@ -18,10 +18,10 @@
     "price": 4.5,
     "imageUrl": "/images/coca-zero.png",
     "category": "bebidas",
-    "stock": 12,
+    "stock": 0,
     "isActive": true,
     "createdAt": "2025-06-08T16:00:00.000Z",
-    "updatedAt": "2025-09-06T03:31:23.250Z"
+    "updatedAt": "2025-09-06T05:44:41.045Z"
   },
   {
     "_id": "3",
@@ -54,10 +54,10 @@
     "price": 6.5,
     "imageUrl": "/images/doritos.png",
     "category": "salgados",
-    "stock": 27,
+    "stock": 22,
     "isActive": true,
     "createdAt": "2025-06-08T16:00:00.000Z",
-    "updatedAt": "2025-09-06T03:06:11.570Z"
+    "updatedAt": "2025-09-06T05:24:42.523Z"
   },
   {
     "_id": "6",
@@ -78,10 +78,10 @@
     "price": 4.5,
     "imageUrl": "/images/Snickers.png",
     "category": "doces",
-    "stock": 17,
+    "stock": 12,
     "isActive": true,
     "createdAt": "2025-06-08T16:00:00.000Z",
-    "updatedAt": "2025-07-20T01:07:10.855Z"
+    "updatedAt": "2025-09-06T05:40:18.598Z"
   },
   {
     "_id": "8",
@@ -90,10 +90,10 @@
     "price": 5.5,
     "imageUrl": "/images/torcida.png",
     "category": "salgados",
-    "stock": 23,
+    "stock": 22,
     "isActive": true,
     "createdAt": "2025-06-08T16:00:00.000Z",
-    "updatedAt": "2025-07-20T00:55:54.723Z"
+    "updatedAt": "2025-09-06T06:27:22.901Z"
   },
   {
     "_id": "9",

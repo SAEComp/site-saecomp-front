@@ -87,11 +87,11 @@ const ProductsManagement: React.FC = () => {
 
     const getCategoryColor = (category: string) => {
         const colors = {
-            'doces': 'bg-pink-100 text-pink-800',
-            'salgados': 'bg-orange-100 text-orange-800',
-            'bebidas': 'bg-green-100 text-green-800'
+            'doces': 'text-pink-600',
+            'salgados': 'text-orange-600', 
+            'bebidas': 'text-[#03B04B]'
         };
-        return colors[category as keyof typeof colors] || 'bg-gray-100 text-gray-800';
+        return colors[category as keyof typeof colors] || 'text-gray-600';
     };
 
     if (loading) {
@@ -207,7 +207,7 @@ const ProductsManagement: React.FC = () => {
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
-                                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getCategoryColor(product.category)}`}>
+                                            <span className={`text-sm font-medium ${getCategoryColor(product.category)}`}>
                                                 {getCategoryLabel(product.category)}
                                             </span>
                                         </td>
@@ -215,21 +215,21 @@ const ProductsManagement: React.FC = () => {
                                             {formatCurrency(product.price)}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                                            <span className={`text-sm font-medium ${
                                                 product.stock > 10 
-                                                    ? 'bg-green-100 text-green-800'
+                                                    ? 'text-[#03B04B]'
                                                     : product.stock > 0
-                                                    ? 'bg-yellow-100 text-yellow-800'
-                                                    : 'bg-red-100 text-red-800'
+                                                    ? 'text-orange-600'
+                                                    : 'text-red-600'
                                             }`}>
                                                 {product.stock} unidades
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
-                                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                                            <span className={`text-sm font-medium ${
                                                 product.isActive 
-                                                    ? 'bg-green-100 text-green-800'
-                                                    : 'bg-red-100 text-red-800'
+                                                    ? 'text-[#03B04B]'
+                                                    : 'text-red-600'
                                             }`}>
                                                 {product.isActive ? 'Ativo' : 'Inativo'}
                                             </span>

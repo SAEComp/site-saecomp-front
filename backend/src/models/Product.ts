@@ -67,17 +67,45 @@ export class Product {
     return product.isActive && product.stock > 0;
   }
 
-  // Helper method to update stock
+  // Helper method to update stock (with atomic-like operation)
   static async updateStock(id: string, quantity: number) {
+    // Get current product state
     const product = db.getProductById(id);
-    if (!product) return null;
+    if (!product) {
+      throw new Error('Produto não encontrado');
+    }
     
     const newStock = product.stock - quantity;
     if (newStock < 0) {
-      throw new Error('Estoque insuficiente');
+      throw new Error(`Estoque insuficiente para ${product.name}. Disponível: ${product.stock}, Solicitado: ${quantity}`);
     }
     
-    return db.updateProduct(id, { stock: newStock });
+    // Update stock atomically
+    const updatedProduct = db.updateProduct(id, { 
+      stock: newStock,
+      updatedAt: new Date().toISOString()
+    });
+    
+    if (!updatedProduct) {
+      throw new Error('Falha ao atualizar estoque');
+    }
+    
+    return updatedProduct;
+  }
+
+  // Helper method to restore stock (for cancellations)
+  static async restoreStock(id: string, quantity: number) {
+    const product = db.getProductById(id);
+    if (!product) {
+      throw new Error('Produto não encontrado');
+    }
+    
+    const newStock = product.stock + quantity;
+    
+    return db.updateProduct(id, { 
+      stock: newStock,
+      updatedAt: new Date().toISOString()
+    });
   }
 }
 
