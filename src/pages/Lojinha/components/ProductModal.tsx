@@ -25,6 +25,8 @@ const ProductModal: React.FC<ProductModalProps> = ({
         stock: 0,
         isActive: true
     });
+    const [imageFile, setImageFile] = useState<File | null>(null);
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -50,6 +52,8 @@ const ProductModal: React.FC<ProductModalProps> = ({
                 isActive: true
             });
         }
+        setImageFile(null);
+        setImagePreview(null);
         setError(null);
     }, [product, isOpen]);
 
@@ -63,6 +67,76 @@ const ProductModal: React.FC<ProductModalProps> = ({
                 ? (e.target as HTMLInputElement).checked
                 : value
         }));
+    };
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            // Validar tipo de arquivo
+            if (!file.type.startsWith('image/')) {
+                setError('Por favor, selecione apenas arquivos de imagem');
+                return;
+            }
+            
+            // Validar tamanho (max 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                setError('A imagem deve ter no máximo 5MB');
+                return;
+            }
+            
+            setImageFile(file);
+            
+            // Criar preview
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                setImagePreview(e.target?.result as string);
+            };
+            reader.readAsDataURL(file);
+            
+            setError(null);
+        }
+    };
+
+    const removeImage = () => {
+        setImageFile(null);
+        setImagePreview(null);
+        setFormData(prev => ({ ...prev, imageUrl: '' }));
+    };
+
+    const handleDragOver = (e: React.DragEvent) => {
+        e.preventDefault();
+    };
+
+    const handleDrop = (e: React.DragEvent) => {
+        e.preventDefault();
+        const files = e.dataTransfer.files;
+        if (files && files[0]) {
+            const file = files[0];
+            if (file.type.startsWith('image/')) {
+                if (file.size <= 5 * 1024 * 1024) {
+                    setImageFile(file);
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        setImagePreview(e.target?.result as string);
+                    };
+                    reader.readAsDataURL(file);
+                    setError(null);
+                } else {
+                    setError('A imagem deve ter no máximo 5MB');
+                }
+            } else {
+                setError('Por favor, selecione apenas arquivos de imagem');
+            }
+        }
+    };
+
+    const convertFileToBase64 = (file: File): Promise<string> => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -85,12 +159,25 @@ const ProductModal: React.FC<ProductModalProps> = ({
                 throw new Error('Estoque não pode ser negativo');
             }
 
+            // Preparar dados para envio
+            let dataToSend = { ...formData };
+
+            // Se há uma nova imagem para upload
+            if (imageFile) {
+                try {
+                    const base64Image = await convertFileToBase64(imageFile);
+                    dataToSend.imageUrl = base64Image;
+                } catch (err) {
+                    throw new Error('Erro ao processar a imagem');
+                }
+            }
+
             if (product) {
                 // Editando produto existente
-                await productService.update(product._id, formData);
+                await productService.update(product._id, dataToSend);
             } else {
                 // Criando novo produto
-                await productService.create(formData);
+                await productService.create(dataToSend);
             }
 
             onSave();
@@ -221,20 +308,75 @@ const ProductModal: React.FC<ProductModalProps> = ({
                         </div>
 
                         <div>
-                            <label htmlFor="imageUrl" className="block text-sm font-medium text-gray-700 mb-2">
-                                URL da Imagem
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Imagem do Produto
                             </label>
-                            <input
-                                type="url"
-                                id="imageUrl"
-                                name="imageUrl"
-                                value={formData.imageUrl}
-                                onChange={handleInputChange}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#03B04B] focus:border-[#03B04B]"
-                                placeholder="https://exemplo.com/imagem.jpg"
-                            />
-                            <p className="text-xs text-gray-500 mt-1">
-                                Deixe em branco para usar a imagem padrão da categoria
+                            
+                            {/* Preview da imagem */}
+                            {(imagePreview || formData.imageUrl) && (
+                                <div className="mb-4">
+                                    <div className="relative inline-block">
+                                        <img 
+                                            src={imagePreview || formData.imageUrl} 
+                                            alt="Preview" 
+                                            className="w-32 h-32 object-cover rounded-lg border border-gray-300"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={removeImage}
+                                            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-600"
+                                        >
+                                            ×
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                            
+                            {/* Upload de arquivo */}
+                            <div 
+                                className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+                                    imageFile || imagePreview ? 'border-green-300 bg-green-50' : 'border-gray-300 hover:border-gray-400'
+                                }`}
+                                onDragOver={handleDragOver}
+                                onDrop={handleDrop}
+                            >
+                                <input
+                                    type="file"
+                                    id="imageFile"
+                                    accept="image/*"
+                                    onChange={handleImageChange}
+                                    className="hidden"
+                                />
+                                <label htmlFor="imageFile" className="cursor-pointer">
+                                    <div className="text-gray-400 mb-2">
+                                        <svg className="mx-auto h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                        </svg>
+                                    </div>
+                                    <div className="text-sm text-gray-600">
+                                        {imageFile ? (
+                                            <span className="text-green-600 font-medium">
+                                                ✓ Imagem selecionada: {imageFile.name}
+                                            </span>
+                                        ) : (
+                                            <>
+                                                <span className="font-medium text-[#03B04B] hover:text-green-600">
+                                                    Clique para fazer upload
+                                                </span>
+                                                {' '}ou arraste uma imagem aqui
+                                            </>
+                                        )}
+                                    </div>
+                                    {!imageFile && (
+                                        <p className="text-xs text-gray-500 mt-1">
+                                            PNG, JPG, JPEG até 5MB
+                                        </p>
+                                    )}
+                                </label>
+                            </div>
+                            
+                            <p className="text-xs text-gray-500 mt-2">
+                                Se nenhuma imagem for enviada, será usada a imagem padrão da categoria
                             </p>
                         </div>
 

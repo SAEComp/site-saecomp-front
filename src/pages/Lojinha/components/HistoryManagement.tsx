@@ -199,7 +199,7 @@ const HistoryManagement: React.FC = () => {
             {/* Header with Title and Filters */}
             <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center space-y-4 lg:space-y-0">
                 <div>
-                    <h2 className="text-xl font-semibold text-gray-900">Histórico de Transações</h2>
+                    <h2 className="text-xl font-semibold text-gray-900">Histórico de Alterações</h2>
                     <p className="text-sm text-gray-600 mt-1">
                         Registro de todas as alterações nos produtos da lojinha
                     </p>
