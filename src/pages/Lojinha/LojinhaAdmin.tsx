@@ -3,9 +3,10 @@ import { useNavigate } from 'react-router';
 import ProductsManagement from './components/ProductsManagement';
 import OrdersManagement from './components/OrdersManagement';
 import StatsManagement from './components/StatsManagement';
+import PixManagement from './components/PixManagement';
 import perryGerente from '../../assets/lojinha-icons/perrys/gerente.png';
 
-type TabType = 'stats' | 'products' | 'orders';
+type TabType = 'stats' | 'products' | 'orders' | 'pix';
 
 const LojinhaGerenciamento: React.FC = () => {
     const [activeTab, setActiveTab] = useState<TabType>('stats');
@@ -19,6 +20,8 @@ const LojinhaGerenciamento: React.FC = () => {
                 return <ProductsManagement />;
             case 'orders':
                 return <OrdersManagement />;
+            case 'pix':
+                return <PixManagement />;
             default:
                 return <StatsManagement />;
         }
@@ -96,6 +99,16 @@ const LojinhaGerenciamento: React.FC = () => {
                             }`}
                         >
                             Pedidos
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('pix')}
+                            className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                                activeTab === 'pix'
+                                    ? 'border-green-500 text-green-600'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                            }`}
+                        >
+                            PIX
                         </button>
                     </nav>
                 </div>

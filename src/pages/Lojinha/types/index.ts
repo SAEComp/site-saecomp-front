@@ -92,3 +92,13 @@ export interface ProductFilters {
   sortBy?: 'name' | 'price' | 'createdAt' | 'stock';
   order?: 'asc' | 'desc';
 }
+
+export interface PixSettings {
+  _id?: string;
+  pixKey: string;
+  ownerName: string;
+  city: string;
+  isActive: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}

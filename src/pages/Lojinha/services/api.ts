@@ -7,7 +7,8 @@ import {
   PixPaymentRequest,
   PixPaymentResponse,
   ApiResponse, 
-  ProductFilters 
+  ProductFilters,
+  PixSettings
 } from '../types';
 import authInterceptor from '../../../providers/authInterceptor';
 
@@ -303,6 +304,40 @@ export const getAdminStats = async (): Promise<ApiResponse<{
 
 export const adminService = {
   getStats: getAdminStats
+};
+
+// PIX Settings
+export const getAllPixSettings = async (): Promise<ApiResponse<PixSettings[]>> => {
+  const response = await api.get('/pix-settings');
+  return response.data;
+};
+
+export const getPixSettingsById = async (id: string): Promise<ApiResponse<PixSettings>> => {
+  const response = await api.get(`/pix-settings/${id}`);
+  return response.data;
+};
+
+export const createPixSettings = async (pixData: Omit<PixSettings, '_id' | 'createdAt' | 'updatedAt'>): Promise<ApiResponse<PixSettings>> => {
+  const response = await api.post('/pix-settings', pixData);
+  return response.data;
+};
+
+export const updatePixSettings = async (id: string, pixData: Omit<PixSettings, '_id' | 'createdAt' | 'updatedAt'>): Promise<ApiResponse<PixSettings>> => {
+  const response = await api.put(`/pix-settings/${id}`, pixData);
+  return response.data;
+};
+
+export const deletePixSettings = async (id: string): Promise<ApiResponse<PixSettings>> => {
+  const response = await api.delete(`/pix-settings/${id}`);
+  return response.data;
+};
+
+export const pixService = {
+  getAllPixSettings,
+  getPixSettingsById,
+  createPixSettings,
+  updatePixSettings,
+  deletePixSettings
 };
 
 export default api;

@@ -1201,5 +1201,71 @@
     "updatedAt": "2025-09-06T06:27:22.903Z",
     "paymentId": "pix_1757140012145_1757140012199",
     "notes": " [Cancelado por timeout do PIX]"
+  },
+  {
+    "customerName": "Rodrigo Kurosawa",
+    "items": [
+      {
+        "productId": "8",
+        "name": "Torcida",
+        "price": 5.5,
+        "quantity": 1,
+        "subtotal": 5.5
+      },
+      {
+        "productId": "1",
+        "name": "Coca-Cola",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 10,
+    "status": "cancelado",
+    "paymentStatus": "cancelado",
+    "_id": "1757173735539",
+    "createdAt": "2025-09-06T15:48:55.539Z",
+    "updatedAt": "2025-09-06T15:49:04.191Z",
+    "paymentId": "pix_1757173735539_1757173735601"
+  },
+  {
+    "customerName": "Rodrigo Kurosawa",
+    "items": [
+      {
+        "productId": "1",
+        "name": "Coca-Cola",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "cancelado",
+    "paymentStatus": "cancelado",
+    "_id": "1757173760928",
+    "createdAt": "2025-09-06T15:49:20.931Z",
+    "updatedAt": "2025-09-06T15:49:51.856Z",
+    "paymentId": "pix_1757173760928_1757173760968",
+    "notes": " [Cancelado por timeout do PIX]"
+  },
+  {
+    "customerName": "Cliente Anônimo",
+    "items": [
+      {
+        "productId": "1",
+        "name": "Coca-Cola",
+        "price": 4.5,
+        "quantity": 1,
+        "subtotal": 4.5
+      }
+    ],
+    "totalAmount": 4.5,
+    "status": "cancelado",
+    "paymentStatus": "cancelado",
+    "_id": "1757174684441",
+    "createdAt": "2025-09-06T16:04:44.441Z",
+    "updatedAt": "2025-09-07T19:40:02.982Z",
+    "paymentId": "pix_1757174684441_1757174684498",
+    "notes": " [Cancelado por timeout do PIX]"
   }
 ]

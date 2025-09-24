@@ -6,6 +6,7 @@ import { connectToDatabase } from './config/database';
 import productRoutes from './routes/products';
 import orderRoutes from './routes/orders';
 import paymentRoutes from './routes/payments';
+import pixSettingsRoutes from './routes/pixSettings';
 import errorHandler from './middleware/errorHandler';
 
 // Load environment variables
@@ -44,6 +45,7 @@ app.get('/health', (req: Request, res: Response) => {
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/pix-settings', pixSettingsRoutes);
 
 // Error handling middleware (must be last)
 app.use(errorHandler);
