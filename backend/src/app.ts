@@ -7,6 +7,7 @@ import productRoutes from './routes/products';
 import orderRoutes from './routes/orders';
 import paymentRoutes from './routes/payments';
 import pixSettingsRoutes from './routes/pixSettings';
+import historyRoutes from './routes/history';
 import errorHandler from './middleware/errorHandler';
 
 // Load environment variables
@@ -46,6 +47,7 @@ app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/pix-settings', pixSettingsRoutes);
+app.use('/api/history', historyRoutes);
 
 // Error handling middleware (must be last)
 app.use(errorHandler);

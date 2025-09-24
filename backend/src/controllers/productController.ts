@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
 import Product, { IProduct } from '../models/Product';
+import { logHistoryEntry, generateChanges } from '../utils/historyLogger';
 
 // Fetch all products with filters
 export const getAllProducts = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -144,6 +145,25 @@ export const createProduct = async (req: Request, res: Response, next: NextFunct
 
     const savedProduct = await Product.create(req.body);
 
+    // Registrar no histórico
+    await logHistoryEntry({
+      action: 'CREATE',
+      entityType: 'PRODUCT',
+      entityId: savedProduct._id.toString(),
+      entityName: savedProduct.name,
+      changes: [
+        { field: 'name', newValue: savedProduct.name },
+        { field: 'stock', newValue: savedProduct.stock },
+        { field: 'price', newValue: savedProduct.price },
+        { field: 'category', newValue: savedProduct.category }
+      ],
+      details: {
+        stockChange: savedProduct.stock,
+        previousStock: 0,
+        newStock: savedProduct.stock
+      }
+    });
+
     res.status(201).json({
       success: true,
       data: savedProduct,
@@ -169,22 +189,48 @@ export const updateProduct = async (req: Request, res: Response, next: NextFunct
 
     const { id } = req.params;
     
-    const updatedProduct = await Product.findByIdAndUpdate(
-      id, 
-      { ...req.body, updatedAt: new Date().toISOString() }
-    );
+    // Buscar produto antes da atualização para comparar
+    const originalProduct = await Product.findById(id);
     
-    if (!updatedProduct) {
+    if (!originalProduct) {
       res.status(404).json({
         success: false,
         error: 'Produto não encontrado'
       });
       return;
     }
+    
+    const updatedProduct = await Product.findByIdAndUpdate(
+      id, 
+      { ...req.body, updatedAt: new Date().toISOString() }
+    );
+    
+    // Buscar produto atualizado
+    const refreshedProduct = await Product.findById(id);
+
+    // Gerar mudanças e registrar no histórico
+    const changes = generateChanges(originalProduct.toObject(), refreshedProduct!.toObject());
+    
+    if (changes.length > 0) {
+      const stockChange = originalProduct.stock !== refreshedProduct!.stock;
+      
+      await logHistoryEntry({
+        action: 'UPDATE',
+        entityType: 'PRODUCT',
+        entityId: refreshedProduct!._id.toString(),
+        entityName: refreshedProduct!.name,
+        changes,
+        details: stockChange ? {
+          stockChange: refreshedProduct!.stock - originalProduct.stock,
+          previousStock: originalProduct.stock,
+          newStock: refreshedProduct!.stock
+        } : undefined
+      });
+    }
 
     res.status(200).json({
       success: true,
-      data: updatedProduct,
+      data: refreshedProduct,
       message: 'Produto atualizado com sucesso'
     });
   } catch (error) {
@@ -197,10 +243,7 @@ export const deleteProduct = async (req: Request, res: Response, next: NextFunct
   try {
     const { id } = req.params;
     
-    const product = await Product.findByIdAndUpdate(
-      id,
-      { isActive: false }
-    );
+    const product = await Product.findById(id);
     
     if (!product) {
       res.status(404).json({
@@ -209,6 +252,24 @@ export const deleteProduct = async (req: Request, res: Response, next: NextFunct
       });
       return;
     }
+
+    await Product.findByIdAndUpdate(id, { isActive: false });
+
+    // Registrar no histórico
+    await logHistoryEntry({
+      action: 'DELETE',
+      entityType: 'PRODUCT',
+      entityId: product._id.toString(),
+      entityName: product.name,
+      changes: [
+        { field: 'isActive', oldValue: true, newValue: false }
+      ],
+      details: {
+        stockChange: -product.stock,
+        previousStock: product.stock,
+        newStock: 0
+      }
+    });
 
     res.status(200).json({
       success: true,

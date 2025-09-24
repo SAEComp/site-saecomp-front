@@ -1,0 +1,200 @@
+[
+  {
+    "_id": "hist_1758744164664_77pa7479v",
+    "action": "CREATE",
+    "entityType": "PRODUCT",
+    "entityId": "1",
+    "entityName": "Coca-Cola",
+    "changes": [
+      {
+        "field": "price",
+        "oldValue": null,
+        "newValue": 3.5
+      },
+      {
+        "field": "stock",
+        "oldValue": null,
+        "newValue": 50
+      },
+      {
+        "field": "category",
+        "oldValue": null,
+        "newValue": "Bebidas"
+      }
+    ],
+    "timestamp": "2025-01-20T09:30:00.000Z",
+    "details": "Produto adicionado ao catálogo"
+  },
+  {
+    "_id": "hist_1758744218469_kglxwxgm5",
+    "action": "UPDATE",
+    "entityType": "PRODUCT",
+    "entityId": "1",
+    "entityName": "Coca-Cola",
+    "changes": [
+      {
+        "field": "price",
+        "oldValue": 3.5,
+        "newValue": 4
+      },
+      {
+        "field": "stock",
+        "oldValue": 50,
+        "newValue": 50
+      }
+    ],
+    "timestamp": "2025-01-21T14:15:00.000Z",
+    "details": "Reajuste de preço"
+  },
+  {
+    "_id": "hist_1758744255926_riw73eke0",
+    "action": "UPDATE",
+    "entityType": "PRODUCT",
+    "entityId": "1",
+    "entityName": "Coca-Cola",
+    "changes": [
+      {
+        "field": "price",
+        "oldValue": 4,
+        "newValue": 4
+      },
+      {
+        "field": "stock",
+        "oldValue": 50,
+        "newValue": 80
+      }
+    ],
+    "timestamp": "2025-01-22T10:45:00.000Z",
+    "details": "Reposição de estoque"
+  },
+  {
+    "_id": "hist_1758744280612_1r761xfls",
+    "action": "UPDATE",
+    "entityType": "PRODUCT",
+    "entityId": "1",
+    "entityName": "Coca-Cola",
+    "changes": [
+      {
+        "field": "price",
+        "oldValue": 4,
+        "newValue": 4
+      },
+      {
+        "field": "stock",
+        "oldValue": 80,
+        "newValue": 80
+      },
+      {
+        "field": "description",
+        "oldValue": "Refrigerante cola",
+        "newValue": "Refrigerante cola"
+      }
+    ],
+    "timestamp": "2025-01-22T16:20:00.000Z",
+    "details": "Tentativa de atualização sem mudanças"
+  },
+  {
+    "_id": "hist_1758744290319_o3qd9n31u",
+    "action": "UPDATE",
+    "entityType": "PRODUCT",
+    "entityId": "2",
+    "entityName": "Pepsi",
+    "changes": [
+      {
+        "field": "price",
+        "oldValue": 3,
+        "newValue": 3.8
+      },
+      {
+        "field": "stock",
+        "oldValue": 25,
+        "newValue": 40
+      },
+      {
+        "field": "description",
+        "oldValue": "Refrigerante",
+        "newValue": "Refrigerante de cola sabor original"
+      }
+    ],
+    "timestamp": "2025-01-23T11:30:00.000Z",
+    "details": "Reajuste completo do produto"
+  },
+  {
+    "_id": "hist_1758744298420_3iywqrtqz",
+    "action": "DELETE",
+    "entityType": "PRODUCT",
+    "entityId": "3",
+    "entityName": "Guaraná Antártica",
+    "changes": [
+      {
+        "field": "status",
+        "oldValue": "active",
+        "newValue": "deleted"
+      }
+    ],
+    "timestamp": "2025-01-23T15:45:00.000Z",
+    "details": "Produto descontinuado pelo fornecedor"
+  },
+  {
+    "_id": "hist_1758744307247_59pete550",
+    "action": "CREATE",
+    "entityType": "PRODUCT",
+    "entityId": "4",
+    "entityName": "Kit Kat",
+    "changes": [
+      {
+        "field": "price",
+        "oldValue": null,
+        "newValue": 5.5
+      },
+      {
+        "field": "stock",
+        "oldValue": null,
+        "newValue": 30
+      },
+      {
+        "field": "category",
+        "oldValue": null,
+        "newValue": "Chocolates"
+      },
+      {
+        "field": "supplier",
+        "oldValue": null,
+        "newValue": "Nestlé"
+      }
+    ],
+    "timestamp": "2025-01-24T08:15:00.000Z",
+    "details": "Novo produto adicionado"
+  },
+  {
+    "_id": "hist_1758744319294_b46x28vu8",
+    "action": "UPDATE",
+    "entityType": "PRODUCT",
+    "entityId": "4",
+    "entityName": "Kit Kat",
+    "changes": [
+      {
+        "field": "price",
+        "oldValue": 5.5,
+        "newValue": 5.5
+      },
+      {
+        "field": "stock",
+        "oldValue": 30,
+        "newValue": 45
+      },
+      {
+        "field": "category",
+        "oldValue": "Chocolates",
+        "newValue": "Chocolates"
+      },
+      {
+        "field": "description",
+        "oldValue": "",
+        "newValue": "Chocolate crocante com wafer"
+      }
+    ],
+    "timestamp": "2025-01-24T14:30:00.000Z",
+    "details": "Reposição de estoque e adição de descrição"
+  }
+]

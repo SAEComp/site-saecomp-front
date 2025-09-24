@@ -8,7 +8,9 @@ import {
   PixPaymentResponse,
   ApiResponse, 
   ProductFilters,
-  PixSettings
+  PixSettings,
+  HistoryEntry,
+  HistoryStats
 } from '../types';
 import authInterceptor from '../../../providers/authInterceptor';
 
@@ -338,6 +340,28 @@ export const pixService = {
   createPixSettings,
   updatePixSettings,
   deletePixSettings
+};
+
+// History
+export const getHistory = async (params?: { page?: number; limit?: number; entityType?: string; action?: string }): Promise<ApiResponse<HistoryEntry[]>> => {
+  const queryParams = new URLSearchParams();
+  if (params?.page) queryParams.append('page', params.page.toString());
+  if (params?.limit) queryParams.append('limit', params.limit.toString());
+  if (params?.entityType) queryParams.append('entityType', params.entityType);
+  if (params?.action) queryParams.append('action', params.action);
+  
+  const response = await api.get(`/history?${queryParams.toString()}`);
+  return response.data;
+};
+
+export const getHistoryStats = async (): Promise<ApiResponse<HistoryStats>> => {
+  const response = await api.get('/history/stats');
+  return response.data;
+};
+
+export const historyService = {
+  getHistory,
+  getHistoryStats
 };
 
 export default api;

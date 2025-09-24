@@ -4,9 +4,10 @@ import ProductsManagement from './components/ProductsManagement';
 import OrdersManagement from './components/OrdersManagement';
 import StatsManagement from './components/StatsManagement';
 import PixManagement from './components/PixManagement';
+import HistoryManagement from './components/HistoryManagement';
 import perryGerente from '../../assets/lojinha-icons/perrys/gerente.png';
 
-type TabType = 'stats' | 'products' | 'orders' | 'pix';
+type TabType = 'stats' | 'products' | 'orders' | 'pix' | 'history';
 
 const LojinhaGerenciamento: React.FC = () => {
     const [activeTab, setActiveTab] = useState<TabType>('stats');
@@ -22,6 +23,8 @@ const LojinhaGerenciamento: React.FC = () => {
                 return <OrdersManagement />;
             case 'pix':
                 return <PixManagement />;
+            case 'history':
+                return <HistoryManagement />;
             default:
                 return <StatsManagement />;
         }
@@ -109,6 +112,16 @@ const LojinhaGerenciamento: React.FC = () => {
                             }`}
                         >
                             PIX
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('history')}
+                            className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                                activeTab === 'history'
+                                    ? 'border-green-500 text-green-600'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                            }`}
+                        >
+                            Histórico
                         </button>
                     </nav>
                 </div>
