@@ -65,10 +65,10 @@ export default function Card({
           className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20">
           <div //card
             onClick={(e) => e.stopPropagation()}
-            className={`relative flex justify-center  overflow-hidden h-[90%] w-[300px] sm:w-[350px] md:w-[400px] lg:w-[35%] xl:w-[35%] 2xl:w-[35%] z-30 rounded-3xl ${theme.bgColor} pt-2`}>
+            className={`relative flex justify-center  overflow-hidden h-[90%] w-[95vw] md:w-[60vw] lg:w-[35%] xl:w-[35%] 2xl:w-[35%] z-30 rounded-3xl ${theme.bgColor} pt-2`}>
             <div className="relative flex flex-col w-[40vh] h-[40vh]">
 
-              <div className="absolute inset-3 flex items-center justify-center rounded-full bg-[#D9D9D9]">
+              <div className="absolute inset-3 flex items-center aspect-square justify-center rounded-full bg-[#D9D9D9]">
                 <img
                   src={`${import.meta.env.VITE_FILES}/${classInfo?.teacherId
                     }.jpg`}
@@ -101,15 +101,15 @@ export default function Card({
 
             <div className="absolute bottom-0 left-0 w-full h-[60%] bg-white rounded-3xl overflow-auto">
               <div className="flex flex-col w-full rounded-b-3xl z-10 p-[2%] gap-1 items-center justify-center">
-                <div className="text-lg font-semibold  bg-gray-400 rounded-lg p-1 w-[80%] text-center">
+                <div className="text-lg font-semibold  bg-slate-100 rounded-lg p-1 w-[80%] text-center">
                   {classInfo?.courseName} <br></br> {classInfo?.courseCode}
                 </div>
 
-                <div className="text-lg font-semibold  bg-gray-400 rounded-lg p-1 w-[80%] text-center">
+                <div className="text-lg font-semibold  bg-slate-100 rounded-lg p-1 w-[80%] text-center">
                   {classInfo?.semesterCode}
                 </div>
 
-                <div className="text-lg font-semibold  bg-gray-400 rounded-lg p-1 w-[80%] text-center">
+                <div className="text-lg font-semibold  bg-slate-100 rounded-lg p-1 w-[80%] text-center">
                   {"Nota geral: " + classInfo?.averageScore?.toPrecision(2)}
                 </div>
 
@@ -126,7 +126,7 @@ export default function Card({
                   UniqueEvaluationId.map((evalId) => (
                     <div
                       key={evalId}
-                      className="p-1 bg-gray-400 rounded-xl mb-2 w-[90%] px-[5%]"
+                      className="p-1 bg-slate-100 rounded-xl mb-2 w-[90%] px-[5%]"
                       onClick={() => loadQuestionCard(evalId)}>
                       <div className="text-lg font-semibold mb-2 text-center">
                         <div>Nota: {cardData?.answers.find(answer => answer.evaluationId === evalId && answer.questionId === 47)?.answerText} </div>
