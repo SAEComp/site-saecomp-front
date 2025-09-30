@@ -247,6 +247,12 @@ const FeedbackEdition = () => {
                             </div>
                         )}
                     </div>
+                <div className="h-[100vh] w-[260px] sm:w-[300px] md:w-[300px] lg:w-[20%] xl:w-[20%] 2xl:w-[20%] bg-green-700 rounded-lg">
+                    <ReviewList
+                        detailedAnswerIndex={detailedAnswer?.evaluationId ?? -1}
+                        onReviewClick={handleReviewSelect}
+                        answersList={answersList}
+                    />
                 </div>
                 {!isMobile && (
                     <div
@@ -271,6 +277,7 @@ const FeedbackEdition = () => {
                     </div>
                 </div>
             )}
+            </div>
         </div>
     );
 };
