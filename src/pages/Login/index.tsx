@@ -11,12 +11,15 @@ const Login = () => {
     const google = useGoogle();
     const navigate = useNavigate();
     const location = useLocation();
+    const searchParams = new URLSearchParams(location.search);
     const { login, logout, isAuthenticated, user, googleInitialized, tempCredential } = useAuth();
     const signInDiv = useRef<HTMLDivElement>(null);
     const [nUsp, setNUsp] = useState<string>('');
 
     useEffect(() => {
+        const redirectParam = searchParams.get("redirect");
         const redirect = location.state?.from?.pathname || null;
+        if (user && isAuthenticated && redirectParam) window.location.href = redirectParam; 
         if (user && redirect) navigate(redirect, { replace: true });
     }, [user]);
 
