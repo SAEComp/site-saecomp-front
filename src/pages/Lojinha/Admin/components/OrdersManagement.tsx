@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { orderService } from '../services/api';
-import { Order } from '../types';
-import erroIcon from '../../../assets/lojinha-icons/perrys/ERRO.png';
+import { orderService } from '../../services/api';
+import { Order } from '../../types';
+import erroIcon from '../../../../assets/lojinha-icons/perrys/ERRO.png';
+import ConfirmModal from '../../../../components/Inputs/ConfirmModal';
+import { Table, ITableColumn } from '../../../../components/Inputs';
 
 // Função utilitária para extrair primeiro e último nome
 const getFirstAndLastName = (fullName: string): string => {
@@ -28,6 +30,8 @@ const OrdersManagement: React.FC = () => {
     const [statusFilter, setStatusFilter] = useState<string>('all');
     const [currentPage, setCurrentPage] = useState(1);
     const ORDERS_PER_PAGE = 40;
+    const [showStatusConfirmModal, setShowStatusConfirmModal] = useState(false);
+    const [pendingStatusChange, setPendingStatusChange] = useState<{orderId: string, newStatus: string, message: string} | null>(null);
     
     // Estados para o modal de filtros
     const [showFilterModal, setShowFilterModal] = useState(false);
@@ -95,9 +99,9 @@ const OrdersManagement: React.FC = () => {
                     message = `Ao alterar para "${newStatus}", os itens serão devolvidos ao estoque. Continuar?`;
                 }
                 
-                if (!confirm(message)) {
-                    return; // User cancelled
-                }
+                setPendingStatusChange({ orderId, newStatus, message });
+                setShowStatusConfirmModal(true);
+                return;
             }
 
             await orderService.updateStatus(orderId, newStatus);
@@ -105,6 +109,22 @@ const OrdersManagement: React.FC = () => {
         } catch (err: any) {
             console.error('Error updating order status:', err);
             alert('Erro ao atualizar status: ' + (err.message || 'Erro desconhecido'));
+        }
+    };
+
+    const confirmStatusChange = async () => {
+        if (!pendingStatusChange) return;
+
+        try {
+            await orderService.updateStatus(pendingStatusChange.orderId, pendingStatusChange.newStatus);
+            await loadOrders(); // Recarregar lista
+            setShowStatusConfirmModal(false);
+            setPendingStatusChange(null);
+        } catch (err: any) {
+            console.error('Error updating order status:', err);
+            alert('Erro ao atualizar status: ' + (err.message || 'Erro desconhecido'));
+            setShowStatusConfirmModal(false);
+            setPendingStatusChange(null);
         }
     };
 
@@ -124,6 +144,133 @@ const OrdersManagement: React.FC = () => {
             minute: '2-digit'
         });
     };
+
+    const getStatusClass = (status: string) => {
+        switch (status) {
+            case 'concluído':
+                return 'bg-green-100 text-green-800';
+            case 'cancelado':
+                return 'bg-red-100 text-red-800';
+            default:
+                return 'bg-yellow-100 text-yellow-800';
+        }
+    };
+
+    const columns: ITableColumn<Order>[] = [
+        {
+            key: 'order',
+            title: 'Pedido',
+            render: (_, order) => (
+                <div className="text-sm font-mono font-medium text-gray-900">
+                    #{order._id.slice(-8)}
+                </div>
+            )
+        },
+        {
+            key: 'customer',
+            title: 'Cliente',
+            render: (_, order) => (
+                <div className="text-sm font-medium text-gray-900">
+                    {getFirstAndLastName(order.customerName || '')}
+                </div>
+            )
+        },
+        {
+            key: 'items',
+            title: 'Itens',
+            render: (_, order) => (
+                <div>
+                    <div className="text-sm text-gray-900">
+                        {order.items.length} item{order.items.length !== 1 ? 's' : ''}
+                    </div>
+                    <div className="text-xs text-gray-500 max-w-xs">
+                        {order.items.map(item => `${item.quantity}x ${item.name}`).join(', ')}
+                    </div>
+                </div>
+            ),
+            className: 'px-6 py-4'
+        },
+        {
+            key: 'total',
+            title: 'Total',
+            render: (_, order) => (
+                <span className="text-sm font-medium text-gray-900">
+                    {formatCurrency(order.totalAmount)}
+                </span>
+            )
+        },
+        {
+            key: 'status',
+            title: 'Status',
+            render: (_, order) => (
+                <select
+                    value={order.status}
+                    onChange={(e) => handleStatusChange(order._id, e.target.value)}
+                    className={`text-xs font-medium rounded-full px-2 py-1 border-0 focus:ring-1 focus:ring-[#03B04B] ${getStatusClass(order.status)}`}
+                >
+                    <option value="pendente">Pendente</option>
+                    <option value="concluído">Concluído</option>
+                    <option value="cancelado">Cancelado</option>
+                </select>
+            )
+        },
+        {
+            key: 'date',
+            title: 'Data',
+            render: (_, order) => (
+                <div className="text-sm text-gray-900">
+                    {formatDate(order.createdAt)}
+                </div>
+            )
+        },
+        {
+            key: 'actions',
+            title: 'Ações',
+            align: 'right',
+            render: (_, order) => (
+                <button
+                    onClick={() => setSelectedOrder(order)}
+                    className="text-[#03B04B] hover:text-green-700 text-sm font-medium"
+                >
+                    Ver detalhes
+                </button>
+            )
+        }
+    ];
+
+    const mobileView = (order: Order) => (
+        <div className="p-4">
+            <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-mono text-gray-900">#{order._id.slice(-8)}</span>
+                <span className="text-sm font-medium text-gray-900">
+                    {formatCurrency(order.totalAmount)}
+                </span>
+            </div>
+            <div className="text-sm text-gray-900 mb-1">
+                {getFirstAndLastName(order.customerName || '')}
+            </div>
+            <div className="text-xs text-gray-500 mb-2">
+                {order.items.length} item{order.items.length !== 1 ? 's' : ''} • {formatDate(order.createdAt)}
+            </div>
+            <div className="flex items-center justify-between">
+                <select
+                    value={order.status}
+                    onChange={(e) => handleStatusChange(order._id, e.target.value)}
+                    className={`text-xs font-medium rounded-full px-2 py-1 border-0 focus:ring-1 focus:ring-[#03B04B] ${getStatusClass(order.status)}`}
+                >
+                    <option value="pendente">Pendente</option>
+                    <option value="concluído">Concluído</option>
+                    <option value="cancelado">Cancelado</option>
+                </select>
+                <button
+                    onClick={() => setSelectedOrder(order)}
+                    className="text-[#03B04B] hover:text-green-600 transition-colors text-sm"
+                >
+                    Ver Detalhes
+                </button>
+            </div>
+        </div>
+    );
 
     // Lógica de paginação
     const totalPages = Math.ceil(orders.length / ORDERS_PER_PAGE);
@@ -238,23 +385,23 @@ const OrdersManagement: React.FC = () => {
 
     if (error) {
         return (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-                <div className="flex items-center space-x-3">
+            <div className="flex justify-center items-center min-h-[400px]">
+                <div className="text-center max-w-md">
                     <img 
                         src={erroIcon} 
                         alt="Erro" 
-                        className="w-8 h-8 object-contain"
+                        className="w-24 h-24 mx-auto mb-6 object-contain"
                     />
-                    <div>
-                        <h3 className="text-red-900 font-medium">Erro ao carregar pedidos</h3>
-                        <p className="text-red-700 text-sm mt-1">{error}</p>
-                        <button
-                            onClick={loadOrders}
-                            className="mt-3 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
-                        >
-                            Tentar novamente
-                        </button>
-                    </div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                        Erro ao carregar pedidos
+                    </h3>
+                    <p className="text-gray-600 mb-6">{error}</p>
+                    <button 
+                        onClick={loadOrders}
+                        className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg transition-colors duration-200 font-medium shadow-sm"
+                    >
+                        Tentar Novamente
+                    </button>
                 </div>
             </div>
         );
@@ -319,144 +466,14 @@ const OrdersManagement: React.FC = () => {
             </div>
 
             {/* Lista de pedidos */}
-            <div className="bg-white rounded-lg shadow overflow-hidden">
-                {orders.length > 0 ? (
-                    <>
-                        {/* Versão desktop */}
-                        <div className="hidden md:block overflow-x-auto">
-                            <table className="min-w-full divide-y divide-gray-200">
-                                <thead className="bg-gray-50">
-                                    <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Pedido
-                                        </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Cliente
-                                        </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Itens
-                                        </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Total
-                                        </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Status
-                                        </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Data
-                                        </th>
-                                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Ações
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody className="bg-white divide-y divide-gray-200">
-                                    {currentOrders.map((order) => (
-                                        <tr key={order._id}>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="text-sm font-mono font-medium text-gray-900">
-                                                    #{order._id.slice(-8)}
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="text-sm font-medium text-gray-900">
-                                                    {getFirstAndLastName(order.customerName || '')}
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <div className="text-sm text-gray-900">
-                                                    {order.items.length} item{order.items.length !== 1 ? 's' : ''}
-                                                </div>
-                                                <div className="text-xs text-gray-500 max-w-xs">
-                                                    {order.items.map(item => `${item.quantity}x ${item.name}`).join(', ')}
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                                {formatCurrency(order.totalAmount)}
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <select
-                                                    value={order.status}
-                                                    onChange={(e) => handleStatusChange(order._id, e.target.value)}
-                                                    className={`text-xs font-medium rounded-full px-2 py-1 border-0 focus:ring-1 focus:ring-[#03B04B] ${
-                                                        order.status === 'concluído' 
-                                                            ? 'bg-green-100 text-green-800'
-                                                            : order.status === 'cancelado'
-                                                            ? 'bg-red-100 text-red-800'
-                                                            : 'bg-yellow-100 text-yellow-800'
-                                                    }`}
-                                                >
-                                                    <option value="pendente">Pendente</option>
-                                                    <option value="concluído">Concluído</option>
-                                                    <option value="cancelado">Cancelado</option>
-                                                </select>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                {formatDate(order.createdAt)}
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                <button
-                                                    onClick={() => setSelectedOrder(order)}
-                                                    className="text-[#03B04B] hover:text-green-600 transition-colors"
-                                                >
-                                                    Ver Detalhes
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-
-                        {/* Versão mobile */}
-                        <div className="md:hidden">
-                            {currentOrders.map((order) => (
-                                <div key={order._id} className="p-4 border-b border-gray-200 last:border-b-0">
-                                    <div className="flex items-center justify-between mb-2">
-                                        <span className="text-sm font-mono text-gray-900">#{order._id.slice(-8)}</span>
-                                        <span className="text-sm font-medium text-gray-900">
-                                            {formatCurrency(order.totalAmount)}
-                                        </span>
-                                    </div>
-                                    <div className="text-sm text-gray-900 mb-1">
-                                        {getFirstAndLastName(order.customerName || '')}
-                                    </div>
-                                    <div className="text-xs text-gray-500 mb-2">
-                                        {order.items.length} item{order.items.length !== 1 ? 's' : ''} • {formatDate(order.createdAt)}
-                                    </div>
-                                    <div className="flex items-center justify-between">
-                                        <select
-                                            value={order.status}
-                                            onChange={(e) => handleStatusChange(order._id, e.target.value)}
-                                            className={`text-xs font-medium rounded-full px-2 py-1 border-0 focus:ring-1 focus:ring-[#03B04B] ${
-                                                order.status === 'concluído' 
-                                                    ? 'bg-green-100 text-green-800'
-                                                    : order.status === 'cancelado'
-                                                    ? 'bg-red-100 text-red-800'
-                                                    : 'bg-yellow-100 text-yellow-800'
-                                            }`}
-                                        >
-                                            <option value="pendente">Pendente</option>
-                                            <option value="concluído">Concluído</option>
-                                            <option value="cancelado">Cancelado</option>
-                                        </select>
-                                        <button
-                                            onClick={() => setSelectedOrder(order)}
-                                            className="text-[#03B04B] hover:text-green-600 transition-colors text-sm"
-                                        >
-                                            Ver Detalhes
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </>
-                ) : (
-                    <div className="p-6 text-center">
-                        <p className="text-gray-500">Nenhum pedido encontrado</p>
-                    </div>
-                )}
-            </div>
+            <Table<Order>
+                columns={columns}
+                data={currentOrders}
+                loading={loading}
+                emptyText="Nenhum pedido encontrado"
+                responsive={true}
+                mobileView={mobileView}
+            />
 
             {/* Componente de Paginação */}
             {totalPages > 1 && (
@@ -820,6 +837,21 @@ const OrdersManagement: React.FC = () => {
                     </div>
                 </div>
             )}
+
+            {/* Confirm Status Change Modal */}
+            <ConfirmModal
+                isOpen={showStatusConfirmModal}
+                title="Alterar Status do Pedido"
+                message={pendingStatusChange?.message || ""}
+                confirmText="Confirmar"
+                cancelText="Cancelar"
+                type="warning"
+                onConfirm={confirmStatusChange}
+                onCancel={() => {
+                    setShowStatusConfirmModal(false);
+                    setPendingStatusChange(null);
+                }}
+            />
         </div>
     );
 };

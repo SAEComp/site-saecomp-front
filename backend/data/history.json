@@ -196,5 +196,25 @@
     ],
     "timestamp": "2025-01-24T14:30:00.000Z",
     "details": "Reposição de estoque e adição de descrição"
+  },
+  {
+    "_id": "hist_1758817768539_18xyjuixw",
+    "action": "DELETE",
+    "entityType": "PRODUCT",
+    "entityId": "12",
+    "entityName": "Amendoim",
+    "changes": [
+      {
+        "field": "isActive",
+        "oldValue": true,
+        "newValue": false
+      }
+    ],
+    "timestamp": "2025-09-25T16:29:28.539Z",
+    "details": {
+      "stockChange": -19,
+      "previousStock": 19,
+      "newStock": 0
+    }
   }
 ]

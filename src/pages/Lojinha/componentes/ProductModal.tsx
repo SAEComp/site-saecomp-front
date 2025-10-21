@@ -2,6 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { productService } from '../services/api';
 import { Product } from '../types';
 import erroIcon from '../../../assets/lojinha-icons/perrys/ERRO.png';
+import TextInput from '../../../components/Inputs/TextInput';
+import NumberInput from '../../../components/Inputs/NumberInput';
+import TextareaInput from '../../../components/Inputs/TextareaInput';
+import DropDown, { IOption } from '../../../components/Inputs/DropDown';
+import FileUploadInput from '../../../components/Inputs/FileUploadInput';
 
 interface ProductModalProps {
     product?: Product | null;
@@ -57,77 +62,10 @@ const ProductModal: React.FC<ProductModalProps> = ({
         setError(null);
     }, [product, isOpen]);
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-        const { name, value, type } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: type === 'number' 
-                ? parseFloat(value) || 0
-                : type === 'checkbox'
-                ? (e.target as HTMLInputElement).checked
-                : value
-        }));
-    };
-
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            // Validar tipo de arquivo
-            if (!file.type.startsWith('image/')) {
-                setError('Por favor, selecione apenas arquivos de imagem');
-                return;
-            }
-            
-            // Validar tamanho (max 5MB)
-            if (file.size > 5 * 1024 * 1024) {
-                setError('A imagem deve ter no máximo 5MB');
-                return;
-            }
-            
-            setImageFile(file);
-            
-            // Criar preview
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                setImagePreview(e.target?.result as string);
-            };
-            reader.readAsDataURL(file);
-            
-            setError(null);
-        }
-    };
-
     const removeImage = () => {
         setImageFile(null);
         setImagePreview(null);
         setFormData(prev => ({ ...prev, imageUrl: '' }));
-    };
-
-    const handleDragOver = (e: React.DragEvent) => {
-        e.preventDefault();
-    };
-
-    const handleDrop = (e: React.DragEvent) => {
-        e.preventDefault();
-        const files = e.dataTransfer.files;
-        if (files && files[0]) {
-            const file = files[0];
-            if (file.type.startsWith('image/')) {
-                if (file.size <= 5 * 1024 * 1024) {
-                    setImageFile(file);
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        setImagePreview(e.target?.result as string);
-                    };
-                    reader.readAsDataURL(file);
-                    setError(null);
-                } else {
-                    setError('A imagem deve ter no máximo 5MB');
-                }
-            } else {
-                setError('Por favor, selecione apenas arquivos de imagem');
-            }
-        }
     };
 
     const convertFileToBase64 = (file: File): Promise<string> => {
@@ -223,87 +161,81 @@ const ProductModal: React.FC<ProductModalProps> = ({
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
                                     Nome do Produto *
                                 </label>
-                                <input
-                                    type="text"
-                                    id="name"
-                                    name="name"
+                                <TextInput
+                                    label="Ex: Brigadeiro"
                                     value={formData.name}
-                                    onChange={handleInputChange}
-                                    required
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#03B04B] focus:border-[#03B04B]"
-                                    placeholder="Ex: Brigadeiro"
+                                    onChange={(value) => setFormData(prev => ({ ...prev, name: value }))}
+                                    className="border border-gray-300"
                                 />
                             </div>
 
                             <div>
-                                <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
                                     Categoria *
                                 </label>
-                                <select
-                                    id="category"
-                                    name="category"
-                                    value={formData.category}
-                                    onChange={handleInputChange}
-                                    required
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#03B04B] focus:border-[#03B04B]"
-                                >
-                                    <option value="doces">Doces</option>
-                                    <option value="salgados">Salgados</option>
-                                    <option value="bebidas">Bebidas</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-2">
-                                    Preço (R$) *
-                                </label>
-                                <input
-                                    type="number"
-                                    id="price"
-                                    name="price"
-                                    value={formData.price}
-                                    onChange={handleInputChange}
-                                    required
-                                    min="0"
-                                    step="0.01"
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#03B04B] focus:border-[#03B04B]"
-                                    placeholder="0.00"
+                                <DropDown
+                                    placeholder="Selecione uma categoria"
+                                    options={[
+                                        { id: 'doces', label: 'Doces' },
+                                        { id: 'salgados', label: 'Salgados' },
+                                        { id: 'bebidas', label: 'Bebidas' }
+                                    ]}
+                                    value={formData.category ? { id: formData.category, label: formData.category === 'doces' ? 'Doces' : formData.category === 'salgados' ? 'Salgados' : 'Bebidas' } : null}
+                                    onChange={(option) => setFormData(prev => ({ ...prev, category: (option?.id as 'doces' | 'salgados' | 'bebidas') || 'doces' }))}
+                                    searchable={false}
+                                    clearable={false}
+                                    className="border border-gray-300"
                                 />
                             </div>
 
                             <div>
-                                <label htmlFor="stock" className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Preço (R$) *
+                                </label>
+                                <div className="relative">
+                                    <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">R$</span>
+                                    <input
+                                        type="number"
+                                        value={formData.price}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, price: parseFloat(e.target.value) || 0 }))}
+                                        min="0"
+                                        step="0.01"
+                                        className="block w-full rounded-lg py-3 pl-10 pr-3 text-gray-900 font-inter placeholder-gray-400 placeholder-opacity-100 focus:placeholder-opacity-30 focus:outline-none focus:ring-2 focus:ring-[#03B04B] focus:border-transparent border border-gray-300"
+                                        placeholder="0,00"
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
                                     Estoque
                                 </label>
-                                <input
-                                    type="number"
-                                    id="stock"
-                                    name="stock"
-                                    value={formData.stock}
-                                    onChange={handleInputChange}
-                                    min="0"
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#03B04B] focus:border-[#03B04B]"
-                                    placeholder="0"
+                                <NumberInput
+                                    placeholder="Quantidade em estoque"
+                                    min={0}
+                                    max={999}
+                                    defaultValue={formData.stock}
+                                    onChange={(value) => setFormData(prev => ({ ...prev, stock: value || 0 }))}
+                                    className="border border-gray-300"
                                 />
                             </div>
                         </div>
 
                         <div>
-                            <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
                                 Descrição *
                             </label>
-                            <textarea
-                                id="description"
-                                name="description"
+                            <TextareaInput
+                                label="Descreva o produto..."
                                 value={formData.description}
-                                onChange={handleInputChange}
-                                required
+                                onChange={(value) => setFormData(prev => ({ ...prev, description: value }))}
                                 rows={3}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#03B04B] focus:border-[#03B04B]"
-                                placeholder="Descreva o produto..."
+                                maxLength={500}
+                                required
+                                className="border border-gray-300"
                             />
                         </div>
 
@@ -332,48 +264,23 @@ const ProductModal: React.FC<ProductModalProps> = ({
                                 </div>
                             )}
                             
-                            {/* Upload de arquivo */}
-                            <div 
-                                className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
-                                    imageFile || imagePreview ? 'border-green-300 bg-green-50' : 'border-gray-300 hover:border-gray-400'
-                                }`}
-                                onDragOver={handleDragOver}
-                                onDrop={handleDrop}
-                            >
-                                <input
-                                    type="file"
-                                    id="imageFile"
-                                    accept="image/*"
-                                    onChange={handleImageChange}
-                                    className="hidden"
-                                />
-                                <label htmlFor="imageFile" className="cursor-pointer">
-                                    <div className="text-gray-400 mb-2">
-                                        <svg className="mx-auto h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                                        </svg>
-                                    </div>
-                                    <div className="text-sm text-gray-600">
-                                        {imageFile ? (
-                                            <span className="text-green-600 font-medium">
-                                                ✓ Imagem selecionada: {imageFile.name}
-                                            </span>
-                                        ) : (
-                                            <>
-                                                <span className="font-medium text-[#03B04B] hover:text-green-600">
-                                                    Clique para fazer upload
-                                                </span>
-                                                {' '}ou arraste uma imagem aqui
-                                            </>
-                                        )}
-                                    </div>
-                                    {!imageFile && (
-                                        <p className="text-xs text-gray-500 mt-1">
-                                            PNG, JPG, JPEG até 5MB
-                                        </p>
-                                    )}
-                                </label>
-                            </div>
+                            <FileUploadInput
+                                label="Imagem do Produto"
+                                accept="image/*"
+                                maxSize={5}
+                                onFileSelect={(files) => {
+                                    if (files && files[0]) {
+                                        const file = files[0];
+                                        setImageFile(file);
+                                        const reader = new FileReader();
+                                        reader.onload = (e) => {
+                                            setImagePreview(e.target?.result as string);
+                                        };
+                                        reader.readAsDataURL(file);
+                                        setError(null);
+                                    }
+                                }}
+                            />
                             
                             <p className="text-xs text-gray-500 mt-2">
                                 Se nenhuma imagem for enviada, será usada a imagem padrão da categoria
@@ -384,9 +291,8 @@ const ProductModal: React.FC<ProductModalProps> = ({
                             <label className="flex items-center space-x-2">
                                 <input
                                     type="checkbox"
-                                    name="isActive"
                                     checked={formData.isActive}
-                                    onChange={handleInputChange}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, isActive: e.target.checked }))}
                                     className="rounded border-gray-300 text-[#03B04B] focus:ring-[#03B04B]"
                                 />
                                 <span className="text-sm font-medium text-gray-700">

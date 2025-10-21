@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
-import { useCart } from './hooks/useCart';
-import { PaymentMethod } from './types';
-import { orderService, paymentService } from './services/api';
-import { getProductImageUrl } from './utils/imageUtils';
-import { useAuth } from '../../auth/AuthContext';
-import erroIcon from '../../assets/lojinha-icons/perrys/ERRO.png';
-import concluirIcon from '../../assets/lojinha-icons/perrys/concluir.png';
-import profileIcon from '../../assets/lojinha-icons/perrys/profile.png';
-import timeoutIcon from '../../assets/lojinha-icons/perrys/timeout.png';
+import { useCart } from '../hooks/useCart';
+import { PaymentMethod } from '../types';
+import { orderService, paymentService } from '../services/api';
+import { getProductImageUrl } from '../utils/imageUtils';
+import { useAuth } from '../../../auth/AuthContext';
+import erroIcon from '../../../assets/lojinha-icons/perrys/ERRO.png';
+import concluirIcon from '../../../assets/lojinha-icons/perrys/concluir.png';
+import profileIcon from '../../../assets/lojinha-icons/perrys/profile.png';
+import timeoutIcon from '../../../assets/lojinha-icons/perrys/timeout.png';
+import ConfirmModal from '../../../components/Inputs/ConfirmModal';
 
 const Checkout: React.FC = () => {
     const navigate = useNavigate();
@@ -25,6 +26,7 @@ const Checkout: React.FC = () => {
     const [timeLeft, setTimeLeft] = useState<number | null>(null);
     const [isExpired, setIsExpired] = useState(false);
     const [copied, setCopied] = useState(false);
+    const [showCancelModal, setShowCancelModal] = useState(false);
 
     // Function to get first and last name from full name
     const getFirstAndLastName = (fullName: string): string => {
@@ -74,26 +76,22 @@ const Checkout: React.FC = () => {
         return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
     };
 
-    // Copy PIX code to clipboard
-    const handleCopyPix = async () => {
+    // Copy PIX to clipboard
+    const handleCopyPix = () => {
         if (pixCopyPaste) {
-            try {
-                await navigator.clipboard.writeText(pixCopyPaste);
-                setCopied(true);
-                setTimeout(() => setCopied(false), 2000);
-            } catch (err) {
-                console.error('Failed to copy:', err);
-            }
+            navigator.clipboard.writeText(pixCopyPaste);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
         }
     };
 
-    // Handle order timeout by canceling it and restoring stock
-    const handleOrderTimeout = async (orderIdToCancel: string) => {
+    // Handle order timeout
+    const handleOrderTimeout = async (orderId: string) => {
         try {
-            await orderService.cancelByTimeout(orderIdToCancel);
-            console.log('Order cancelled due to timeout:', orderIdToCancel);
+            await orderService.cancel(orderId);
+            console.log('Order automatically cancelled due to timeout');
         } catch (err) {
-            console.error('Failed to cancel order by timeout:', err);
+            console.error('Error cancelling order on timeout:', err);
         }
     };
 
@@ -136,29 +134,36 @@ const Checkout: React.FC = () => {
                 amount: totalAmount,
                 customerName: customerName
             });
-            if (pixResponse.data?.qrCode) {
+
+            if (pixResponse.success && pixResponse.data) {
                 setQrCodeData(pixResponse.data.qrCode);
-                // Simulate PIX copy-paste code (in real implementation, this would come from the payment service)
-                setPixCopyPaste(pixResponse.data.qrCode);
-                // Start 30-second timer
-                setTimeLeft(30);
+                setPixCopyPaste(pixResponse.data.pixCode);
+                setTimeLeft(30); // 30 seconds timer
+                
+                // Start checking payment status
+                const checkInterval = setInterval(async () => {
+                    try {
+                        const statusResponse = await paymentService.getStatus(newOrderId);
+                        if (statusResponse.success && statusResponse.data?.paymentStatus === 'completo') {
+                            clearInterval(checkInterval);
+                            clearCart();
+                            navigate(`/lojinha/sucesso/${newOrderId}`, { replace: true });
+                        }
+                    } catch (err) {
+                        console.error('Error checking payment status:', err);
+                    }
+                }, 2000);
+
+                // Clear interval after timeout
+                setTimeout(() => {
+                    clearInterval(checkInterval);
+                }, 35000);
             } else {
-                throw new Error('Falha ao gerar código PIX');
+                throw new Error(pixResponse.message || 'Falha ao gerar PIX');
             }
         } catch (err: any) {
-            console.error('Checkout error:', err);
-            let errorMessage = 'Erro ao processar pedido';
-            
-            if (err.message) {
-                errorMessage = err.message;
-            } else if (err.response?.data?.message) {
-                errorMessage = err.response.data.message;
-            } else if (err.code === 'ECONNABORTED') {
-                errorMessage = 'Timeout: Verifique sua conexão e tente novamente';
-            } else if (err.code === 'NETWORK_ERROR') {
-                errorMessage = 'Erro de rede: Verifique sua conexão';
-            }
-            
+            console.error('Error submitting order:', err);
+            const errorMessage = err.response?.data?.message || err.message || 'Erro ao processar pedido. Tente novamente.';
             setError(errorMessage);
         } finally {
             setLoading(false);
@@ -166,18 +171,17 @@ const Checkout: React.FC = () => {
     };
 
     // Handle order cancellation
-    const handleCancelOrder = async () => {
+    const handleCancelOrder = () => {
         if (!orderId) return;
-        
-        const confirmCancel = window.confirm(
-            'Tem certeza que deseja cancelar este pedido? Esta ação não pode ser desfeita.'
-        );
-        
-        if (!confirmCancel) return;
+        setShowCancelModal(true);
+    };
+
+    const confirmCancelOrder = async () => {
+        setShowCancelModal(false);
         
         try {
             setLoading(true);
-            await orderService.cancel(orderId);
+            await orderService.cancel(orderId!);
             clearCart();
             navigate('/lojinha', { 
                 state: { message: 'Pedido cancelado com sucesso' },
@@ -189,6 +193,15 @@ const Checkout: React.FC = () => {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleRetry = () => {
+        setError(null);
+        setQrCodeData(null);
+        setPixCopyPaste(null);
+        setOrderId(null);
+        setTimeLeft(null);
+        setIsExpired(false);
     };
 
     if (cartItems.length === 0) {
@@ -234,6 +247,7 @@ const Checkout: React.FC = () => {
                             </div>
                         ))}
                     </div>
+                    
                     <div className="mt-6 pt-6 border-t border-gray-200">
                         <div className="flex justify-between items-center">
                             <span className="text-xl font-bold text-gray-900">Total:</span>
@@ -316,23 +330,27 @@ const Checkout: React.FC = () => {
                     </div>
                 ) : isExpired ? (
                     /* Payment Expired */
-                    <div className="bg-white rounded-lg shadow-lg p-6">
-                        <div className="text-center">
-                            <img 
-                                src={timeoutIcon} 
-                                alt="Perry Timeout" 
-                                className="w-28 h-28 md:w-32 md:h-32 mx-auto mb-4 object-contain drop-shadow-lg"
-                            />
-                            <h2 className="text-2xl font-bold text-black mb-2">Tempo Expirado</h2>
-                            <p className="text-gray-600 mb-6">
-                                O pedido será cancelado automaticamente
-                            </p>
-                            <div className="flex justify-center">
+                    <div className="text-center py-12">
+                        <img 
+                            src={timeoutIcon} 
+                            alt="Tempo esgotado" 
+                            className="w-24 h-24 mx-auto mb-4 object-contain"
+                        />
+                        <h2 className="text-xl font-bold text-red-600 mb-2">Tempo Esgotado</h2>
+                        <p className="text-gray-600 mb-6">O tempo para pagamento expirou. Tente novamente.</p>
+                        <div className="space-y-3">
+                            <button
+                                onClick={handleRetry}
+                                className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-medium transition"
+                            >
+                                Tentar Novamente
+                            </button>
+                            <div className="text-center">
                                 <button
                                     onClick={() => navigate('/lojinha')}
-                                    className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium flex items-center gap-2"
+                                    className="text-gray-600 hover:text-gray-800 font-medium inline-flex items-center"
                                 >
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                                     </svg>
                                     Voltar
@@ -380,36 +398,27 @@ const Checkout: React.FC = () => {
                                         type="text"
                                         value={pixCopyPaste}
                                         readOnly
-                                        className="flex-1 min-w-0 px-3 sm:px-4 py-2 bg-gray-50 text-xs sm:text-sm font-mono text-left border-0 focus:outline-none text-gray-400 opacity-80"
+                                        className="flex-1 px-4 py-3 text-sm font-mono bg-gray-50 border-0 focus:outline-none"
+                                        style={{ fontSize: '12px' }}
                                     />
                                     <button
                                         onClick={handleCopyPix}
-                                        className={`flex-shrink-0 px-2 sm:px-4 py-2 border-l border-gray-300 transition-colors text-xs sm:text-sm font-medium flex items-center gap-1 ${
+                                        className={`px-6 py-3 font-medium transition-colors ${
                                             copied 
-                                                ? 'bg-green-100 text-green-800' 
-                                                : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                                                ? 'bg-green-600 text-white' 
+                                                : 'bg-gray-600 hover:bg-gray-700 text-white'
                                         }`}
                                     >
-                                        {copied ? (
-                                            <>
-                                                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                                </svg>
-                                                <span className="hidden sm:inline">Copiado!</span>
-                                            </>
-                                        ) : (
-                                            'Copiar'
-                                        )}
+                                        {copied ? 'Copiado!' : 'Copiar'}
                                     </button>
                                 </div>
-                                <p className="text-xs text-gray-500 mt-2 text-center">
-                                    Cole este código no seu aplicativo do banco
-                                </p>
                             </div>
                         )}
                         
-                        <div className="bg-gray-50 rounded-lg p-4 mb-6">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {/* Order Details */}
+                        <div className="bg-gray-50 rounded-lg p-6 mb-6">
+                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Detalhes do Pedido</h3>
+                            <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <span className="text-sm font-medium text-gray-700">Valor:</span>
                                     <p className="text-lg font-bold text-green-600">R$ {totalAmount.toFixed(2)}</p>
@@ -446,6 +455,18 @@ const Checkout: React.FC = () => {
                     </div>
                 )}
             </div>
+            
+            {/* Modal de confirmação de cancelamento */}
+            <ConfirmModal
+                isOpen={showCancelModal}
+                title="Cancelar Pedido"
+                message="Tem certeza que deseja cancelar este pedido? Esta ação não pode ser desfeita."
+                confirmText="Sim, Cancelar"
+                cancelText="Não, Manter Pedido"
+                onConfirm={confirmCancelOrder}
+                onCancel={() => setShowCancelModal(false)}
+                type="danger"
+            />
         </div>
     );
 };

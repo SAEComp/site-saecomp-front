@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { pixService } from '../services/api';
 import { PixSettings } from '../types';
 import erroIcon from '../../../assets/lojinha-icons/perrys/ERRO.png';
+import TextInput from '../../../components/Inputs/TextInput';
 
 interface PixModalProps {
     pixSettings?: PixSettings | null;
@@ -77,13 +78,7 @@ const PixModal: React.FC<PixModalProps> = ({
         }
     };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value, type } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
-        }));
-    };
+
 
     if (!isOpen) return null;
 
@@ -122,63 +117,46 @@ const PixModal: React.FC<PixModalProps> = ({
                     )}
 
                     <div>
-                        <label htmlFor="pixKey" className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
                             Chave PIX *
                         </label>
-                        <input
-                            type="text"
-                            id="pixKey"
-                            name="pixKey"
+                        <TextInput
+                            label="Ex: contato@saecomp.com.br ou (11) 99999-9999"
                             value={formData.pixKey}
-                            onChange={handleChange}
-                            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                            placeholder="Ex: contato@saecomp.com.br ou (11) 99999-9999"
-                            disabled={loading}
-                            required
+                            onChange={(value) => setFormData(prev => ({ ...prev, pixKey: value }))}
+                            className="border border-gray-300"
                         />
                     </div>
 
                     <div>
-                        <label htmlFor="ownerName" className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
                             Nome Completo *
                         </label>
-                        <input
-                            type="text"
-                            id="ownerName"
-                            name="ownerName"
+                        <TextInput
+                            label="Ex: SAEComp - Empresa Júnior"
                             value={formData.ownerName}
-                            onChange={handleChange}
-                            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                            placeholder="Ex: SAEComp - Empresa Júnior"
-                            disabled={loading}
-                            required
+                            onChange={(value) => setFormData(prev => ({ ...prev, ownerName: value }))}
+                            className="border border-gray-300"
                         />
                     </div>
 
                     <div>
-                        <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
                             Cidade *
                         </label>
-                        <input
-                            type="text"
-                            id="city"
-                            name="city"
+                        <TextInput
+                            label="Ex: São Paulo"
                             value={formData.city}
-                            onChange={handleChange}
-                            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                            placeholder="Ex: São Paulo"
-                            disabled={loading}
-                            required
+                            onChange={(value) => setFormData(prev => ({ ...prev, city: value }))}
+                            className="border border-gray-300"
                         />
                     </div>
 
                     <div className="flex items-center">
                         <input
                             type="checkbox"
-                            id="isActive"
-                            name="isActive"
                             checked={formData.isActive}
-                            onChange={handleChange}
+                            onChange={(e) => setFormData(prev => ({ ...prev, isActive: e.target.checked }))}
                             className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
                             disabled={loading}
                         />

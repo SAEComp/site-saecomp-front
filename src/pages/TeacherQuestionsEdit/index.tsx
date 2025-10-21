@@ -25,7 +25,7 @@ const TeacherQuestionsEdit = () =>{
                         Após realizar suas alterações no formulário, você pode descartá-las, retornando o formulário para a última versão salva, ou salvá-las, em que serão apresentadas um sumário das alterações antes de confirmar as mudanças.
                     </span>
                 </div>
-                <FormMaker/>
+      <FormMaker/          >
             </div>
         </div>
     )

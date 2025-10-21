@@ -1,10 +1,13 @@
+import { useState } from 'react';
 import { Link } from 'react-router';
 import { useCart } from '../hooks/useCart';
 import { getProductImageUrl } from '../utils/imageUtils';
 import carrinhoIcon from '../../../assets/lojinha-icons/perrys/carrinho.png';
+import ConfirmModal from '../../../components/Inputs/ConfirmModal';
 
 const Cart = () => {
     const { state, removeItem, updateQuantity, clearCart, getTotalPrice, getTotalItems } = useCart();
+    const [showClearModal, setShowClearModal] = useState(false);
 
     const handleQuantityChange = (productId: string, quantity: number) => {
         if (quantity <= 0) {
@@ -15,9 +18,12 @@ const Cart = () => {
     };
 
     const handleClearCart = () => {
-        if (window.confirm('Tem certeza que deseja limpar todo o carrinho?')) {
-            clearCart();
-        }
+        setShowClearModal(true);
+    };
+
+    const confirmClearCart = () => {
+        clearCart();
+        setShowClearModal(false);
     };
 
     if (state.items.length === 0) {
@@ -158,6 +164,18 @@ const Cart = () => {
                     </div>
                 </div>
             </div>
+            
+            {/* Confirm Clear Modal */}
+            <ConfirmModal
+                isOpen={showClearModal}
+                title="Limpar Carrinho"
+                message="Tem certeza que deseja remover todos os itens do carrinho? Esta ação não pode ser desfeita."
+                confirmText="Limpar"
+                cancelText="Cancelar"
+                type="warning"
+                onConfirm={confirmClearCart}
+                onCancel={() => setShowClearModal(false)}
+            />
         </div>
     );
 };

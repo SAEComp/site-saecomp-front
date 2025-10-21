@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
-import ProductsManagement from './components/ProductsManagement';
-import OrdersManagement from './components/OrdersManagement';
-import StatsManagement from './components/StatsManagement';
-import PixManagement from './components/PixManagement';
-import HistoryManagement from './components/HistoryManagement';
-import perryGerente from '../../assets/lojinha-icons/perrys/gerente.png';
+import { 
+    StatsManagement, 
+    ProductsManagement, 
+    OrdersManagement, 
+    HistoryManagement, 
+    PixManagement 
+} from './components';
+import perryGerente from '../../../assets/lojinha-icons/perrys/gerente.png';
 
 type TabType = 'stats' | 'products' | 'orders' | 'pix' | 'history';
 

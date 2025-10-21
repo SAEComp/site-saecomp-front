@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { pixService } from '../services/api';
-import { PixSettings } from '../types';
-import PixModal from './PixModal';
-import erroIcon from '../../../assets/lojinha-icons/perrys/ERRO.png';
+import { pixService } from '../../services/api';
+import { PixSettings } from '../../types';
+import { PixModal } from '../../componentes';
+import erroIcon from '../../../../assets/lojinha-icons/perrys/ERRO.png';
+import ConfirmModal from '../../../../components/Inputs/ConfirmModal';
 
 const PixManagement: React.FC = () => {
     const [pixSettings, setPixSettings] = useState<PixSettings[]>([]);
@@ -10,6 +11,8 @@ const PixManagement: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingPixSettings, setEditingPixSettings] = useState<PixSettings | null>(null);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [deletingPixId, setDeletingPixId] = useState<string | null>(null);
 
     useEffect(() => {
         loadPixSettings();
@@ -53,15 +56,24 @@ const PixManagement: React.FC = () => {
         setIsModalOpen(true);
     };
 
-    const handleDeletePixSettings = async (id: string) => {
-        if (window.confirm('Tem certeza que deseja remover esta chave PIX?')) {
-            try {
-                await pixService.deletePixSettings(id);
-                await loadPixSettings();
-            } catch (err: any) {
-                console.error('Erro ao deletar chave PIX:', err);
-                setError(err.message || 'Erro ao deletar chave PIX');
-            }
+    const handleDeletePixSettings = (id: string) => {
+        setDeletingPixId(id);
+        setShowDeleteModal(true);
+    };
+
+    const confirmDeletePix = async () => {
+        if (!deletingPixId) return;
+        
+        try {
+            await pixService.deletePixSettings(deletingPixId);
+            await loadPixSettings();
+            setShowDeleteModal(false);
+            setDeletingPixId(null);
+        } catch (err: any) {
+            console.error('Erro ao deletar chave PIX:', err);
+            setError(err.message || 'Erro ao deletar chave PIX');
+            setShowDeleteModal(false);
+            setDeletingPixId(null);
         }
     };
 
@@ -233,6 +245,21 @@ const PixManagement: React.FC = () => {
                     setEditingPixSettings(null);
                 }}
                 onSave={handleSavePixSettings}
+            />
+            
+            {/* Confirm Delete Modal */}
+            <ConfirmModal
+                isOpen={showDeleteModal}
+                title="Remover Chave PIX"
+                message="Tem certeza que deseja remover esta chave PIX? Esta ação não pode ser desfeita."
+                confirmText="Remover"
+                cancelText="Cancelar"
+                type="danger"
+                onConfirm={confirmDeletePix}
+                onCancel={() => {
+                    setShowDeleteModal(false);
+                    setDeletingPixId(null);
+                }}
             />
         </div>
     );

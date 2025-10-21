@@ -232,7 +232,7 @@ export const getAdminStats = async (): Promise<ApiResponse<{
   totalOrders: number;
   totalRevenue: number;
   completedOrders: number;
-  pendingOrders: number;
+  totalItemsSold: number;
   totalProductsInStock: number;
   totalItemsInStock: number;
   topProducts: Array<{
@@ -289,13 +289,16 @@ export const getAdminStats = async (): Promise<ApiResponse<{
   // Calcular total de itens em estoque (soma de todas as quantidades)
   const totalItemsInStock = products.reduce((total, product) => total + product.stock, 0);
   
+  // Calcular total de itens vendidos (soma de todas as quantidades vendidas)
+  const totalItemsSold = Object.values(productStats).reduce((total, stats) => total + stats.quantity, 0);
+  
   return {
     success: true,
     data: {
       totalOrders: orders.length,
       totalRevenue,
       completedOrders: completedOrders.length,
-      pendingOrders: orders.filter(order => order.status === 'pendente').length,
+      totalItemsSold,
       totalProductsInStock,
       totalItemsInStock,
       topProducts,
