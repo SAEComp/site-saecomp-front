@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { productService } from '../services/api';
 import { Product } from '../types';
 import erroIcon from '../../../assets/lojinha-icons/perrys/ERRO.png';

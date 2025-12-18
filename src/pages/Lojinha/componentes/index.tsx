@@ -4,7 +4,6 @@ export { default as CategoryTabs } from './CategoryTabs';
 export { default as ProductModal } from './ProductModal';
 export { default as PixModal } from './PixModal';
 export { default as StockIndicator } from './StockIndicator';
-export { default as Cart } from './Cart';
 
 // Componentes de estado reutilizáveis
 export { LoadingState } from './LoadingState';

@@ -2,7 +2,7 @@
  * Utility functions for handling image URLs and other assets
  */
 
-const API_BASE_URL = import.meta.env.VITE_LOJINHA_API_URL || 'http://localhost:5001/api';
+const API_BASE_URL = import.meta.env.VITE_LOJINHA_API_URL || 'https://api.saecomp.com.br/api';
 const BACKEND_BASE_URL = API_BASE_URL.replace('/api', '');
 
 /**

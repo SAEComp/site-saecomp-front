@@ -14,7 +14,7 @@ import {
 } from '../types';
 import authInterceptor from '../../../providers/authInterceptor';
 
-const API_BASE_URL = import.meta.env.VITE_LOJINHA_API_URL || '/api';
+const API_BASE_URL = import.meta.env.VITE_LOJINHA_API_URL || 'https://api.saecomp.com.br/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -104,12 +104,6 @@ export const deleteProduct = async (id: string): Promise<ApiResponse<any>> => {
 export const updateStock = async (id: string, stock: number): Promise<ApiResponse<Product>> => {
   const response = await api.patch(`/products/${id}/stock`, { stock });
   return response.data;
-};
-
-// Legacy function for backward compatibility
-export const fetchProducts = async (filters?: ProductFilters): Promise<Product[]> => {
-  const response = await getProducts(filters);
-  return response.data || [];
 };
 
 // Pedidos
@@ -204,7 +198,6 @@ export const productService = {
   getAll: getProducts,
   getById: getProductById,
   getByCategory: getProductsByCategory,
-  fetchData: fetchProducts,
   create: createProduct,
   update: updateProduct,
   delete: deleteProduct,
@@ -242,7 +235,7 @@ export const getAdminStats = async (): Promise<ApiResponse<{
   }>;
   recentOrders: Order[];
 }>> => {
-  // Para agora, vamos simular os dados até que o backend implemente estas estatísticas
+  // Calcular estatísticas a partir dos dados de pedidos e produtos
   const ordersResponse = await getAllOrders({ limit: 100 });
   const orders = ordersResponse.data || [];
   

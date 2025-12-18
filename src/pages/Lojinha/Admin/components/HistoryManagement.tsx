@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { historyService, productService } from '../../services/api';
 import { HistoryEntry, Product } from '../../types';
 import { getProductImageUrl } from '../../utils/imageUtils';

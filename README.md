@@ -2,14 +2,15 @@
 
 ## Lojinha Integrada
 
-Este projeto agora inclui a **Lojinha SAEComp** totalmente integrada! 🛒
+Este projeto inclui a **Lojinha SAEComp** totalmente integrada ao site! 🛒
 
 ### Backend da Lojinha
-O backend está localizado em `backend/` e oferece uma API REST completa para:
+O backend está centralizado no repositório `site-saecomp-back-lojinha` e oferece uma API REST completa para:
 - Gerenciamento de produtos (doces, salgados, bebidas)
 - Sistema de pedidos
-- Integração com pagamentos PIX
-- Banco de dados local (JSON)
+- Integração com pagamentos via Mercado Pago
+- Banco de dados PostgreSQL compartilhado
+- Autenticação unificada com o sistema principal
 
 ### Frontend da Lojinha
 Interface moderna e responsiva integrada ao site principal:
@@ -17,15 +18,15 @@ Interface moderna e responsiva integrada ao site principal:
 - Carrinho de compras
 - Sistema de checkout
 - Área administrativa (requer permissões)
+- Totalmente independente do backend
 
 ## Como rodar para desenvolvimento
 
 ### Configuração Inicial
 1. **Instalar dependências:**
 ```bash
-npm run setup
+npm install
 ```
-Isso instalará as dependências do frontend e backend automaticamente.
 
 2. **Configurar variáveis de ambiente (.env):**
 ```ini
@@ -34,68 +35,52 @@ VITE_TEACHER_EVALUATION_API_URL=
 VITE_AUTH_API_URL=
 VITE_GOOGLE_CLIENT_ID=
 
-# Lojinha Backend (já configurado)
-VITE_LOJINHA_API_URL=http://localhost:5001/api
+# Lojinha Backend (apontando para produção por padrão)
+VITE_LOJINHA_API_URL=https://api.saecomp.com.br/api
 VITE_APP_NAME=SAEComp
 VITE_NODE_ENV=development
 ```
 
+Para desenvolvimento local, você pode configurar `VITE_LOJINHA_API_URL` para apontar para um backend local (ex: `http://localhost:5001/api`).
+
 ### Desenvolvimento
 
-**Opção 1 - Tudo junto (recomendado):**
 ```bash
-npm run dev:full
-```
-Isso iniciará o backend (porta 5001) e frontend (porta 5173) simultaneamente.
-
-**Opção 2 - Separadamente:**
-```bash
-# Terminal 1 - Backend
-npm run backend:dev
-
-# Terminal 2 - Frontend  
 npm run dev
 ```
+Isso iniciará o frontend na porta 5173.
 
 ### Scripts Disponíveis
 
-#### Frontend + Backend
-- `npm run setup` - Instala dependências de ambos
-- `npm run dev:full` - Inicia frontend e backend juntos
-- `npm run dev` - Apenas frontend
-- `npm run build` - Build do frontend
+#### Frontend
+- `npm run dev` - Inicia o frontend em modo desenvolvimento
+- `npm run build` - Build do frontend para produção
+- `npm run preview` - Preview do build de produção
+- `npm run lint` - Executa o linter
 
-#### Backend (Lojinha)
-- `npm run backend:install` - Instala dependências do backend
-- `npm run backend:dev` - Backend em modo desenvolvimento
-- `npm run backend:build` - Build do backend
-- `npm run backend:start` - Inicia backend em produção
+#### Deploy
+- `npm run predeploy` - Prepara o build para deploy
+- `npm run deploy` - Faz deploy para GitHub Pages
 
 ## Acessos
 
-### Frontend
+### Frontend (Desenvolvimento)
 - **Site principal:** http://localhost:5173
 - **Lojinha:** http://localhost:5173/lojinha
 
-### Backend API
-- **Health check:** http://localhost:5001/health
-- **Produtos:** http://localhost:5001/api/products
-- **Documentação completa:** `backend/README.md`
+### Backend API (Produção)
+- **API Principal:** https://api.saecomp.com.br/api
+- **Repositório do Backend:** site-saecomp-back-lojinha
 
 ## Estrutura da Lojinha
 
 ```
-backend/                    # Backend da lojinha
-├── src/                   # Código fonte TypeScript
-├── data/                  # Banco de dados JSON
-├── dist/                  # Código compilado
-└── README.md             # Documentação detalhada
-
 src/pages/Lojinha/         # Frontend da lojinha
 ├── components/           # Componentes específicos
 ├── services/            # Serviços de API
 ├── types/              # Tipos TypeScript
-└── hooks/              # Hooks personalizados
+├── hooks/              # Hooks personalizados
+└── utils/              # Funções utilitárias
 ```
 
 ## Funcionalidades da Lojinha

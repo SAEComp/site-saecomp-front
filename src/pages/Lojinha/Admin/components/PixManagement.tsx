@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { pixService } from '../../services/api';
 import { PixSettings } from '../../types';
 import { PixModal } from '../../componentes';
