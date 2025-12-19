@@ -19,9 +19,9 @@ const PixModal: React.FC<PixModalProps> = ({
 }) => {
     const [formData, setFormData] = useState({
         pixKey: '',
-        ownerName: '',
-        city: '',
-        isActive: true
+        nameAccount: '',
+        cityAccount: '',
+        tokenAccount: ''
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -30,16 +30,16 @@ const PixModal: React.FC<PixModalProps> = ({
         if (pixSettings) {
             setFormData({
                 pixKey: pixSettings.pixKey,
-                ownerName: pixSettings.ownerName,
-                city: pixSettings.city,
-                isActive: pixSettings.isActive
+                nameAccount: pixSettings.nameAccount,
+                cityAccount: pixSettings.cityAccount,
+                tokenAccount: pixSettings.tokenAccount || ''
             });
         } else {
             setFormData({
                 pixKey: '',
-                ownerName: '',
-                city: '',
-                isActive: true
+                nameAccount: '',
+                cityAccount: '',
+                tokenAccount: ''
             });
         }
         setError(null);
@@ -48,7 +48,7 @@ const PixModal: React.FC<PixModalProps> = ({
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         
-        if (!formData.pixKey.trim() || !formData.ownerName.trim() || !formData.city.trim()) {
+        if (!formData.pixKey.trim() || !formData.nameAccount.trim() || !formData.cityAccount.trim() || !formData.tokenAccount.trim()) {
             setError('Todos os campos são obrigatórios');
             return;
         }
@@ -59,10 +59,10 @@ const PixModal: React.FC<PixModalProps> = ({
         try {
             if (pixSettings?._id) {
                 // Atualizar configuração existente
-                await pixService.updatePixSettings(pixSettings._id, formData);
+                await pixService.create(formData); // Backend não tem rota PUT, usa POST
             } else {
                 // Criar nova configuração
-                await pixService.createPixSettings(formData);
+                await pixService.create(formData);
             }
             onSave();
         } catch (err: any) {
@@ -134,8 +134,8 @@ const PixModal: React.FC<PixModalProps> = ({
                         </label>
                         <TextInput
                             label="Ex: SAEComp - Empresa Júnior"
-                            value={formData.ownerName}
-                            onChange={(value) => setFormData(prev => ({ ...prev, ownerName: value }))}
+                            value={formData.nameAccount}
+                            onChange={(value) => setFormData(prev => ({ ...prev, nameAccount: value }))}
                             className="border border-gray-300"
                         />
                     </div>
@@ -146,23 +146,22 @@ const PixModal: React.FC<PixModalProps> = ({
                         </label>
                         <TextInput
                             label="Ex: São Paulo"
-                            value={formData.city}
-                            onChange={(value) => setFormData(prev => ({ ...prev, city: value }))}
+                            value={formData.cityAccount}
+                            onChange={(value) => setFormData(prev => ({ ...prev, cityAccount: value }))}
                             className="border border-gray-300"
                         />
                     </div>
 
-                    <div className="flex items-center">
-                        <input
-                            type="checkbox"
-                            checked={formData.isActive}
-                            onChange={(e) => setFormData(prev => ({ ...prev, isActive: e.target.checked }))}
-                            className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
-                            disabled={loading}
-                        />
-                        <label htmlFor="isActive" className="ml-2 text-sm text-gray-700">
-                            Chave PIX ativa
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Token Mercado Pago *
                         </label>
+                        <TextInput
+                            label="Ex: APP_USR-1234567890..."
+                            value={formData.tokenAccount}
+                            onChange={(value) => setFormData(prev => ({ ...prev, tokenAccount: value }))}
+                            className="border border-gray-300"
+                        />
                     </div>
 
                     <div className="flex space-x-3 pt-4">

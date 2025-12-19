@@ -80,8 +80,9 @@ export interface ProductFilters {
 export interface PixSettings {
   id: number;
   pixKey: string;
-  ownerName: string;
-  city: string;
+  nameAccount: string;
+  cityAccount: string;
+  tokenAccount: string;
 }
 
 export interface ProductStatistics {

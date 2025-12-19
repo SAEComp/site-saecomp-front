@@ -10,6 +10,7 @@ import { useCart } from "../../pages/Lojinha/hooks/useCart.tsx";
 import homeIcon from '../../assets/lojinha-icons/Home.png';
 import carrinhoIcon from '../../assets/lojinha-icons/carrinho.png';
 import loginIcon from '../../assets/lojinha-icons/Login.png';
+import ConfirmModal from "../Inputs/ConfirmModal.tsx";
 
 
 const NavBar = () => {
@@ -18,6 +19,7 @@ const NavBar = () => {
     const { user, isAuthenticated } = useAuth();
     const { getTotalItems } = useCart();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [showLoginModal, setShowLoginModal] = useState(false);
     
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
     
@@ -26,6 +28,23 @@ const NavBar = () => {
     
     // Obtém a quantidade de itens no carrinho
     const cartItemCount = getTotalItems();
+    
+    // Função para lidar com clique na lojinha
+    const handleLojinhaClick = (e: React.MouseEvent) => {
+        if (!isAuthenticated) {
+            e.preventDefault();
+            setShowLoginModal(true);
+            toggleMenu();
+        } else {
+            toggleMenu();
+        }
+    };
+    
+    // Função para redirecionar para login
+    const handleGoToLogin = () => {
+        setShowLoginModal(false);
+        navigate('/login');
+    };
 
     return (
         <div className="h-[100px] w-screen bg-[#03B04B] flex items-center justify-between z-10 px-[3%] sm:px-[5%] sticky top-0">
@@ -43,7 +62,7 @@ const NavBar = () => {
                         )}
                         
                         <NavButton navigateTo="/saecomp" onClick={toggleMenu}>A SAEComp</NavButton>
-                        <NavButton navigateTo="/lojinha" onClick={toggleMenu}>Lojinha</NavButton>
+                        <NavButton navigateTo="/lojinha" onClick={handleLojinhaClick}>Lojinha</NavButton>
                         <NavButton navigateTo="/manual" onClick={toggleMenu}>Manual</NavButton>
                         <NavButton navigateTo="/avaliacoes" onClick={toggleMenu}>Avaliação de Professores</NavButton>
                         <NavButton navigateTo="/enfases" onClick={toggleMenu}>Ênfases</NavButton>
@@ -111,8 +130,18 @@ const NavBar = () => {
                         )
                     }
                 </div>
-            )}
-        </div>
+            )}            
+            {/* Modal de aviso de login */}
+            <ConfirmModal
+                isOpen={showLoginModal}
+                title="Autenticação Necessária"
+                message="Você precisa estar logado para acessar a lojinha. Deseja ir para a página de login?"
+                confirmText="Ir para Login"
+                cancelText="Cancelar"
+                onConfirm={handleGoToLogin}
+                onCancel={() => setShowLoginModal(false)}
+                type="info"
+            />        </div>
     );
 };
 

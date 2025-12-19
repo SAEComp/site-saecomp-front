@@ -51,43 +51,40 @@ const routes = createBrowserRouter([
             },
             {
                 path: "lojinha",
-                element: <LojinhaLayout />,
+                element: <RequireAuth />,
                 children: [
                     {
-                        index: true,
-                        element: <Lojinha />,
-                    },
-                    {
-                        path: "loja",
-                        element: <Lojinha />,
-                    },
-                    {
-                        path: "produto/:id",
-                        element: <ProductDetails />,
-                    },
-                    {
-                        path: "carrinho",
-                        element: <CartPage />,
-                    },
-                    {
-                        path: "checkout",
-                        element: <Checkout />,
-                    },
-                    {
-                        path: "sucesso/:orderId",
-                        element: <OrderSuccess />,
-                    },
-                    {
-                        path: "admin",
-                        element: <RequireAuth />,
+                        element: <LojinhaLayout />,
                         children: [
                             {
                                 index: true,
-                                element: <AuthPermissions permissions={["users:edit"]}>
-                                    <LojinhaGerenciamento />
-                                </AuthPermissions>,
-                            }
-                        ]
+                                element: <Lojinha />,
+                            },
+                            {
+                                path: "loja",
+                                element: <Lojinha />,
+                            },
+                            {
+                                path: "produto/:id",
+                                element: <ProductDetails />,
+                            },
+                            {
+                                path: "carrinho",
+                                element: <CartPage />,
+                            },
+                            {
+                                path: "checkout",
+                                element: <Checkout />,
+                            },
+                            {
+                                path: "sucesso/:orderId",
+                                element: <OrderSuccess />,
+                            },
+                            {
+                                path: "admin",
+                                element: <LojinhaGerenciamento />,
+                            },
+                        ],
                     },
                 ],
             },

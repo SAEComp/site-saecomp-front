@@ -12,7 +12,7 @@ const PixManagement: React.FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingPixSettings, setEditingPixSettings] = useState<PixSettings | null>(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [deletingPixId, setDeletingPixId] = useState<string | null>(null);
+    const [deletingPixId, setDeletingPixId] = useState<number | null>(null);
 
     useEffect(() => {
         loadPixSettings();
@@ -22,7 +22,7 @@ const PixManagement: React.FC = () => {
         try {
             setLoading(true);
             setError(null);
-            const response = await pixService.getAllPixSettings();
+            const response = await pixService.getAll();
             if (response.success && response.data) {
                 setPixSettings(response.data);
             } else {
@@ -56,7 +56,7 @@ const PixManagement: React.FC = () => {
         setIsModalOpen(true);
     };
 
-    const handleDeletePixSettings = (id: string) => {
+    const handleDeletePixSettings = (id: number) => {
         setDeletingPixId(id);
         setShowDeleteModal(true);
     };
@@ -65,7 +65,7 @@ const PixManagement: React.FC = () => {
         if (!deletingPixId) return;
         
         try {
-            await pixService.deletePixSettings(deletingPixId);
+            await pixService.delete(deletingPixId);
             await loadPixSettings();
             setShowDeleteModal(false);
             setDeletingPixId(null);
@@ -139,7 +139,7 @@ const PixManagement: React.FC = () => {
                     {pixSettings.length > 0 ? (
                         <div className="space-y-4">
                             {pixSettings.map((pixSetting) => (
-                                <div key={pixSetting._id} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                                <div key={pixSetting.id} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
                                     <div className="flex items-start justify-between">
                                         <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
                                             <div>
@@ -156,7 +156,7 @@ const PixManagement: React.FC = () => {
                                                     Nome Completo
                                                 </label>
                                                 <div className="bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-900">
-                                                    {pixSetting.ownerName}
+                                                    {pixSetting.nameAccount}
                                                 </div>
                                             </div>
                                             
@@ -165,7 +165,7 @@ const PixManagement: React.FC = () => {
                                                     Cidade
                                                 </label>
                                                 <div className="bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-900">
-                                                    {pixSetting.city}
+                                                    {pixSetting.cityAccount}
                                                 </div>
                                             </div>
                                         </div>
@@ -181,7 +181,7 @@ const PixManagement: React.FC = () => {
                                                 </svg>
                                             </button>
                                             <button
-                                                onClick={() => pixSetting._id && handleDeletePixSettings(pixSetting._id)}
+                                                onClick={() => pixSetting.id && handleDeletePixSettings(pixSetting.id)}
                                                 className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-colors"
                                                 title="Remover chave PIX"
                                             >
@@ -190,21 +190,6 @@ const PixManagement: React.FC = () => {
                                                 </svg>
                                             </button>
                                         </div>
-                                    </div>
-                                    
-                                    <div className="mt-4 flex items-center justify-between">
-                                        <div className="flex items-center space-x-2">
-                                            <div className={`w-3 h-3 rounded-full ${pixSetting.isActive ? 'bg-green-500' : 'bg-red-500'}`}></div>
-                                            <span className={`text-sm font-medium ${pixSetting.isActive ? 'text-green-700' : 'text-red-700'}`}>
-                                                {pixSetting.isActive ? 'Ativa' : 'Inativa'}
-                                            </span>
-                                        </div>
-                                        
-                                        {pixSetting.updatedAt && (
-                                            <div className="text-xs text-gray-500">
-                                                Atualizada em: {new Date(pixSetting.updatedAt).toLocaleString('pt-BR')}
-                                            </div>
-                                        )}
                                     </div>
                                 </div>
                             ))}

@@ -12,7 +12,7 @@ import {
 } from '../types';
 import authInterceptor from '../../../providers/authInterceptor';
 
-const API_BASE_URL = import.meta.env.VITE_LOJINHA_API_URL || 'https://api.saecomp.com.br/api/lojinha';
+const API_BASE_URL = import.meta.env.VITE_LOJINHA_API_URL || 'http://localhost:3000/api/lojinha';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -48,7 +48,15 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response: AxiosResponse) => response,
   (error) => {
-    console.error('API Error:', error);
+    // Não logar erros 404 de carrinho (são esperados após finalizar pedido)
+    const isCartNotFound = error.response?.status === 404 && 
+                          error.config?.url?.includes('/cart') &&
+                          (error.response?.data?.message?.includes('Carrinho inexistente') || 
+                           error.response?.data?.message?.includes('Cart not found'));
+    
+    if (!isCartNotFound) {
+      console.error('API Error:', error);
+    }
     
     // Erro de autenticação (apenas loga, não redireciona)
     if (error.response?.status === 401) {
@@ -103,11 +111,11 @@ export const getProducts = async (filters?: ProductFilters): Promise<ApiResponse
 
 export const getProductById = async (id: number): Promise<ApiResponse<Product>> => {
   const response = await api.get('/product', {
-    params: { id }
+    params: { productId: id }
   });
   return {
     success: true,
-    data: response.data.product
+    data: response.data
   };
 };
 
@@ -166,18 +174,20 @@ export const getCart = async (): Promise<ApiResponse<Cart>> => {
   const response = await api.get('/cart');
   return {
     success: true,
-    data: response.data.cart
+    data: response.data
   };
 };
 
 export const addToCart = async (productId: number, quantity: number): Promise<ApiResponse<Cart>> => {
-  const response = await api.post('/cart', {
+  await api.post('/cart', {
     productId,
     quantity
   });
+  // Após adicionar, buscar o carrinho atualizado
+  const cartResponse = await api.get('/cart');
   return {
     success: true,
-    data: response.data.cart
+    data: cartResponse.data
   };
 };
 
@@ -203,17 +213,26 @@ export const clearCart = async (): Promise<ApiResponse<any>> => {
 // PEDIDOS E PAGAMENTOS
 // ======================
 
-export const finishOrder = async (): Promise<ApiResponse<PixPaymentResponse>> => {
-  const response = await api.post('/finish-order');
+export const finishOrder = async (): Promise<ApiResponse<PixPaymentResponse & { buyOrderId: number }>> => {
+  // Primeiro busca o carrinho para pegar o buyOrderId
+  const cartResponse = await api.get('/cart');
+  const buyOrderId = cartResponse.data.id;
+  
+  const response = await api.post('/finish-order', {
+    buyOrderId
+  });
   return {
     success: true,
-    data: response.data
+    data: {
+      ...response.data,
+      buyOrderId // Retorna o buyOrderId para uso futuro
+    }
   };
 };
 
-export const cancelPayment = async (paymentId: number): Promise<ApiResponse<any>> => {
+export const cancelPayment = async (buyOrderId: number): Promise<ApiResponse<any>> => {
   const response = await api.post('/cancel-payment', {
-    paymentId
+    buyOrderId
   });
   return {
     success: true,
@@ -285,9 +304,12 @@ export const getStatistics = async (): Promise<ApiResponse<Statistics>> => {
 
 export const getAllPixSettings = async (): Promise<ApiResponse<PixSettings[]>> => {
   const response = await api.get('/admin/pix-key');
+  // Backend retorna um objeto único, não um array
+  // Convertemos para array para manter compatibilidade com o componente
+  const pixData = response.data;
   return {
     success: true,
-    data: response.data.pixKey || []
+    data: pixData ? [pixData] : []
   };
 };
 

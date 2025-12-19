@@ -15,20 +15,32 @@ const LojinhaGerenciamento: React.FC = () => {
     const [activeTab, setActiveTab] = useState<TabType>('stats');
     const navigate = useNavigate();
 
+    console.log('LojinhaGerenciamento renderizado, activeTab:', activeTab);
+
     const renderTabContent = () => {
-        switch (activeTab) {
-            case 'stats':
-                return <StatsManagement />;
-            case 'products':
-                return <ProductsManagement />;
-            case 'orders':
-                return <OrdersManagement />;
-            case 'pix':
-                return <PixManagement />;
-            case 'history':
-                return <HistoryManagement />;
-            default:
-                return <StatsManagement />;
+        try {
+            switch (activeTab) {
+                case 'stats':
+                    return <StatsManagement />;
+                case 'products':
+                    return <ProductsManagement />;
+                case 'orders':
+                    return <OrdersManagement />;
+                case 'pix':
+                    return <PixManagement />;
+                case 'history':
+                    return <HistoryManagement />;
+                default:
+                    return <StatsManagement />;
+            }
+        } catch (error) {
+            console.error('Erro ao renderizar aba:', error);
+            return (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+                    <div className="text-red-900 font-medium">Erro ao carregar conteúdo</div>
+                    <p className="text-red-700 text-sm mt-1">{error instanceof Error ? error.message : 'Erro desconhecido'}</p>
+                </div>
+            );
         }
     };
 

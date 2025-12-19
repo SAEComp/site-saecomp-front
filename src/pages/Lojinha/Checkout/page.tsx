@@ -21,10 +21,13 @@ const Checkout: React.FC = () => {
     const [qrCodeData, setQrCodeData] = useState<string | null>(null);
     const [pixCopyPaste, setPixCopyPaste] = useState<string | null>(null);
     const [orderId, setOrderId] = useState<string | null>(null);
+    const [buyOrderId, setBuyOrderId] = useState<number | null>(null);
     const [timeLeft, setTimeLeft] = useState<number | null>(null);
     const [isExpired, setIsExpired] = useState(false);
     const [copied, setCopied] = useState(false);
     const [showCancelModal, setShowCancelModal] = useState(false);
+    const [checkIntervalRef, setCheckIntervalRef] = useState<NodeJS.Timeout | null>(null);
+    const [checkInterval, setCheckInterval] = useState<NodeJS.Timeout | null>(null);
 
     // Function to get first and last name from full name
     const getFirstAndLastName = (fullName: string): string => {
@@ -46,7 +49,7 @@ const Checkout: React.FC = () => {
     // Get customer name from authenticated user or set as anonymous
     const customerName = user?.name ? getFirstAndLastName(user.name) : 'Cliente Anônimo';
 
-    // Timer effect for 30 seconds
+    // Timer effect for 10 seconds (teste)
     useEffect(() => {
         if (timeLeft === null || timeLeft <= 0) return;
 
@@ -54,10 +57,6 @@ const Checkout: React.FC = () => {
             setTimeLeft(prev => {
                 if (prev === null || prev <= 1) {
                     setIsExpired(true);
-                    // Cancel order when timer expires
-                    if (orderId) {
-                        handleOrderTimeout(parseInt(orderId));
-                    }
                     return 0;
                 }
                 return prev - 1;
@@ -65,7 +64,14 @@ const Checkout: React.FC = () => {
         }, 1000);
 
         return () => clearInterval(timer);
-    }, [timeLeft, orderId]);
+    }, [timeLeft]);
+
+    // Handle timeout expiration
+    useEffect(() => {
+        if (isExpired && orderId && buyOrderId) {
+            handleOrderTimeout(parseInt(orderId));
+        }
+    }, [isExpired, orderId, buyOrderId]);
 
     // Format time left as MM:SS
     const formatTimeLeft = (seconds: number) => {
@@ -85,20 +91,29 @@ const Checkout: React.FC = () => {
 
     // Handle order timeout
     const handleOrderTimeout = async (paymentId: number) => {
+        if (!buyOrderId) return;
+        
+        // Limpar interval de checagem
+        if (checkIntervalRef) {
+            clearInterval(checkIntervalRef);
+            setCheckIntervalRef(null);
+        }
+        
         try {
-            await paymentService.cancel(paymentId);
+            await paymentService.cancel(buyOrderId);
+            clearCart();
             console.log('Order automatically cancelled due to timeout');
         } catch (err) {
             console.error('Error cancelling order on timeout:', err);
         }
     };
 
-    // Redirect if cart is empty
+    // Redirect if cart is empty (but not if order exists - payment or expired screen)
     useEffect(() => {
-        if (cartItems.length === 0) {
+        if (cartItems.length === 0 && !orderId) {
             navigate('/lojinha');
         }
-    }, [cartItems, navigate]);
+    }, [cartItems, navigate, orderId]);
 
     const handleSubmitOrder = async () => {
         setError(null);
@@ -112,17 +127,19 @@ const Checkout: React.FC = () => {
 
             if (pixResponse.success && pixResponse.data) {
                 const newOrderId = pixResponse.data.paymentData.paymentId.toString();
+                const newBuyOrderId = pixResponse.data.buyOrderId;
                 setOrderId(newOrderId);
+                setBuyOrderId(newBuyOrderId);
                 setQrCodeData(pixResponse.data.paymentData.qrCodeBase64);
                 setPixCopyPaste(pixResponse.data.paymentData.pixCopiaECola);
-                setTimeLeft(1800); // 30 minutos (1800 segundos)
+                setTimeLeft(10); // 10 segundos para teste
                 
                 // Start checking payment status
-                const checkInterval = setInterval(async () => {
+                const interval = setInterval(async () => {
                     try {
                         const statusResponse = await paymentService.getStatus(parseInt(newOrderId));
                         if (statusResponse.success && statusResponse.data?.paymentStatus === 'completed') {
-                            clearInterval(checkInterval);
+                            clearInterval(interval);
                             await clearCart();
                             navigate(`/lojinha/sucesso/${newOrderId}`, { replace: true });
                         }
@@ -130,11 +147,13 @@ const Checkout: React.FC = () => {
                         console.error('Error checking payment status:', err);
                     }
                 }, 3000); // Check a cada 3 segundos
+                
+                setCheckIntervalRef(interval);
 
-                // Clear interval after timeout (30 minutos + 30 segundos)
+                // Clear interval after timeout (10 segundos + 5 segundos)
                 setTimeout(() => {
-                    clearInterval(checkInterval);
-                }, 1830000); // 30min30s
+                    clearInterval(interval);
+                }, 15000); // 15s
             } else {
                 throw new Error(pixResponse.message || 'Falha ao gerar PIX');
             }
@@ -156,9 +175,20 @@ const Checkout: React.FC = () => {
     const confirmCancelOrder = async () => {
         setShowCancelModal(false);
         
+        if (!buyOrderId) {
+            setError('ID do pedido não encontrado');
+            return;
+        }
+        
+        // Limpar interval de checagem
+        if (checkIntervalRef) {
+            clearInterval(checkIntervalRef);
+            setCheckIntervalRef(null);
+        }
+        
         try {
             setLoading(true);
-            await paymentService.cancel(parseInt(orderId!));
+            await paymentService.cancel(buyOrderId);
             clearCart();
             navigate('/lojinha', { 
                 state: { message: 'Pedido cancelado com sucesso' },
@@ -181,50 +211,57 @@ const Checkout: React.FC = () => {
         setIsExpired(false);
     };
 
-    if (cartItems.length === 0) {
+    // Don't render if cart is empty and no order in progress
+    if (cartItems.length === 0 && !orderId) {
         return null; // Will redirect
     }
 
     return (
         <div className="min-h-screen bg-gray-50 py-8">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex items-center justify-between mb-6">
-                    <h1 className="text-3xl font-bold text-gray-900">Finalizar Compra</h1>
-                    <img 
-                        src={concluirIcon} 
-                        alt="Perry Concluir" 
-                        className="w-20 h-20 md:w-24 md:h-24 object-contain drop-shadow-lg"
-                    />
-                </div>
+                {!isExpired && (
+                    <>
+                        <div className="flex items-center justify-between mb-6">
+                            <h1 className="text-3xl font-bold text-gray-900">Finalizar Compra</h1>
+                            <img 
+                                src={concluirIcon} 
+                                alt="Perry Concluir" 
+                                className="w-20 h-20 md:w-24 md:h-24 object-contain drop-shadow-lg"
+                            />
+                        </div>
+                        
+                        {/* Linha divisória */}
+                        <div className="border-t border-gray-300 mb-8"></div>
+                    </>
+                )}
                 
-                {/* Linha divisória */}
-                <div className="border-t border-gray-300 mb-8"></div>
-                
-                {/* Order Summary */}
-                <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-                    <h2 className="text-xl font-semibold text-gray-900 mb-4">Resumo do Pedido</h2>
-                    <div className="space-y-4">
-                        {cartItems.map((item) => (
-                            <div key={item.id} className="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg">
-                                <div className="flex-1">
-                                    <h3 className="font-medium text-gray-900">{item.productName}</h3>
-                                    <p className="text-sm text-gray-600">Quantidade: {item.quantity}</p>
-                                    <p className="text-sm text-gray-600">Preço unitário: R$ {item.value.toFixed(2)}</p>
-                                    <p className="font-medium text-gray-900">
-                                        Subtotal: R$ {(item.value * item.quantity).toFixed(2)}
-                                    </p>
+                {/* Order Summary - Hidden when expired */}
+                {!isExpired && (
+                    <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
+                        <h2 className="text-xl font-semibold text-gray-900 mb-4">Resumo do Pedido</h2>
+                        <div className="space-y-4">
+                            {cartItems.map((item) => (
+                                <div key={item.id} className="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg">
+                                    <div className="flex-1">
+                                        <h3 className="font-medium text-gray-900">{item.productName}</h3>
+                                        <p className="text-sm text-gray-600">Quantidade: {item.quantity}</p>
+                                        <p className="text-sm text-gray-600">Preço unitário: R$ {item.value.toFixed(2)}</p>
+                                        <p className="font-medium text-gray-900">
+                                            Subtotal: R$ {(item.value * item.quantity).toFixed(2)}
+                                        </p>
+                                    </div>
                                 </div>
+                            ))}
+                        </div>
+                        
+                        <div className="mt-6 pt-6 border-t border-gray-200">
+                            <div className="flex justify-between items-center">
+                                <span className="text-xl font-bold text-gray-900">Total:</span>
+                                <span className="text-xl font-bold text-green-600">R$ {totalAmount.toFixed(2)}</span>
                             </div>
-                        ))}
-                    </div>
-                    
-                    <div className="mt-6 pt-6 border-t border-gray-200">
-                        <div className="flex justify-between items-center">
-                            <span className="text-xl font-bold text-gray-900">Total:</span>
-                            <span className="text-xl font-bold text-green-600">R$ {totalAmount.toFixed(2)}</span>
                         </div>
                     </div>
-                </div>
+                )}
 
                 {!qrCodeData ? (
                     /* Order Information */
@@ -308,25 +345,12 @@ const Checkout: React.FC = () => {
                         />
                         <h2 className="text-xl font-bold text-red-600 mb-2">Tempo Esgotado</h2>
                         <p className="text-gray-600 mb-6">O tempo para pagamento expirou. Tente novamente.</p>
-                        <div className="space-y-3">
-                            <button
-                                onClick={handleRetry}
-                                className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-medium transition"
-                            >
-                                Tentar Novamente
-                            </button>
-                            <div className="text-center">
-                                <button
-                                    onClick={() => navigate('/lojinha')}
-                                    className="text-gray-600 hover:text-gray-800 font-medium inline-flex items-center"
-                                >
-                                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                                    </svg>
-                                    Voltar
-                                </button>
-                            </div>
-                        </div>
+                        <button
+                            onClick={() => navigate('/lojinha')}
+                            className="bg-[#03B04B] hover:bg-green-600 text-white px-8 py-3 rounded-lg font-medium transition"
+                        >
+                            Continuar Comprando
+                        </button>
                     </div>
                 ) : (
                     /* PIX Payment */
@@ -416,7 +440,9 @@ const Checkout: React.FC = () => {
                                     </>
                                 ) : (
                                     <>
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
                                         Cancelar Pedido
                                     </>
                                 )}

@@ -107,8 +107,11 @@ export const CartProvider = ({ children }: CartProviderProps) => {
       if (response.success && response.data) {
         dispatch({ type: 'SET_CART', payload: response.data });
       }
-    } catch (error) {
-      console.error('Erro ao sincronizar carrinho:', error);
+    } catch (error: any) {
+      // Não logar erro se o carrinho não existir (comportamento normal após finalizar pedido)
+      if (!error?.message?.includes('Carrinho inexistente')) {
+        console.error('Erro ao sincronizar carrinho:', error);
+      }
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false });
     }
@@ -157,12 +160,23 @@ export const CartProvider = ({ children }: CartProviderProps) => {
     try {
       await cartService.clear();
       dispatch({ type: 'CLEAR_CART' });
-    } catch (error) {
-      console.error('Erro ao limpar carrinho:', error);
-      throw error;
+    } catch (error: any) {
+      // Se o carrinho já não existir (404), apenas limpar o estado local
+      if (error?.message?.includes('Carrinho inexistente') || error?.code === 'API_ERROR') {
+        console.log('Carrinho já foi removido, limpando apenas estado local');
+        dispatch({ type: 'CLEAR_CART' });
+      } else {
+        console.error('Erro ao limpar carrinho:', error);
+        throw error;
+      }
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false });
     }
+  };
+
+  // Limpar apenas o estado local (sem chamar backend)
+  const clearCartLocal = () => {
+    dispatch({ type: 'CLEAR_CART' });
   };
 
   const toggleCart = () => dispatch({ type: 'TOGGLE_CART' });
@@ -183,6 +197,7 @@ export const CartProvider = ({ children }: CartProviderProps) => {
     removeItem,
     clearCart,
     syncCart,
+    clearCartLocal,
     toggleCart,
     openCart,
     closeCart,
