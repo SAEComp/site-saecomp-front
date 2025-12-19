@@ -1,61 +1,54 @@
+// Tipos baseados no backend (site-saecomp-back-lojinha)
+// Sem camada de adapter - frontend usa tipos do backend diretamente
+
 export interface Product {
-  _id: string;
+  id: number;
   name: string;
   description: string;
-  price: number;
-  imageUrl: string;
-  category: 'doces' | 'salgados' | 'bebidas';
-  stock: number;
-  isActive: boolean;
-  isAvailable?: boolean;
-  createdAt: string;
-  updatedAt: string;
+  value: number;
+  imgUrl: string | null;
+  category: 'sweet' | 'salty' | 'drink';
+  quantity: number;
+  barCode?: string | null;
 }
 
 export interface CartItem {
-  _id: string;
-  name: string;
-  description: string;
-  price: number;
-  imageUrl: string;
-  category: 'doces' | 'salgados' | 'bebidas';
-  stock: number;
-  isActive: boolean;
+  id: number;
+  productId: number;
+  productName: string;
+  productStock: number;
   quantity: number;
+  value: number;
+}
+
+export interface Cart {
+  id: number;
+  changed: boolean;
+  totalValue: number;
+  items: CartItem[];
 }
 
 export interface OrderItem {
-  productId: string;
-  name: string;
-  price: number;
+  productName: string;
   quantity: number;
-  subtotal: number;
+  value: number;
 }
 
 export interface Order {
-  _id: string;
-  customerName?: string;
-  items: OrderItem[];
-  totalAmount: number;
-  status: 'pendente' | 'concluído' | 'cancelado';
-  paymentStatus: 'pendente' | 'completo' | 'falhado' | 'cancelado';
-  paymentMethod?: PaymentMethod;
-  paymentId?: string;
-  qrCodeData?: string;
-  notes?: string;
-  confirmedAt?: string;
-  createdAt: string;
-  updatedAt: string;
+  id: number;
+  userName: string;
+  date: Date;
+  status: 'cart' | 'pendingPayment' | 'canceled' | 'finishedPayment';
+  totalValue: number;
+  item: OrderItem[];
 }
 
 export type PaymentMethod = 'pix';
 
 export interface Payment {
-  orderId: string;
-  amount: number;
-  paymentMethod: PaymentMethod;
-  status: 'pending' | 'completed' | 'failed';
-  qrCode?: string;
+  paymentId: number;
+  qrCodeBase64: string;
+  pixCopiaECola: string;
 }
 
 export interface PixPaymentRequest {
@@ -65,46 +58,53 @@ export interface PixPaymentRequest {
 }
 
 export interface PixPaymentResponse {
-  qrCode: string;
-  pixCode: string;
-  paymentId: string;
-  expiresAt: string;
+  totalValue: number;
+  paymentData: Payment;
 }
 
 export interface ApiResponse<T> {
-  success: boolean;
+  success?: boolean;
   data?: T;
   error?: string;
   message?: string;
-  pagination?: {
-    page: number;
-    limit: number;
-    total: number;
-    pages: number;
-  };
+  [key: string]: any;
 }
 
 export interface ProductFilters {
-  category?: 'doces' | 'salgados' | 'bebidas' | 'all';
+  category?: 'sweet' | 'salty' | 'drink' | 'all';
   search?: string;
   page?: number;
   limit?: number;
-  sortBy?: 'name' | 'price' | 'createdAt' | 'stock';
-  order?: 'asc' | 'desc';
 }
 
 export interface PixSettings {
-  _id?: string;
+  id: number;
   pixKey: string;
   ownerName: string;
   city: string;
-  isActive: boolean;
-  createdAt?: string;
-  updatedAt?: string;
+}
+
+export interface ProductStatistics {
+  id: number;
+  name: string;
+  soldQuantity: number;
+  revenueValue: number;
+}
+
+export interface Statistics {
+  totalRevenueValue: number;
+  totalOrders: number;
+  finishedOrders: number;
+  canceledOrders: number;
+  stockProducts: number;
+  stockItems: number;
+  soldItems: number;
+  productsWithMoreSoldQuantity: ProductStatistics[];
+  productsWithMoreRevenueValue: ProductStatistics[];
 }
 
 export interface HistoryEntry {
-  _id: string;
+  id: number;
   action: 'CREATE' | 'UPDATE' | 'DELETE';
   entityType: 'PRODUCT';
   entityId: string;
@@ -124,13 +124,7 @@ export interface HistoryEntry {
 
 export interface HistoryStats {
   totalEntries: number;
-  actionCounts: {
-    CREATE: number;
-    UPDATE: number;
-    DELETE: number;
-  };
+  entriesByType: { [key: string]: number };
+  entriesByAction: { [key: string]: number };
   recentActivity: HistoryEntry[];
-  entityTypeCounts: {
-    PRODUCT: number;
-  };
 }

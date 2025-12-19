@@ -10,13 +10,18 @@ interface ProductCardProps {
 const ProductCard = ({ product }: ProductCardProps) => {
   const { addItem } = useCart();
 
-  const handleAddToCart = () => {
-    addItem(product);
+  const handleAddToCart = async () => {
+    try {
+      await addItem(product);
+    } catch (error) {
+      console.error('Erro ao adicionar ao carrinho:', error);
+      // Pode adicionar toast/alert aqui se desejar
+    }
   };
 
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 h-fit">
-      <Link to={`/lojinha/produto/${product._id}`} className="block">
+      <Link to={`/lojinha/produto/${product.id}`} className="block">
         <div className="aspect-[4/3] sm:aspect-square bg-gray-50 p-2 sm:p-3 flex items-center justify-center overflow-hidden">
           <img 
             src={getProductImageUrl(product)} 
@@ -33,23 +38,23 @@ const ProductCard = ({ product }: ProductCardProps) => {
         </div>
       </Link>
       <div className="p-2 sm:p-3 pt-0 flex items-center justify-between">
-        <p className="text-base sm:text-lg font-bold text-[#03B04B]">R$ {product.price.toFixed(2)}</p>
+        <p className="text-base sm:text-lg font-bold text-[#03B04B]">R$ {product.value.toFixed(2)}</p>
         <button 
           onClick={handleAddToCart} 
           className={`px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-colors duration-200 hidden sm:block ${
-            !product.isAvailable || product.stock === 0
+            product.quantity === 0
               ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
               : 'bg-[#03B04B] text-white hover:bg-green-600'
           }`}
-          disabled={!product.isAvailable || product.stock === 0}
+          disabled={product.quantity === 0}
         >
-          {product.stock === 0 ? 'Esgotado' : 'Adicionar'}
+          {product.quantity === 0 ? 'Esgotado' : 'Adicionar'}
         </button>
       </div>
-      {product.stock < 5 && product.stock > 0 && (
+      {product.quantity < 5 && product.quantity > 0 && (
         <div className="px-2 sm:px-3 pb-2 sm:pb-3">
           <p className="text-xs text-orange-600">
-            Restam apenas {product.stock} unidades
+            Restam apenas {product.quantity} unidades
           </p>
         </div>
       )}

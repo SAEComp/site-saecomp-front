@@ -1,0 +1,573 @@
+import axios, { AxiosResponse } from 'axios';
+import { 
+  Product, 
+  Order, 
+  Payment, 
+  PaymentMethod,
+  PixPaymentRequest,
+  PixPaymentResponse,
+  ApiResponse, 
+  ProductFilters,
+  PixSettings,
+  HistoryEntry,
+  HistoryStats
+} from '../types';
+import authInterceptor from '../../../providers/authInterceptor';
+import { 
+  ProductBackend, 
+  CartBackend, 
+  OrderBackend, 
+  FinishBuyResponse,
+  StatisticsBackend,
+  PixKeyBackend,
+  BackendResponse
+} from '../types/backend.types';
+import {
+  adaptProductFromBackend,
+  adaptProductToBackend,
+  adaptCartFromBackend,
+  adaptOrderFromBackend,
+  adaptFinishBuyToPixResponse,
+  adaptStatisticsFromBackend,
+  categoryFrontendToBackend
+} from './apiAdapter';
+
+const API_BASE_URL = import.meta.env.VITE_LOJINHA_API_URL || 'https://api.saecomp.com.br/api/lojinha';
+
+const api = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  timeout: 30000,
+});
+
+// Interceptor de autenticação para enviar o token do usuário logado
+// Rotas públicas que não precisam de autenticação
+api.interceptors.request.use(authInterceptor(['/products', '/payments', '/orders']));
+
+// Interceptors para tratamento de erros
+api.interceptors.response.use(
+  (response: AxiosResponse) => response,
+  (error) => {
+    console.error('API Error:', error);
+    
+    if (error.code === 'ECONNABORTED') {
+      return Promise.reject({ message: 'Timeout: Verifique sua conexão e tente novamente' });
+    }
+    
+    if (error.code === 'ERR_NETWORK') {
+      return Promise.reject({ message: 'Erro de rede: Verifique sua conexão' });
+    }
+    
+    if (error.response?.data) {
+      return Promise.reject(error.response.data);
+    }
+    
+    return Promise.reject({ message: error.message || 'Erro de conexão' });
+  }
+);
+
+// Produtos
+export const getProducts = async (filters?: ProductFilters): Promise<ApiResponse<Product[]>> => {
+  const params = new URLSearchParams();
+  
+  // Backend usa 'category' diretamente, não 'all'
+  if (filters?.category && filters.category !== 'all') {
+    const backendCategory = categoryFrontendToBackend[filters.category];
+    params.append('category', backendCategory);
+  }
+  
+  if (filters?.search) {
+    params.append('search', filters.search);
+  }
+  
+  try {
+    const response = await api.get<BackendResponse<ProductBackend[]>>('/products', { params });
+    const products = response.data.product || [];
+    const adaptedProducts = products.map(adaptProductFromBackend);
+    
+    return {
+      success: true,
+      data: adaptedProducts
+    };
+  } catch (error) {
+    console.error('❌ API error:', error);
+    throw error;
+  }
+};
+
+export const getProductById = async (id: string): Promise<ApiResponse<Product>> => {
+  const response = await api.get<BackendResponse<ProductBackend>>('/product', {
+    params: { id }
+  });
+  const product = response.data.product as unknown as ProductBackend;
+  const adaptedProduct = adaptProductFromBackend(product);
+  backendCategory = categoryFrontendToBackend[category];
+  const response = await api.get<BackendResponse<ProductBackend[]>>('/products', {
+    params: { category: backendCategory }
+  });
+  const products = response.data.product || [];
+  const adaptedProducts = products.map(adaptProductFromBackend);
+  
+  return {
+    success: true,
+    data: adaptedProducts
+  }
+    success: true,
+    data: adaptedProduct
+  };
+};
+
+export const getProductsByCategory = async (category: 'doces' | 'salgados' | 'bebidas'): Promise<ApiResponse<Product[]>> => {
+  const response = await api.get(`/products/category/${category}`);
+  return response.data;
+};
+
+// Admin Product Functions
+export const createProduct = async (productData: Omit<Product, '_id' | 'createdAt' | 'updatedAt'>): Promise<ApiResponse<Product>> => {
+  const backendData = adaptProductToBackend(productData);
+  const response = await api.post<BackendResponse<ProductBackend>>('/admin/product', backendData);
+  const product = response.data.product as unknown as ProductBackend;
+  const adaptedProduct = adaptProductFromBackend(product);
+  
+  return {
+    success: true,
+    data: adaptedProduct
+  };
+};
+
+export const updateProduct = async (id: string, productData: Partial<Product>): Promise<ApiResponse<Product>> => {
+  const backendData = adaptProductToBackend({ ...productData, _id: id });
+  const response = await api.put<BackendResponse<ProductBackend>>('/admin/product', backendData);
+  const product = response.data.product as unknown as ProductBackend;
+  const adaptedProduct = adaptProductFromBackend(product);
+  
+  return {
+    success: true,
+    data: adaptedProduct
+  };
+};
+
+export const deleteProduct = async (id: string): Promise<ApiResponse<any>> => {
+  const response = await api.delete('/admin/product', {
+    params: { id }
+  });
+  return {
+    success: true,
+    data: response.data
+  };
+};
+
+export const updateStock = async (id: string, stock: number): Promise<ApiResponse<Product>> => {
+  // Backend atualiza estoque através do updateProduct
+  return updateProduct(id, { stock });
+};
+
+// Carrinho (novo sistema do backend)
+export const getCart = async (): Promise<ApiResponse<CartBackend>> => {
+  const response = await api.get<BackendResponse<CartBackend>>('/cart');
+  return {
+    success: true,
+    data: response.data.cart as unknown as CartBackend
+  };
+};
+
+export const addToCart = async (productId: string, quantity: number): Promise<ApiResponse<CartBackend>> => {
+  const response = await api.post<BackendResponse<CartBackend>>('/cart', {
+    productId: parseInt(productId),
+    quantity
+  });
+  return {
+    success: true,
+    data: response.data.cart as unknown as CartBackend
+  };
+};
+
+export const removeFromCart = async (itemId: string): Promise<ApiResponse<any>> => {
+  const response = await api.delete('/item', {
+    params: { id: parseInt(itemId) }
+  });
+  return {
+    success: true,
+    data: response.data
+  };
+};
+
+export const clearCart = async (): Promise<ApiResponse<any>> => {
+  const response = await api.delete('/cart');
+  return {
+    success: true,
+    data: response.data
+  };
+};
+
+// Pedidos - Sistema integrado com carrinho
+export const createOrder = async (orderData: {
+  items: {
+    productId: string;
+    quantity: number;
+    price: number;
+  }[];
+  paymentMethod?: PaymentMethod;
+  totalAmount: number;
+  customerName?: string;
+  notes?: string;
+}): Promise<ApiResponse<Order>> => {
+  // No novo backend, o pedido é criado através do finish-order
+  // que usa o carrinho atual do usuário
+  const response = await api.post<FinishBuyResponse>('/finish-order');
+  
+  // Criar um Order fake para compatibilidade
+  const order: Order = {
+    _id: response.data.paymentData.paymentId.toString(),
+    items: orderData.items.map(item => ({
+      productId: item.productId,
+      name: '',
+      price: item.price,
+      quantity: item.quantity,
+      subtotal: item.price * item.quantity
+    })),
+    totalAmount: response.data.totalValue,
+    status: 'pendente',
+    paymentStatus: 'pendente',
+    paymentMethod: 'pix',
+    paymentId: response.data.paymentData.paymentId.toString(),
+    qrCodeData: response.data.paymentData.qrCodeBase64,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+  
+  return {
+    success: true,
+    data: order
+  };
+};
+
+export const getOrderById = async (id: string): Promise<ApiResponse<Order>> => {
+  // Backend não tem endpoint específico para um pedido, buscar da lista
+  const allOrders = await getAllOrders();
+  const order = allOrders.data?.find(o => o._id === id);
+  
+  if (!order) {
+    throw new Error('Pedido não encontrado');
+  }
+  
+  return {
+    success: true,
+    data: order
+  };
+};
+
+export const getAllOrders = async (filters?: {
+  status?: string;
+  page?: number;
+  limit?: number;
+}): Promise<ApiResponse<Order[]>> => {
+  const params = new URLSearchParams();
+  
+  if (filters?.status) {
+    params.append('status', filters.status);
+  }
+  if (filters?.page) {
+    params.append('page', filters.page.toString());
+  }
+  if (filters?.limit) {
+    params.append('limit', filters.limit.toString());
+  }
+  
+  const response = await api.get<BackendResponse<OrderBackend[]>>('/admin/orders-history', { params });
+  const orders = response.data.buyOrder || [];
+  const adaptedOrders = orders.map(adaptOrderFromBackend);
+  
+  return {
+    success: true,
+    data: adaptedOrders
+  };
+};
+
+export const getOrdersByStatus = async (status: string): Promise<ApiResponse<Order[]>> => {
+  return getAllOrders({ status });
+};
+
+export const updateOrderStatus = async (id: string, status: string): Promise<ApiResponse<Order>> => {
+  // Backend não tem endpoint específico para atualizar status de pedido individual
+  // Retornar sucesso mock por enquanto
+  const order = await getOrderById(id);
+  
+  return {
+    success: true,
+    data: order.data
+  };
+};
+
+export const cancelOrder = async (id: string): Promise<ApiResponse<any>> => {
+  const response = await api.post('/cancel-payment', {
+    paymentId: parseInt(id)
+  });
+  
+  return {
+    success: true,
+    data: response.data
+  };
+};
+
+export const cancelOrderByTimeout = async (id: string): Promise<ApiResponse<any>> => {
+  return cancelOrder(id);
+};
+
+// Pagamentos
+export const generatePix = async (paymentData: PixPaymentRequest): Promise<ApiResponse<PixPaymentResponse>> => {
+  // No novo backend, finish-order já gera o PIX automaticamente
+  const response = await api.post<FinishBuyResponse>('/finish-order');
+  const pixResponse = adaptFinishBuyToPixResponse(response.data, paymentData.orderId);
+  
+  return {
+    success: true,
+    data: pixResponse
+  };
+};
+
+export const confirmPayment = async (paymentId: string, status: string): Promise<ApiResponse<any>> => {
+  // Backend usa webhook do Mercado Pago
+  // Este endpoint é para uso interno do Mercado Pago
+  const response = await api.post('/confirm-payment', { paymentId, status });
+  return {
+    success: true,
+    data: response.data
+  };
+};
+
+export const getPaymentStatus = async (paymentId: string): Promise<ApiResponse<{
+  paymentStatus: string;
+  orderStatus: string;
+  orderId: string;
+}>> => {
+  const response = await api.get('/listen-payment', {
+    params: { paymentId }
+  });
+  
+  // Adapter o status retornado
+  const data = response.data;
+  return {
+    success: true,
+    data: {
+      paymentStatus: data.paymentStatus || 'pending',
+      orderStatus: data.orderStatus || 'pendente',
+      orderId: data.orderId || paymentId
+    }
+  };
+};
+
+export const getPendingPayments = async (): Promise<ApiResponse<any[]>> => {
+  const response = await api.get('/pending-payment');
+  return {
+    success: true,
+    data: response.data.pendingPayments || []
+  };
+};
+
+// Health check
+export const healthCheck = async (): Promise<{ status: string; message: string }> => {
+  try {
+    const response = await api.get('/../../health');
+    return response.data;
+  } catch {
+    return { status: 'ok', message: 'API disponível' };
+  }
+};
+
+// Organized API services
+export const productService = {
+  getAll: getProducts,
+  getById: getProductById,
+  getByCategory: getProductsByCategory,
+  create: createProduct,
+  update: updateProduct,
+  delete: deleteProduct,
+  updateStock: updateStock
+};
+
+export const orderService = {
+  create: createOrder,
+  getById: getOrderById,
+  getAll: getAllOrders,
+  getByStatus: getOrdersByStatus,
+  updateStatus: updateOrderStatus,
+  cancel: cancelOrder,
+  cancelByTimeout: cancelOrderByTimeout
+};
+
+export const paymentService = {
+  generatePix: generatePix,
+  confirm: confirmPayment,
+  getStatus: getPaymentStatus
+};
+
+// Admin/Statistics API
+export const getAdminStats = async (): Promise<ApiResponse<{
+  totalOrders: number;
+  totalRevenue: number;
+  completedOrders: number;
+  totalItemsSold: number;
+  totalProductsInStock: number;
+  totalItemsInStock: number;
+  topProducts: Array<{
+    product: Product;
+    totalSold: number;
+    revenue: number;
+  }>;
+  recentOrders: Order[];
+}>> => {
+  const response = await api.get<BackendResponse<StatisticsBackend>>('/admin/statistics');
+  const stats = response.data.statistics as unknown as StatisticsBackend;
+  const adaptedStats = adaptStatisticsFromBackend(stats);
+  
+  // Buscar pedidos recentes separadamente
+  const ordersResponse = await getAllOrders({ limit: 5 });
+  adaptedStats.recentOrders = ordersResponse.data || [];
+  
+  return {
+    success: true,
+    data: adaptedStats
+  };
+};
+
+export const adminService = {
+  getStats: getAdminStats
+};
+
+// PIX Settings
+export const getAllPixSettings = async (): Promise<ApiResponse<PixSettings[]>> => {
+  const response = await api.get<BackendResponse<PixKeyBackend[]>>('/admin/pix-key');
+  const pixKeys = response.data.pixKey || [];
+  
+  const adaptedKeys = pixKeys.map((key: PixKeyBackend) => ({
+    _id: key.id.toString(),
+    pixKey: key.pixKey,
+    ownerName: key.ownerName,
+    city: key.city,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  }));
+  
+  return {
+    success: true,
+    data: adaptedKeys
+  };
+};
+
+export const getPixSettingsById = async (id: string): Promise<ApiResponse<PixSettings>> => {
+  const allSettings = await getAllPixSettings();
+  const setting = allSettings.data?.find(s => s._id === id);
+  
+  if (!setting) {
+    throw new Error('Configuração PIX não encontrada');
+  }
+  
+  return {
+    success: true,
+    data: setting
+  };
+};
+
+export const createPixSettings = async (pixData: Omit<PixSettings, '_id' | 'createdAt' | 'updatedAt'>): Promise<ApiResponse<PixSettings>> => {
+  const response = await api.post<BackendResponse<PixKeyBackend>>('/admin/pix-key', {
+    pixKey: pixData.pixKey,
+    ownerName: pixData.ownerName,
+    city: pixData.city
+  });
+  
+  const pixKey = response.data.pixKey as unknown as PixKeyBackend;
+  
+  return {
+    success: true,
+    data: {
+      _id: pixKey.id.toString(),
+      pixKey: pixKey.pixKey,
+      ownerName: pixKey.ownerName,
+      city: pixKey.city,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    }
+  };
+};
+
+export const updatePixSettings = async (id: string, pixData: Omit<PixSettings, '_id' | 'createdAt' | 'updatedAt'>): Promise<ApiResponse<PixSettings>> => {
+  // Backend não tem endpoint de update, apenas create e delete
+  // Fazer delete + create
+  await deletePixSettings(id);
+  return createPixSettings(pixData);
+};
+
+export const deletePixSettings = async (id: string): Promise<ApiResponse<PixSettings>> => {
+  const response = await api.delete('/admin/pix-key', {
+    params: { id: parseInt(id) }
+  });
+  
+  return {
+    success: true,
+    data: response.data
+  };
+};
+
+export const pixService = {
+  getAllPixSettings,
+  getPixSettingsById,
+  createPixSettings,
+  updatePixSettings,
+  deletePixSettings
+};
+
+// History
+export const getHistory = async (params?: { page?: number; limit?: number; entityType?: string; action?: string }): Promise<ApiResponse<HistoryEntry[]>> => {
+  const queryParams = new URLSearchParams();
+  if (params?.page) queryParams.append('page', params.page.toString());
+  if (params?.limit) queryParams.append('limit', params.limit.toString());
+  if (params?.entityType) queryParams.append('entityType', params.entityType);
+  if (params?.action) queryParams.append('action', params.action);
+  
+  const response = await api.get('/admin/entries-history', { params: queryParams });
+  
+  // Adaptar resposta do backend se necessário
+  const entries = response.data.entryHistory || [];
+  
+  return {
+    success: true,
+    data: entries
+  };
+};
+
+export const getHistoryStats = async (): Promise<ApiResponse<HistoryStats>> => {
+  // Backend não tem endpoint de stats de histórico separado
+  // Retornar estatísticas básicas
+  const historyResponse = await getHistory({ limit: 1000 });
+  const entries = historyResponse.data || [];
+  
+  const stats: HistoryStats = {
+    totalEntries: entries.length,
+    entriesByType: {},
+    entriesByAction: {},
+    recentActivity: entries.slice(0, 10)
+  };
+  
+  return {
+    success: true,
+    data: stats
+  };
+};
+
+export const historyService = {
+  getHistory,
+  getHistoryStats
+};
+
+// Serviço de Carrinho
+export const cartService = {
+  get: getCart,
+  add: addToCart,
+  remove: removeFromCart,
+  clear: clearCart
+};
+
+export default api;

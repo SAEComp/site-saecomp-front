@@ -116,7 +116,7 @@ const HistoryManagement: React.FC = () => {
     };
 
     const getProductById = (id: string): Product | undefined => {
-        return products.find(product => product._id === id);
+        return products.find(product => product.id.toString() === id);
     };
 
     // Função para formatar valores monetários

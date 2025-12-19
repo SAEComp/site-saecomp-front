@@ -44,14 +44,17 @@ const ProductDetails: React.FC = () => {
         fetchProduct();
     }, [id]);
 
-    const handleAddToCart = () => {
+    const handleAddToCart = async () => {
         if (product) {
-            // Add product to cart multiple times based on quantity
-            for (let i = 0; i < quantity; i++) {
-                addItem(product);
+            try {
+                // No novo sistema, adicionar com a quantidade de uma vez
+                await addItem(product);
+                // Redirect back to main lojinha menu
+                navigate('/lojinha');
+            } catch (error) {
+                console.error('Erro ao adicionar ao carrinho:', error);
+                // Pode adicionar toast/alert aqui se desejar
             }
-            // Redirect back to main lojinha menu
-            navigate('/lojinha');
         }
     };
 
@@ -86,11 +89,11 @@ const ProductDetails: React.FC = () => {
                         <div className="w-full lg:w-1/2 p-3 md:p-8">
                             <ProductInfo product={product} />
                             
-                            {product.stock > 0 && (
+                            {product.quantity > 0 && (
                                 <div className="space-y-3 md:space-y-6">
                                     <QuantitySelector 
                                         quantity={quantity}
-                                        maxQuantity={product.stock}
+                                        maxQuantity={product.quantity}
                                         onQuantityChange={setQuantity}
                                     />
                                     

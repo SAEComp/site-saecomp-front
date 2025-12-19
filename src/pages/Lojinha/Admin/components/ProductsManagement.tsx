@@ -143,7 +143,7 @@ const ProductsManagement: React.FC = () => {
             title: 'Preço',
             render: (_, product) => (
                 <span className="text-sm font-medium text-gray-900">
-                    {formatCurrency(product.price)}
+                    {formatCurrency(product.value)}
                 </span>
             )
         },
@@ -152,13 +152,13 @@ const ProductsManagement: React.FC = () => {
             title: 'Estoque',
             render: (_, product) => (
                 <span className={`text-sm font-medium ${
-                    product.stock > 10 
+                    product.quantity > 10 
                         ? 'text-[#03B04B]'
-                        : product.stock > 0
+                        : product.quantity > 0
                         ? 'text-orange-600'
                         : 'text-red-600'
                 }`}>
-                    {product.stock} unidades
+                    {product.quantity} unidades
                 </span>
             )
         },

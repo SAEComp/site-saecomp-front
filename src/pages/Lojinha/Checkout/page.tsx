@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { useCart } from '../hooks/useCart';
-import { PaymentMethod } from '../types';
 import { orderService, paymentService } from '../services/api';
-import { getProductImageUrl } from '../utils/imageUtils';
 import { useAuth } from '../../../auth/AuthContext';
 import erroIcon from '../../../assets/lojinha-icons/perrys/ERRO.png';
 import concluirIcon from '../../../assets/lojinha-icons/perrys/concluir.png';
@@ -58,7 +56,7 @@ const Checkout: React.FC = () => {
                     setIsExpired(true);
                     // Cancel order when timer expires
                     if (orderId) {
-                        handleOrderTimeout(orderId);
+                        handleOrderTimeout(parseInt(orderId));
                     }
                     return 0;
                 }
@@ -86,9 +84,9 @@ const Checkout: React.FC = () => {
     };
 
     // Handle order timeout
-    const handleOrderTimeout = async (orderId: string) => {
+    const handleOrderTimeout = async (paymentId: number) => {
         try {
-            await orderService.cancel(orderId);
+            await paymentService.cancel(paymentId);
             console.log('Order automatically cancelled due to timeout');
         } catch (err) {
             console.error('Error cancelling order on timeout:', err);
@@ -108,56 +106,35 @@ const Checkout: React.FC = () => {
         setIsExpired(false);
 
         try {
-            // Create order
-            const orderData = {
-                items: cartItems.map(item => ({
-                    productId: item._id,
-                    quantity: item.quantity,
-                    price: item.price
-                })),
-                paymentMethod: 'pix' as PaymentMethod,
-                totalAmount,
-                customerName: customerName
-            };
-
-            const orderResponse = await orderService.create(orderData);
-            
-            const newOrderId = orderResponse.data?._id;
-            if (!newOrderId) {
-                throw new Error('Falha ao criar pedido');
-            }
-            setOrderId(newOrderId);
-
-            // Generate PIX payment QR code
-            const pixResponse = await paymentService.generatePix({
-                orderId: newOrderId,
-                amount: totalAmount,
-                customerName: customerName
-            });
+            // No novo backend, finish-order cria o pedido E gera o PIX automaticamente
+            // usando o carrinho atual do usuário
+            const pixResponse = await orderService.finish();
 
             if (pixResponse.success && pixResponse.data) {
-                setQrCodeData(pixResponse.data.qrCode);
-                setPixCopyPaste(pixResponse.data.pixCode);
-                setTimeLeft(30); // 30 seconds timer
+                const newOrderId = pixResponse.data.paymentData.paymentId.toString();
+                setOrderId(newOrderId);
+                setQrCodeData(pixResponse.data.paymentData.qrCodeBase64);
+                setPixCopyPaste(pixResponse.data.paymentData.pixCopiaECola);
+                setTimeLeft(1800); // 30 minutos (1800 segundos)
                 
                 // Start checking payment status
                 const checkInterval = setInterval(async () => {
                     try {
-                        const statusResponse = await paymentService.getStatus(newOrderId);
-                        if (statusResponse.success && statusResponse.data?.paymentStatus === 'completo') {
+                        const statusResponse = await paymentService.getStatus(parseInt(newOrderId));
+                        if (statusResponse.success && statusResponse.data?.paymentStatus === 'completed') {
                             clearInterval(checkInterval);
-                            clearCart();
+                            await clearCart();
                             navigate(`/lojinha/sucesso/${newOrderId}`, { replace: true });
                         }
                     } catch (err) {
                         console.error('Error checking payment status:', err);
                     }
-                }, 2000);
+                }, 3000); // Check a cada 3 segundos
 
-                // Clear interval after timeout
+                // Clear interval after timeout (30 minutos + 30 segundos)
                 setTimeout(() => {
                     clearInterval(checkInterval);
-                }, 35000);
+                }, 1830000); // 30min30s
             } else {
                 throw new Error(pixResponse.message || 'Falha ao gerar PIX');
             }
@@ -181,7 +158,7 @@ const Checkout: React.FC = () => {
         
         try {
             setLoading(true);
-            await orderService.cancel(orderId!);
+            await paymentService.cancel(parseInt(orderId!));
             clearCart();
             navigate('/lojinha', { 
                 state: { message: 'Pedido cancelado com sucesso' },
@@ -228,20 +205,13 @@ const Checkout: React.FC = () => {
                     <h2 className="text-xl font-semibold text-gray-900 mb-4">Resumo do Pedido</h2>
                     <div className="space-y-4">
                         {cartItems.map((item) => (
-                            <div key={item._id} className="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg">
-                                <div className="w-16 h-16 bg-gray-50 rounded-lg flex items-center justify-center p-1">
-                                    <img 
-                                        src={getProductImageUrl(item)} 
-                                        alt={item.name}
-                                        className="max-w-full max-h-full object-contain rounded"
-                                    />
-                                </div>
+                            <div key={item.id} className="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg">
                                 <div className="flex-1">
-                                    <h3 className="font-medium text-gray-900">{item.name}</h3>
+                                    <h3 className="font-medium text-gray-900">{item.productName}</h3>
                                     <p className="text-sm text-gray-600">Quantidade: {item.quantity}</p>
-                                    <p className="text-sm text-gray-600">Preço unitário: R$ {item.price.toFixed(2)}</p>
+                                    <p className="text-sm text-gray-600">Preço unitário: R$ {item.value.toFixed(2)}</p>
                                     <p className="font-medium text-gray-900">
-                                        Subtotal: R$ {(item.price * item.quantity).toFixed(2)}
+                                        Subtotal: R$ {(item.value * item.quantity).toFixed(2)}
                                     </p>
                                 </div>
                             </div>

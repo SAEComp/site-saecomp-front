@@ -10,9 +10,9 @@ const Lojinha = () => {
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [selectedCategory, setSelectedCategory] = useState<'all' | 'doces' | 'salgados' | 'bebidas'>('all');
+    const [selectedCategory, setSelectedCategory] = useState<'all' | 'sweet' | 'salty' | 'drink'>('all');
 
-    const loadProducts = useCallback(async (category: 'all' | 'doces' | 'salgados' | 'bebidas') => {
+    const loadProducts = useCallback(async (category: 'all' | 'sweet' | 'salty' | 'drink') => {
         try {
             setLoading(true);
             setError(null);
@@ -41,7 +41,7 @@ const Lojinha = () => {
         loadProducts(selectedCategory);
     }, [selectedCategory, loadProducts]);
 
-    const handleCategoryChange = useCallback((category: 'all' | 'doces' | 'salgados' | 'bebidas') => {
+    const handleCategoryChange = useCallback((category: 'all' | 'sweet' | 'salty' | 'drink') => {
         if (category !== selectedCategory) {
             setSelectedCategory(category);
         }

@@ -1,20 +1,18 @@
 import axios, { AxiosResponse } from 'axios';
 import { 
   Product, 
+  Cart,
   Order, 
-  Payment, 
-  PaymentMethod,
-  PixPaymentRequest,
   PixPaymentResponse,
   ApiResponse, 
   ProductFilters,
   PixSettings,
-  HistoryEntry,
-  HistoryStats
+  Statistics,
+  HistoryEntry
 } from '../types';
 import authInterceptor from '../../../providers/authInterceptor';
 
-const API_BASE_URL = import.meta.env.VITE_LOJINHA_API_URL || 'https://api.saecomp.com.br/api';
+const API_BASE_URL = import.meta.env.VITE_LOJINHA_API_URL || 'https://api.saecomp.com.br/api/lojinha';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -24,22 +22,61 @@ const api = axios.create({
   timeout: 30000,
 });
 
-// Interceptor de autenticação para enviar o token do usuário logado
-// Rotas públicas que não precisam de autenticação
-api.interceptors.request.use(authInterceptor(['/products', '/payments', '/orders']));
+// 🔑 Interceptor de autenticação - Adiciona token JWT automaticamente
+api.interceptors.request.use(
+  (config) => {
+    // Rotas públicas que não precisam de token
+    const publicRoutes = ['/products', '/product'];
+    const isPublicRoute = publicRoutes.some(route => config.url?.includes(route));
+    
+    if (!isPublicRoute) {
+      // Tenta pegar token de múltiplas fontes
+      const token = 
+        localStorage.getItem('token') || 
+        localStorage.getItem('authToken') ||
+        sessionStorage.getItem('token');
+      
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      } else {
+        console.warn('⚠️ Token não encontrado. Requisição pode falhar se rota exigir autenticação.');
+      }
+    }
+    
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
-// Interceptors para tratamento de erros
+// 🚨 Interceptor para tratamento de erros (incluindo autenticação)
 api.interceptors.response.use(
   (response: AxiosResponse) => response,
   (error) => {
     console.error('API Error:', error);
+    
+    // Erro de autenticação
+    if (error.response?.status === 401) {
+      console.error('🔒 Não autenticado. Token inválido ou expirado.');
+      localStorage.removeItem('token');
+      localStorage.removeItem('authToken');
+      
+      // Redireciona para login se não estiver na página de login
+      if (window.location.pathname !== '/login') {
+        const currentPath = window.location.pathname;
+        window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
+      }
+      
+      return Promise.reject({ message: 'Sessão expirada. Faça login novamente.' });
+    }
     
     if (error.code === 'ECONNABORTED') {
       return Promise.reject({ message: 'Timeout: Verifique sua conexão e tente novamente' });
     }
     
     if (error.code === 'ERR_NETWORK') {
-      return Promise.reject({ message: 'Erro de rede: Verifique sua conexão' });
+      return Promise.reject({ message: 'Erro de rede: Verifique sua conexão com o backend' });
     }
     
     if (error.response?.data) {
@@ -50,150 +87,283 @@ api.interceptors.response.use(
   }
 );
 
-// Produtos
+// ======================
+// PRODUTOS
+// ======================
+
 export const getProducts = async (filters?: ProductFilters): Promise<ApiResponse<Product[]>> => {
   const params = new URLSearchParams();
   
-  if (filters) {
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
-        params.append(key, value.toString());
-      }
-    });
+  if (filters?.category && filters.category !== 'all') {
+    params.append('category', filters.category);
   }
   
-  params.append('_t', Date.now().toString());
-  
-  const url = `/products?${params.toString()}`;
+  if (filters?.search) {
+    params.append('search', filters.search);
+  }
   
   try {
-    const response = await api.get(url);
-    return response.data;
+    const response = await api.get('/products', { params });
+    return {
+      success: true,
+      data: response.data.product || []
+    };
   } catch (error) {
-    console.error('❌ API error:', error);
+    console.error('Error fetching products:', error);
     throw error;
   }
 };
 
-export const getProductById = async (id: string): Promise<ApiResponse<Product>> => {
-  const response = await api.get(`/products/${id}`);
-  return response.data;
+export const getProductById = async (id: number): Promise<ApiResponse<Product>> => {
+  const response = await api.get('/product', {
+    params: { id }
+  });
+  return {
+    success: true,
+    data: response.data.product
+  };
 };
 
-export const getProductsByCategory = async (category: 'doces' | 'salgados' | 'bebidas'): Promise<ApiResponse<Product[]>> => {
-  const response = await api.get(`/products/category/${category}`);
-  return response.data;
+export const getProductsByCategory = async (category: 'sweet' | 'salty' | 'drink'): Promise<ApiResponse<Product[]>> => {
+  const response = await api.get('/products', {
+    params: { category }
+  });
+  return {
+    success: true,
+    data: response.data.product || []
+  };
 };
 
-// Admin Product Functions
-export const createProduct = async (productData: Omit<Product, '_id' | 'createdAt' | 'updatedAt'>): Promise<ApiResponse<Product>> => {
-  const response = await api.post('/products', productData);
-  return response.data;
+// ======================
+// ADMIN - PRODUTOS
+// ======================
+
+export const createProduct = async (productData: Omit<Product, 'id'>): Promise<ApiResponse<Product>> => {
+  const response = await api.post('/admin/product', productData);
+  return {
+    success: true,
+    data: response.data.product
+  };
 };
 
-export const updateProduct = async (id: string, productData: Partial<Product>): Promise<ApiResponse<Product>> => {
-  const response = await api.put(`/products/${id}`, productData);
-  return response.data;
+export const updateProduct = async (id: number, productData: Partial<Product>): Promise<ApiResponse<Product>> => {
+  const response = await api.put('/admin/product', {
+    ...productData,
+    id
+  });
+  return {
+    success: true,
+    data: response.data.product
+  };
 };
 
-export const deleteProduct = async (id: string): Promise<ApiResponse<any>> => {
-  const response = await api.delete(`/products/${id}`);
-  return response.data;
+export const deleteProduct = async (id: number): Promise<ApiResponse<any>> => {
+  const response = await api.delete('/admin/product', {
+    params: { id }
+  });
+  return {
+    success: true,
+    data: response.data
+  };
 };
 
-export const updateStock = async (id: string, stock: number): Promise<ApiResponse<Product>> => {
-  const response = await api.patch(`/products/${id}/stock`, { stock });
-  return response.data;
+export const updateStock = async (id: number, quantity: number): Promise<ApiResponse<Product>> => {
+  return updateProduct(id, { quantity });
 };
 
-// Pedidos
-export const createOrder = async (orderData: {
-  items: {
-    productId: string;
-    quantity: number;
-    price: number;
-  }[];
-  paymentMethod?: PaymentMethod;
-  totalAmount: number;
-  customerName?: string;
-  notes?: string;
-}): Promise<ApiResponse<Order>> => {
-  const response = await api.post('/orders', orderData);
-  return response.data;
+// ======================
+// CARRINHO
+// ======================
+
+export const getCart = async (): Promise<ApiResponse<Cart>> => {
+  const response = await api.get('/cart');
+  return {
+    success: true,
+    data: response.data.cart
+  };
 };
 
-export const getOrderById = async (id: string): Promise<ApiResponse<Order>> => {
-  const response = await api.get(`/orders/${id}`);
-  return response.data;
+export const addToCart = async (productId: number, quantity: number): Promise<ApiResponse<Cart>> => {
+  const response = await api.post('/cart', {
+    productId,
+    quantity
+  });
+  return {
+    success: true,
+    data: response.data.cart
+  };
 };
 
-export const getAllOrders = async (filters?: {
+export const removeFromCart = async (itemId: number): Promise<ApiResponse<any>> => {
+  const response = await api.delete('/item', {
+    params: { id: itemId }
+  });
+  return {
+    success: true,
+    data: response.data
+  };
+};
+
+export const clearCart = async (): Promise<ApiResponse<any>> => {
+  const response = await api.delete('/cart');
+  return {
+    success: true,
+    data: response.data
+  };
+};
+
+// ======================
+// PEDIDOS E PAGAMENTOS
+// ======================
+
+export const finishOrder = async (): Promise<ApiResponse<PixPaymentResponse>> => {
+  const response = await api.post('/finish-order');
+  return {
+    success: true,
+    data: response.data
+  };
+};
+
+export const cancelPayment = async (paymentId: number): Promise<ApiResponse<any>> => {
+  const response = await api.post('/cancel-payment', {
+    paymentId
+  });
+  return {
+    success: true,
+    data: response.data
+  };
+};
+
+export const getPaymentStatus = async (paymentId: number): Promise<ApiResponse<any>> => {
+  const response = await api.get('/listen-payment', {
+    params: { paymentId }
+  });
+  return {
+    success: true,
+    data: response.data
+  };
+};
+
+export const getPendingPayments = async (): Promise<ApiResponse<any[]>> => {
+  const response = await api.get('/pending-payment');
+  return {
+    success: true,
+    data: response.data.pendingPayments || []
+  };
+};
+
+// ======================
+// ADMIN - PEDIDOS
+// ======================
+
+export const getOrdersHistory = async (filters?: {
   status?: string;
   page?: number;
   limit?: number;
 }): Promise<ApiResponse<Order[]>> => {
   const params = new URLSearchParams();
   
-  if (filters) {
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
-        params.append(key, value.toString());
-      }
-    });
+  if (filters?.status) {
+    params.append('status', filters.status);
+  }
+  if (filters?.page) {
+    params.append('page', filters.page.toString());
+  }
+  if (filters?.limit) {
+    params.append('limit', filters.limit.toString());
   }
   
-  const url = `/orders?${params.toString()}`;
-  const response = await api.get(url);
-  return response.data;
+  const response = await api.get('/admin/orders-history', { params });
+  return {
+    success: true,
+    data: response.data.buyOrder || []
+  };
 };
 
-export const getOrdersByStatus = async (status: string): Promise<ApiResponse<Order[]>> => {
-  const response = await api.get(`/orders/status/${status}`);
-  return response.data;
+// ======================
+// ADMIN - ESTATÍSTICAS
+// ======================
+
+export const getStatistics = async (): Promise<ApiResponse<Statistics>> => {
+  const response = await api.get('/admin/statistics');
+  return {
+    success: true,
+    data: response.data.statistics
+  };
 };
 
-export const updateOrderStatus = async (id: string, status: string): Promise<ApiResponse<Order>> => {
-  const response = await api.put(`/orders/${id}/status`, { status });
-  return response.data;
+// ======================
+// ADMIN - PIX SETTINGS
+// ======================
+
+export const getAllPixSettings = async (): Promise<ApiResponse<PixSettings[]>> => {
+  const response = await api.get('/admin/pix-key');
+  return {
+    success: true,
+    data: response.data.pixKey || []
+  };
 };
 
-export const cancelOrder = async (id: string): Promise<ApiResponse<any>> => {
-  const response = await api.put(`/orders/${id}/cancel`);
-  return response.data;
+export const createPixSettings = async (pixData: Omit<PixSettings, 'id'>): Promise<ApiResponse<PixSettings>> => {
+  const response = await api.post('/admin/pix-key', pixData);
+  return {
+    success: true,
+    data: response.data.pixKey
+  };
 };
 
-export const cancelOrderByTimeout = async (id: string): Promise<ApiResponse<any>> => {
-  const response = await api.put(`/orders/${id}/timeout`);
-  return response.data;
+export const deletePixSettings = async (id: number): Promise<ApiResponse<any>> => {
+  const response = await api.delete('/admin/pix-key', {
+    params: { id }
+  });
+  return {
+    success: true,
+    data: response.data
+  };
 };
 
-// Pagamentos
-export const generatePix = async (paymentData: PixPaymentRequest): Promise<ApiResponse<PixPaymentResponse>> => {
-  const response = await api.post('/payments/pix/generate', paymentData);
-  return response.data;
+// ======================
+// ADMIN - HISTÓRICO
+// ======================
+
+export const getHistory = async (params?: { 
+  page?: number; 
+  limit?: number; 
+  entityType?: string; 
+  action?: string 
+}): Promise<ApiResponse<HistoryEntry[]>> => {
+  const queryParams = new URLSearchParams();
+  
+  if (params?.page) queryParams.append('page', params.page.toString());
+  if (params?.limit) queryParams.append('limit', params.limit.toString());
+  if (params?.entityType) queryParams.append('entityType', params.entityType);
+  if (params?.action) queryParams.append('action', params.action);
+  
+  const response = await api.get('/admin/entries-history', { params: queryParams });
+  
+  return {
+    success: true,
+    data: response.data.entryHistory || []
+  };
 };
 
-export const confirmPayment = async (paymentId: string, status: string): Promise<ApiResponse<any>> => {
-  const response = await api.post('/payments/confirm', { paymentId, status });
-  return response.data;
-};
+// ======================
+// HEALTH CHECK
+// ======================
 
-export const getPaymentStatus = async (paymentId: string): Promise<ApiResponse<{
-  paymentStatus: string;
-  orderStatus: string;
-  orderId: string;
-}>> => {
-  const response = await api.get(`/payments/status/${paymentId}`);
-  return response.data;
-};
-
-// Health check
 export const healthCheck = async (): Promise<{ status: string; message: string }> => {
-  const response = await api.get('/../health');
-  return response.data;
+  try {
+    const response = await api.get('/../../health');
+    return response.data;
+  } catch {
+    return { status: 'ok', message: 'API disponível' };
+  }
 };
 
-// Organized API services
+// ======================
+// SERVIÇOS ORGANIZADOS
+// ======================
+
 export const productService = {
   getAll: getProducts,
   getById: getProductById,
@@ -204,160 +374,36 @@ export const productService = {
   updateStock: updateStock
 };
 
+export const cartService = {
+  get: getCart,
+  add: addToCart,
+  remove: removeFromCart,
+  clear: clearCart
+};
+
 export const orderService = {
-  create: createOrder,
-  getById: getOrderById,
-  getAll: getAllOrders,
-  getByStatus: getOrdersByStatus,
-  updateStatus: updateOrderStatus,
-  cancel: cancelOrder,
-  cancelByTimeout: cancelOrderByTimeout
+  finish: finishOrder,
+  getHistory: getOrdersHistory
 };
 
 export const paymentService = {
-  generatePix: generatePix,
-  confirm: confirmPayment,
-  getStatus: getPaymentStatus
-};
-
-// Admin/Statistics API
-export const getAdminStats = async (): Promise<ApiResponse<{
-  totalOrders: number;
-  totalRevenue: number;
-  completedOrders: number;
-  totalItemsSold: number;
-  totalProductsInStock: number;
-  totalItemsInStock: number;
-  topProducts: Array<{
-    product: Product;
-    totalSold: number;
-    revenue: number;
-  }>;
-  recentOrders: Order[];
-}>> => {
-  // Calcular estatísticas a partir dos dados de pedidos e produtos
-  const ordersResponse = await getAllOrders({ limit: 100 });
-  const orders = ordersResponse.data || [];
-  
-  const completedOrders = orders.filter(order => 
-    (order.status === 'concluído' || order.paymentStatus === 'completo') && 
-    order.status !== 'cancelado'
-  );
-  
-  const totalRevenue = completedOrders.reduce((sum, order) => sum + order.totalAmount, 0);
-  
-  // Calcular produtos mais vendidos
-  const productStats: { [key: string]: { quantity: number; revenue: number; product?: Product } } = {};
-  
-  completedOrders.forEach(order => {
-    order.items.forEach(item => {
-      if (!productStats[item.productId]) {
-        productStats[item.productId] = { quantity: 0, revenue: 0 };
-      }
-      productStats[item.productId].quantity += item.quantity;
-      productStats[item.productId].revenue += item.subtotal;
-    });
-  });
-  
-  // Buscar dados dos produtos mais vendidos
-  const productsResponse = await getProducts();
-  const products = productsResponse.data || [];
-  
-  const topProducts = Object.entries(productStats)
-    .map(([productId, stats]) => {
-      const product = products.find(p => p._id === productId);
-      return {
-        product: product!,
-        totalSold: stats.quantity,
-        revenue: stats.revenue
-      };
-    })
-    .filter(item => item.product)
-    .sort((a, b) => b.totalSold - a.totalSold)
-    .slice(0, 3); // Limitado a 3 produtos mais vendidos
-  
-  // Calcular total de produtos em estoque (quantidade de produtos diferentes)
-  const totalProductsInStock = products.length;
-  
-  // Calcular total de itens em estoque (soma de todas as quantidades)
-  const totalItemsInStock = products.reduce((total, product) => total + product.stock, 0);
-  
-  // Calcular total de itens vendidos (soma de todas as quantidades vendidas)
-  const totalItemsSold = Object.values(productStats).reduce((total, stats) => total + stats.quantity, 0);
-  
-  return {
-    success: true,
-    data: {
-      totalOrders: orders.length,
-      totalRevenue,
-      completedOrders: completedOrders.length,
-      totalItemsSold,
-      totalProductsInStock,
-      totalItemsInStock,
-      topProducts,
-      recentOrders: orders.slice(0, 5)
-    }
-  };
+  cancel: cancelPayment,
+  getStatus: getPaymentStatus,
+  getPending: getPendingPayments
 };
 
 export const adminService = {
-  getStats: getAdminStats
-};
-
-// PIX Settings
-export const getAllPixSettings = async (): Promise<ApiResponse<PixSettings[]>> => {
-  const response = await api.get('/pix-settings');
-  return response.data;
-};
-
-export const getPixSettingsById = async (id: string): Promise<ApiResponse<PixSettings>> => {
-  const response = await api.get(`/pix-settings/${id}`);
-  return response.data;
-};
-
-export const createPixSettings = async (pixData: Omit<PixSettings, '_id' | 'createdAt' | 'updatedAt'>): Promise<ApiResponse<PixSettings>> => {
-  const response = await api.post('/pix-settings', pixData);
-  return response.data;
-};
-
-export const updatePixSettings = async (id: string, pixData: Omit<PixSettings, '_id' | 'createdAt' | 'updatedAt'>): Promise<ApiResponse<PixSettings>> => {
-  const response = await api.put(`/pix-settings/${id}`, pixData);
-  return response.data;
-};
-
-export const deletePixSettings = async (id: string): Promise<ApiResponse<PixSettings>> => {
-  const response = await api.delete(`/pix-settings/${id}`);
-  return response.data;
+  getStats: getStatistics
 };
 
 export const pixService = {
-  getAllPixSettings,
-  getPixSettingsById,
-  createPixSettings,
-  updatePixSettings,
-  deletePixSettings
-};
-
-// History
-export const getHistory = async (params?: { page?: number; limit?: number; entityType?: string; action?: string }): Promise<ApiResponse<HistoryEntry[]>> => {
-  const queryParams = new URLSearchParams();
-  if (params?.page) queryParams.append('page', params.page.toString());
-  if (params?.limit) queryParams.append('limit', params.limit.toString());
-  if (params?.entityType) queryParams.append('entityType', params.entityType);
-  if (params?.action) queryParams.append('action', params.action);
-  
-  const response = await api.get(`/history?${queryParams.toString()}`);
-  return response.data;
-};
-
-export const getHistoryStats = async (): Promise<ApiResponse<HistoryStats>> => {
-  const response = await api.get('/history/stats');
-  return response.data;
+  getAll: getAllPixSettings,
+  create: createPixSettings,
+  delete: deletePixSettings
 };
 
 export const historyService = {
-  getHistory,
-  getHistoryStats
+  getHistory
 };
 
 export default api;

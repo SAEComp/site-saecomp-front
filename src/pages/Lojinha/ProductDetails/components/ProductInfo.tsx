@@ -21,9 +21,9 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => (
         </p>
         
         <div className="text-xl md:text-3xl font-bold text-gray-900 mb-3 md:mb-6">
-            R$ {product.price.toFixed(2)}
+            R$ {product.value.toFixed(2)}
         </div>
         
-        <StockIndicator stock={product.stock} showWarning={true} />
+        <StockIndicator stock={product.quantity} showWarning={true} />
     </div>
 );

@@ -1,13 +1,13 @@
 interface CategoryTabsProps {
-  selectedCategory: 'all' | 'doces' | 'salgados' | 'bebidas';
-  onCategoryChange: (category: 'all' | 'doces' | 'salgados' | 'bebidas') => void;
+  selectedCategory: 'all' | 'sweet' | 'salty' | 'drink';
+  onCategoryChange: (category: 'all' | 'sweet' | 'salty' | 'drink') => void;
 }
 
 const categories = [
   { id: 'all', name: 'Todos'},
-  { id: 'doces', name: 'Doces'},
-  { id: 'salgados', name: 'Salgados'},
-  { id: 'bebidas', name: 'Bebidas'},
+  { id: 'sweet', name: 'Doces'},
+  { id: 'salty', name: 'Salgados'},
+  { id: 'drink', name: 'Bebidas'},
 ] as const;
 
 const CategoryTabs = ({ selectedCategory, onCategoryChange }: CategoryTabsProps) => {

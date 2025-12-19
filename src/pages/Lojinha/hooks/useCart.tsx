@@ -1,77 +1,49 @@
-import { createContext, useContext, useReducer, ReactNode } from 'react';
-import { CartItem, Product } from '../types';
+import { createContext, useContext, useReducer, ReactNode, useEffect, useState } from 'react';
+import { Cart, CartItem, Product } from '../types';
+import { cartService } from '../services/api';
 
 interface CartState {
   items: CartItem[];
+  totalValue: number;
   isOpen: boolean;
+  isLoading: boolean;
 }
 
 type CartAction =
-  | { type: 'ADD_ITEM'; payload: Product }
-  | { type: 'REMOVE_ITEM'; payload: string }
-  | { type: 'UPDATE_QUANTITY'; payload: { id: string; quantity: number } }
-  | { type: 'CLEAR_CART' }
+  | { type: 'SET_CART'; payload: Cart }
+  | { type: 'SET_ITEMS'; payload: CartItem[] }
+  | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'TOGGLE_CART' }
   | { type: 'OPEN_CART' }
-  | { type: 'CLOSE_CART' };
+  | { type: 'CLOSE_CART' }
+  | { type: 'CLEAR_CART' };
 
 const initialState: CartState = {
   items: [],
+  totalValue: 0,
   isOpen: false,
+  isLoading: false,
 };
 
 const cartReducer = (state: CartState, action: CartAction): CartState => {
   switch (action.type) {
-    case 'ADD_ITEM': {
-      const existingItem = state.items.find(item => item._id === action.payload._id);
-      
-      if (existingItem) {
-        return {
-          ...state,
-          items: state.items.map(item =>
-            item._id === action.payload._id
-              ? { ...item, quantity: item.quantity + 1 }
-              : item
-          ),
-        };
-      } else {
-        const newItem: CartItem = {
-          ...action.payload,
-          quantity: 1,
-        };
-        return {
-          ...state,
-          items: [...state.items, newItem],
-        };
-      }
-    }
-    
-    case 'REMOVE_ITEM':
+    case 'SET_CART':
       return {
         ...state,
-        items: state.items.filter(item => item._id !== action.payload),
+        items: action.payload.items,
+        totalValue: action.payload.totalValue,
       };
     
-    case 'UPDATE_QUANTITY':
-      if (action.payload.quantity <= 0) {
-        return {
-          ...state,
-          items: state.items.filter(item => item._id !== action.payload.id),
-        };
-      }
+    case 'SET_ITEMS':
       return {
         ...state,
-        items: state.items.map(item =>
-          item._id === action.payload.id
-            ? { ...item, quantity: action.payload.quantity }
-            : item
-        ),
+        items: action.payload,
       };
     
-    case 'CLEAR_CART':
+    case 'SET_LOADING':
       return {
         ...state,
-        items: [],
+        isLoading: action.payload,
       };
     
     case 'TOGGLE_CART':
@@ -92,6 +64,13 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
         isOpen: false,
       };
     
+    case 'CLEAR_CART':
+      return {
+        ...state,
+        items: [],
+        totalValue: 0,
+      };
+    
     default:
       return state;
   }
@@ -99,10 +78,10 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
 
 interface CartContextType {
   state: CartState;
-  addItem: (product: Product) => void;
-  removeItem: (id: string) => void;
-  updateQuantity: (id: string, quantity: number) => void;
-  clearCart: () => void;
+  addItem: (product: Product) => Promise<void>;
+  removeItem: (itemId: number) => Promise<void>;
+  clearCart: () => Promise<void>;
+  syncCart: () => Promise<void>;
   toggleCart: () => void;
   openCart: () => void;
   closeCart: () => void;
@@ -116,51 +95,94 @@ interface CartProviderProps {
   children: ReactNode;
 }
 
-export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
+export const CartProvider = ({ children }: CartProviderProps) => {
   const [state, dispatch] = useReducer(cartReducer, initialState);
+  const [hasInitialized, setHasInitialized] = useState(false);
 
-  const addItem = (product: Product) => {
-    dispatch({ type: 'ADD_ITEM', payload: product });
+  // Sincronizar carrinho com o servidor na inicialização
+  const syncCart = async () => {
+    dispatch({ type: 'SET_LOADING', payload: true });
+    try {
+      const response = await cartService.get();
+      if (response.success && response.data) {
+        dispatch({ type: 'SET_CART', payload: response.data });
+      }
+    } catch (error) {
+      console.error('Erro ao sincronizar carrinho:', error);
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false });
+    }
   };
 
-  const removeItem = (id: string) => {
-    dispatch({ type: 'REMOVE_ITEM', payload: id });
+  useEffect(() => {
+    if (!hasInitialized) {
+      syncCart();
+      setHasInitialized(true);
+    }
+  }, [hasInitialized]);
+
+  // Adicionar item ao carrinho (servidor)
+  const addItem = async (product: Product) => {
+    dispatch({ type: 'SET_LOADING', payload: true });
+    try {
+      const response = await cartService.add(product.id, 1);
+      if (response.success && response.data) {
+        dispatch({ type: 'SET_CART', payload: response.data });
+      }
+    } catch (error) {
+      console.error('Erro ao adicionar item:', error);
+      throw error;
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false });
+    }
   };
 
-  const updateQuantity = (id: string, quantity: number) => {
-    dispatch({ type: 'UPDATE_QUANTITY', payload: { id, quantity } });
+  // Remover item do carrinho (servidor)
+  const removeItem = async (itemId: number) => {
+    dispatch({ type: 'SET_LOADING', payload: true });
+    try {
+      await cartService.remove(itemId);
+      await syncCart(); // Atualizar carrinho após remover
+    } catch (error) {
+      console.error('Erro ao remover item:', error);
+      throw error;
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false });
+    }
   };
 
-  const clearCart = () => {
-    dispatch({ type: 'CLEAR_CART' });
+  // Limpar carrinho (servidor)
+  const clearCart = async () => {
+    dispatch({ type: 'SET_LOADING', payload: true });
+    try {
+      await cartService.clear();
+      dispatch({ type: 'CLEAR_CART' });
+    } catch (error) {
+      console.error('Erro ao limpar carrinho:', error);
+      throw error;
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false });
+    }
   };
 
-  const toggleCart = () => {
-    dispatch({ type: 'TOGGLE_CART' });
-  };
-
-  const openCart = () => {
-    dispatch({ type: 'OPEN_CART' });
-  };
-
-  const closeCart = () => {
-    dispatch({ type: 'CLOSE_CART' });
-  };
+  const toggleCart = () => dispatch({ type: 'TOGGLE_CART' });
+  const openCart = () => dispatch({ type: 'OPEN_CART' });
+  const closeCart = () => dispatch({ type: 'CLOSE_CART' });
 
   const getTotalItems = () => {
     return state.items.reduce((total, item) => total + item.quantity, 0);
   };
 
   const getTotalPrice = () => {
-    return state.items.reduce((total, item) => total + (item.price * item.quantity), 0);
+    return state.totalValue;
   };
 
   const value: CartContextType = {
     state,
     addItem,
     removeItem,
-    updateQuantity,
     clearCart,
+    syncCart,
     toggleCart,
     openCart,
     closeCart,
@@ -168,14 +190,10 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     getTotalPrice,
   };
 
-  return (
-    <CartContext.Provider value={value}>
-      {children}
-    </CartContext.Provider>
-  );
+  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };
 
-export const useCart = (): CartContextType => {
+export const useCart = () => {
   const context = useContext(CartContext);
   if (context === undefined) {
     throw new Error('useCart must be used within a CartProvider');

@@ -1,19 +1,18 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { useCart } from '../hooks/useCart';
-import { getProductImageUrl } from '../utils/imageUtils';
 import carrinhoIcon from '../../../assets/lojinha-icons/perrys/carrinho.png';
 import ConfirmModal from '../../../components/Inputs/ConfirmModal';
 
 const CartPage = () => {
-    const { state, removeItem, updateQuantity, clearCart, getTotalPrice, getTotalItems } = useCart();
+    const { state, removeItem, clearCart, getTotalPrice, getTotalItems } = useCart();
     const [showClearModal, setShowClearModal] = useState(false);
 
-    const handleQuantityChange = (productId: string, quantity: number) => {
-        if (quantity <= 0) {
-            removeItem(productId);
-        } else {
-            updateQuantity(productId, quantity);
+    const handleRemoveItem = async (itemId: number) => {
+        try {
+            await removeItem(itemId);
+        } catch (error) {
+            console.error('Erro ao remover item:', error);
         }
     };
 
@@ -21,9 +20,13 @@ const CartPage = () => {
         setShowClearModal(true);
     };
 
-    const confirmClearCart = () => {
+    const confirmClearCart = async () => {
         setShowClearModal(false);
-        clearCart();
+        try {
+            await clearCart();
+        } catch (error) {
+            console.error('Erro ao limpar carrinho:', error);
+        }
     };
 
     if (state.items.length === 0) {
@@ -66,51 +69,26 @@ const CartPage = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div className="lg:col-span-2 space-y-4">
                         {state.items.map(item => (
-                            <div key={item._id} className="bg-white rounded-lg shadow-sm p-4">
+                            <div key={item.id} className="bg-white rounded-lg shadow-sm p-4">
                                 <div className="flex items-center space-x-4">
-                                <div className="w-20 h-20 bg-gray-50 rounded-lg flex items-center justify-center p-2">
-                                    <img 
-                                        src={getProductImageUrl(item)} 
-                                        alt={item.name} 
-                                        className="max-w-full max-h-full object-contain rounded"
-                                        onError={(e) => {
-                                            e.currentTarget.src = '/placeholder-product.svg';
-                                        }}
-                                    />
-                                </div>
                                     <div className="flex-1">
-                                        <h3 className="text-lg font-semibold text-gray-800">{item.name}</h3>
-                                        <p className="text-gray-600 text-sm">{item.description}</p>
-                                        <p className="text-[#03B04B] font-bold">R$ {item.price.toFixed(2)}</p>
-                                        {item.stock < 5 && (
+                                        <h3 className="text-lg font-semibold text-gray-800">{item.productName}</h3>
+                                        <p className="text-[#03B04B] font-bold">R$ {item.value.toFixed(2)}</p>
+                                        {item.productStock < 5 && (
                                             <p className="text-xs text-orange-600">
-                                                Restam apenas {item.stock} unidades
+                                                Restam apenas {item.productStock} unidades
                                             </p>
                                         )}
                                     </div>
                                     <div className="flex items-center space-x-2">
-                                        <button 
-                                            onClick={() => handleQuantityChange(item._id, item.quantity - 1)}
-                                            className="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center transition duration-200"
-                                            disabled={item.quantity <= 1}
-                                        >
-                                            -
-                                        </button>
                                         <span className="w-12 text-center font-medium">{item.quantity}</span>
-                                        <button 
-                                            onClick={() => handleQuantityChange(item._id, item.quantity + 1)}
-                                            className="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center transition duration-200"
-                                            disabled={item.quantity >= item.stock}
-                                        >
-                                            +
-                                        </button>
                                     </div>
                                     <div className="text-right">
                                         <p className="text-lg font-bold text-gray-800">
-                                            R$ {(item.price * item.quantity).toFixed(2)}
+                                            R$ {(item.value * item.quantity).toFixed(2)}
                                         </p>
                                         <button 
-                                            onClick={() => removeItem(item._id)}
+                                            onClick={() => handleRemoveItem(item.id)}
                                             className="text-red-500 hover:text-red-700 text-sm transition duration-200"
                                             title="Remover item"
                                         >
