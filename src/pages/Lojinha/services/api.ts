@@ -95,6 +95,10 @@ export const getProducts = async (filters?: ProductFilters): Promise<ApiResponse
     params.append('search', filters.search);
   }
   
+  if (filters?.includeInactive) {
+    params.append('includeInactive', 'true');
+  }
+  
   try {
     const response = await api.get('/products', { params });
     // Backend retorna { product: [...] }
@@ -141,11 +145,14 @@ export const createProduct = async (productData: Omit<Product, 'id'>): Promise<A
   };
 };
 
-export const updateProduct = async (id: number, productData: Partial<Product>): Promise<ApiResponse<Product>> => {
-  const response = await api.put('/admin/product', {
+export const updateProduct = async (id: number, productData: Partial<Product> & { productId?: number }): Promise<ApiResponse<Product>> => {
+  // Garante que productId está no corpo da requisição
+  const requestData = {
     ...productData,
-    id
-  });
+    productId: productData.productId || id
+  };
+  
+  const response = await api.put('/admin/product', requestData);
   return {
     success: true,
     data: response.data.product
@@ -154,7 +161,7 @@ export const updateProduct = async (id: number, productData: Partial<Product>): 
 
 export const deleteProduct = async (id: number): Promise<ApiResponse<any>> => {
   const response = await api.delete('/admin/product', {
-    params: { id }
+    params: { productId: id }
   });
   return {
     success: true,
@@ -269,20 +276,40 @@ export const getOrdersHistory = async (filters?: {
 }): Promise<ApiResponse<Order[]>> => {
   const params = new URLSearchParams();
   
+  // Parâmetros obrigatórios
+  params.append('page', filters?.page?.toString() || '1');
+  params.append('pageSize', filters?.limit?.toString() || '10');
+  
+  // Parâmetros opcionais
   if (filters?.status) {
     params.append('status', filters.status);
   }
-  if (filters?.page) {
-    params.append('page', filters.page.toString());
-  }
-  if (filters?.limit) {
-    params.append('limit', filters.limit.toString());
-  }
   
   const response = await api.get('/admin/orders-history', { params });
+  
+  // Mapear dados do backend para formato esperado pelo frontend
+  const orders = (response.data.buyOrder || []).map((order: any) => ({
+    _id: order.id.toString(),
+    id: order.id,
+    customerName: order.userName,
+    items: (order.item || []).map((item: any) => ({
+      name: item.productName,
+      productName: item.productName,
+      quantity: item.quantity,
+      value: item.value,
+      price: item.value,
+      subtotal: item.value * item.quantity
+    })),
+    totalAmount: order.totalValue,
+    status: order.status,
+    paymentStatus: order.status,
+    createdAt: order.date,
+    updatedAt: order.date
+  }));
+  
   return {
     success: true,
-    data: response.data.buyOrder || []
+    data: orders
   };
 };
 
@@ -291,10 +318,15 @@ export const getOrdersHistory = async (filters?: {
 // ======================
 
 export const getStatistics = async (): Promise<ApiResponse<Statistics>> => {
-  const response = await api.get('/admin/statistics');
+  const response = await api.get('/admin/statistics', {
+    params: {
+      moreSoldQnt: 5,
+      moreRevenueQnt: 5
+    }
+  });
   return {
     success: true,
-    data: response.data.statistics
+    data: response.data
   };
 };
 
@@ -392,7 +424,19 @@ export const cartService = {
 
 export const orderService = {
   finish: finishOrder,
-  getHistory: getOrdersHistory
+  getHistory: getOrdersHistory,
+  getAll: getOrdersHistory, // Alias para compatibilidade
+  getByStatus: async (status: string) => {
+    // Implementa filtro por status localmente já que backend não tem endpoint específico
+    const allOrders = await getOrdersHistory();
+    if (!allOrders.data) return allOrders;
+    
+    const filtered = allOrders.data.filter(order => order.status === status);
+    return {
+      ...allOrders,
+      data: filtered
+    };
+  }
 };
 
 export const paymentService = {

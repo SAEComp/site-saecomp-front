@@ -147,10 +147,14 @@ const OrdersManagement: React.FC = () => {
 
     const getStatusClass = (status: string) => {
         switch (status) {
-            case 'concluído':
+            case 'finishedPayment':
                 return 'bg-green-100 text-green-800';
-            case 'cancelado':
+            case 'canceled':
                 return 'bg-red-100 text-red-800';
+            case 'pendingPayment':
+                return 'bg-yellow-100 text-yellow-800';
+            case 'cart':
+                return 'bg-gray-100 text-gray-800';
             default:
                 return 'bg-yellow-100 text-yellow-800';
         }
@@ -162,7 +166,7 @@ const OrdersManagement: React.FC = () => {
             title: 'Pedido',
             render: (_, order) => (
                 <div className="text-sm font-mono font-medium text-gray-900">
-                    #{order._id.slice(-8)}
+                    #{(order._id || order.id || '').toString().slice(-8)}
                 </div>
             )
         },
@@ -203,15 +207,12 @@ const OrdersManagement: React.FC = () => {
             key: 'status',
             title: 'Status',
             render: (_, order) => (
-                <select
-                    value={order.status}
-                    onChange={(e) => handleStatusChange(order._id, e.target.value)}
-                    className={`text-xs font-medium rounded-full px-2 py-1 border-0 focus:ring-1 focus:ring-[#03B04B] ${getStatusClass(order.status)}`}
-                >
-                    <option value="pendente">Pendente</option>
-                    <option value="concluído">Concluído</option>
-                    <option value="cancelado">Cancelado</option>
-                </select>
+                <span className={`text-xs font-medium rounded-full px-3 py-1 ${getStatusClass(order.status)}`}>
+                    {order.status === 'pendingPayment' ? 'Pendente' : 
+                     order.status === 'finishedPayment' ? 'Concluído' : 
+                     order.status === 'canceled' ? 'Cancelado' : 
+                     order.status}
+                </span>
             )
         },
         {

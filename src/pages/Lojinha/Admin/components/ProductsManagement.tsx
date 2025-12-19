@@ -25,9 +25,19 @@ const ProductsManagement: React.FC = () => {
         try {
             setLoading(true);
             setError(null);
+            
+            // Mapear categorias do frontend para backend
+            const categoryMap: Record<string, 'sweet' | 'salty' | 'drink' | undefined> = {
+                'all': undefined,
+                'doces': 'sweet',
+                'salgados': 'salty',
+                'bebidas': 'drink'
+            };
+            
             const response = await productService.getAll({ 
-                category: filter === 'all' ? undefined : filter,
-                limit: 100 
+                category: categoryMap[filter],
+                limit: 100,
+                includeInactive: true // Admin vê todos os produtos (ativos e inativos)
             });
             
             if (response.success && response.data) {
@@ -62,7 +72,7 @@ const ProductsManagement: React.FC = () => {
         if (!productToDelete) return;
 
         try {
-            await productService.delete(productToDelete._id);
+            await productService.delete(productToDelete.id);
             await loadProducts(); // Recarregar lista
             setShowDeleteModal(false);
             setProductToDelete(null);
@@ -89,6 +99,10 @@ const ProductsManagement: React.FC = () => {
 
     const getCategoryLabel = (category: string) => {
         const labels = {
+            'sweet': 'Doces',
+            'salty': 'Salgados',
+            'drink': 'Bebidas',
+            // Mantém compatibilidade com nomes antigos
             'doces': 'Doces',
             'salgados': 'Salgados',
             'bebidas': 'Bebidas'
@@ -98,6 +112,10 @@ const ProductsManagement: React.FC = () => {
 
     const getCategoryColor = (category: string) => {
         const colors = {
+            'sweet': 'text-pink-600',
+            'salty': 'text-orange-600', 
+            'drink': 'text-[#03B04B]',
+            // Mantém compatibilidade com nomes antigos
             'doces': 'text-pink-600',
             'salgados': 'text-orange-600', 
             'bebidas': 'text-[#03B04B]'

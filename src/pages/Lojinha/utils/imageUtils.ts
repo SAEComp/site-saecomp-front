@@ -7,12 +7,17 @@ const BACKEND_BASE_URL = API_BASE_URL.replace('/api/lojinha', '');
 
 /**
  * Converts a relative image URL to a complete URL pointing to the backend
- * @param imageUrl - Relative image URL from the API (e.g., "/images/coca.png")
- * @returns Complete URL to the backend image server
+ * @param imageUrl - Relative image URL from the API (e.g., "/images/coca.png") or base64 data URI
+ * @returns Complete URL to the backend image server or base64 data URI
  */
 export const getImageUrl = (imageUrl: string): string => {
   if (!imageUrl) {
     return `https://via.placeholder.com/400x300/e0e0e0/666666?text=Sem+Imagem`;
+  }
+  
+  // If it's a base64 data URI, return as is
+  if (imageUrl.startsWith('data:image/')) {
+    return imageUrl;
   }
   
   // If already a complete URL, return as is

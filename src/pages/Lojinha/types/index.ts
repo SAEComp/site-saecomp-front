@@ -10,6 +10,7 @@ export interface Product {
   category: 'sweet' | 'salty' | 'drink';
   quantity: number;
   barCode?: string | null;
+  isActive: boolean;
 }
 
 export interface CartItem {
@@ -75,6 +76,7 @@ export interface ProductFilters {
   search?: string;
   page?: number;
   limit?: number;
+  includeInactive?: boolean; // Para admin ver produtos inativos
 }
 
 export interface PixSettings {

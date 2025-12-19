@@ -51,8 +51,24 @@ const StatsManagement: React.FC = () => {
             setLoading(true);
             setError(null);
             const response = await adminService.getStats();
+            console.log('Stats response:', response);
             if (response.success && response.data) {
-                setStats(response.data);
+                // Mapear os campos do backend para o formato esperado pelo frontend
+                const statsData = {
+                    totalOrders: response.data.totalOrders || 0,
+                    totalRevenue: response.data.totalRevenueValue || 0,
+                    completedOrders: response.data.finishedOrders || 0,
+                    canceledOrders: response.data.canceledOrders || 0,
+                    totalItemsSold: response.data.soldItems || 0,
+                    totalProductsInStock: response.data.stockProducts || 0,
+                    totalItemsInStock: response.data.stockItems || 0,
+                    productsWithMoreSoldQuantity: response.data.productsWithMoreSoldQuantity || [],
+                    productsWithMoreRevenueValue: response.data.productsWithMoreRevenueValue || [],
+                    topProducts: [], // Legacy field
+                    recentOrders: [] // Not implemented yet
+                };
+                console.log('Stats data processed:', statsData);
+                setStats(statsData);
             } else {
                 throw new Error(response.message || 'Erro ao carregar estatísticas');
             }
@@ -294,7 +310,7 @@ const StatsManagement: React.FC = () => {
                         </div>
                         <Table
                             columns={topSoldProductsColumns}
-                            data={[...stats.topProducts].sort((a, b) => b.totalSold - a.totalSold)}
+                            data={Array.isArray(stats.productsWithMoreSoldQuantity) ? stats.productsWithMoreSoldQuantity : []}
                             emptyText="Nenhum produto vendido ainda"
                             responsive={true}
                             mobileView={(item, index) => (
@@ -336,7 +352,7 @@ const StatsManagement: React.FC = () => {
                         </div>
                         <Table
                             columns={topRevenueProductsColumns}
-                            data={[...stats.topProducts].sort((a, b) => b.revenue - a.revenue)}
+                            data={Array.isArray(stats.productsWithMoreRevenueValue) ? stats.productsWithMoreRevenueValue : []}
                             emptyText="Nenhum produto vendido ainda"
                             responsive={true}
                             mobileView={(item, index) => (

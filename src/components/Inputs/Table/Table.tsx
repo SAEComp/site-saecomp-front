@@ -69,7 +69,7 @@ const Table = <T extends any>({
         );
     }
 
-    if (data.length === 0) {
+    if (!data || !Array.isArray(data) || data.length === 0) {
         return (
             <div className="bg-white rounded-lg shadow overflow-hidden">
                 <div className="p-8 text-center">

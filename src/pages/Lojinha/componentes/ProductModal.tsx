@@ -25,6 +25,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
         name: '',
         description: '',
         price: 0,
+        priceDisplay: '0,00', // Campo para exibição formatada
         imageUrl: '',
         category: 'doces' as 'doces' | 'salgados' | 'bebidas',
         stock: 0,
@@ -37,28 +38,42 @@ const ProductModal: React.FC<ProductModalProps> = ({
 
     useEffect(() => {
         if (product) {
+            // Mapear categoria do backend (sweet/salty/drink) para frontend (doces/salgados/bebidas)
+            const categoryMap: Record<string, 'doces' | 'salgados' | 'bebidas'> = {
+                'sweet': 'doces',
+                'salty': 'salgados',
+                'drink': 'bebidas'
+            };
+            
+            // Formatar preço para exibição (R$ 10.50 -> 10,50)
+            const priceDisplay = product.value.toFixed(2).replace('.', ',');
+            
             setFormData({
                 name: product.name,
                 description: product.description,
-                price: product.price,
-                imageUrl: product.imageUrl,
-                category: product.category,
-                stock: product.stock,
+                price: product.value,
+                priceDisplay: priceDisplay,
+                imageUrl: product.imgUrl || '',
+                category: categoryMap[product.category] || 'doces',
+                stock: product.quantity,
                 isActive: product.isActive
             });
+            // Se tem imagem existente, não mostra preview (apenas quando selecionar nova)
+            setImagePreview(null);
         } else {
             setFormData({
                 name: '',
                 description: '',
                 price: 0,
+                priceDisplay: '0,00',
                 imageUrl: '',
                 category: 'doces',
                 stock: 0,
                 isActive: true
             });
+            setImagePreview(null);
         }
         setImageFile(null);
-        setImagePreview(null);
         setError(null);
     }, [product, isOpen]);
 
@@ -77,6 +92,30 @@ const ProductModal: React.FC<ProductModalProps> = ({
         });
     };
 
+    const handlePriceChange = (value: string) => {
+        // Remove tudo que não é número
+        const numbers = value.replace(/\D/g, '');
+        
+        // Se vazio, reseta para 0,00
+        if (numbers === '') {
+            setFormData(prev => ({ ...prev, price: 0, priceDisplay: '0,00' }));
+            return;
+        }
+        
+        // Converte para centavos e depois para reais
+        const cents = parseInt(numbers);
+        const reais = cents / 100;
+        
+        // Formata para exibição (XX,XX)
+        const formatted = reais.toFixed(2).replace('.', ',');
+        
+        setFormData(prev => ({ 
+            ...prev, 
+            price: reais,
+            priceDisplay: formatted
+        }));
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
@@ -90,29 +129,49 @@ const ProductModal: React.FC<ProductModalProps> = ({
             if (!formData.description.trim()) {
                 throw new Error('Descrição do produto é obrigatória');
             }
-            if (formData.price <= 0) {
+            if (formData.price <= 0 || isNaN(formData.price)) {
                 throw new Error('Preço deve ser maior que zero');
             }
             if (formData.stock < 0) {
                 throw new Error('Estoque não pode ser negativo');
             }
 
-            // Preparar dados para envio
-            let dataToSend = { ...formData };
+            // Preparar dados para envio (mapear para formato do backend)
+            // Mapear categoria do frontend (doces/salgados/bebidas) para backend (sweet/salty/drink)
+            const categoryMapToBackend: Record<string, 'sweet' | 'salty' | 'drink'> = {
+                'doces': 'sweet',
+                'salgados': 'salty',
+                'bebidas': 'drink'
+            };
+            
+            // Arredondar preço para 2 casas decimais para garantir formato válido
+            const roundedPrice = Math.round(formData.price * 100) / 100;
+            
+            const dataToSend: any = {
+                name: formData.name,
+                value: roundedPrice, // price -> value (garantido com 2 casas decimais)
+                description: formData.description,
+                quantity: formData.stock, // stock -> quantity
+                category: categoryMapToBackend[formData.category] || 'sweet',
+                isActive: formData.isActive
+            };
 
             // Se há uma nova imagem para upload
             if (imageFile) {
                 try {
                     const base64Image = await convertFileToBase64(imageFile);
-                    dataToSend.imageUrl = base64Image;
+                    dataToSend.imgUrl = base64Image;
                 } catch (err) {
                     throw new Error('Erro ao processar a imagem');
                 }
             }
+            // Se não tem nova imagem E não está editando, não envia imgUrl (usa padrão)
+            // Se está editando e não tem nova imagem, não envia imgUrl (mantém a atual)
 
             if (product) {
                 // Editando produto existente
-                await productService.update(product._id, dataToSend);
+                dataToSend.productId = product.id;
+                await productService.update(product.id, dataToSend);
             } else {
                 // Criando novo produto
                 await productService.create(dataToSend);
@@ -198,15 +257,16 @@ const ProductModal: React.FC<ProductModalProps> = ({
                                 <div className="relative">
                                     <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">R$</span>
                                     <input
-                                        type="number"
-                                        value={formData.price}
-                                        onChange={(e) => setFormData(prev => ({ ...prev, price: parseFloat(e.target.value) || 0 }))}
-                                        min="0"
-                                        step="0.01"
+                                        type="text"
+                                        value={formData.priceDisplay}
+                                        onChange={(e) => handlePriceChange(e.target.value)}
                                         className="block w-full rounded-lg py-3 pl-10 pr-3 text-gray-900 font-inter placeholder-gray-400 placeholder-opacity-100 focus:placeholder-opacity-30 focus:outline-none focus:ring-2 focus:ring-[#03B04B] focus:border-transparent border border-gray-300"
                                         placeholder="0,00"
                                     />
                                 </div>
+                                <p className="text-xs text-gray-500 mt-1">
+                                    Digite o valor. Exemplo: 1050 = R$ 10,50
+                                </p>
                             </div>
 
                             <div>
@@ -245,7 +305,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
                             </label>
                             
                             {/* Preview da imagem */}
-                            {(imagePreview || formData.imageUrl) && (
+                            {(imagePreview || (product && formData.imageUrl)) && (
                                 <div className="mb-4">
                                     <div className="relative inline-block">
                                         <img 
@@ -253,14 +313,22 @@ const ProductModal: React.FC<ProductModalProps> = ({
                                             alt="Preview" 
                                             className="w-32 h-32 object-cover rounded-lg border border-gray-300"
                                         />
-                                        <button
-                                            type="button"
-                                            onClick={removeImage}
-                                            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-600"
-                                        >
-                                            ×
-                                        </button>
+                                        {imagePreview && (
+                                            <button
+                                                type="button"
+                                                onClick={removeImage}
+                                                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-600"
+                                                title="Remover nova imagem"
+                                            >
+                                                ×
+                                            </button>
+                                        )}
                                     </div>
+                                    {!imagePreview && product && (
+                                        <p className="text-xs text-gray-500 mt-2">
+                                            Imagem atual do produto. Selecione uma nova para alterar.
+                                        </p>
+                                    )}
                                 </div>
                             )}
                             
