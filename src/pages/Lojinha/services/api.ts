@@ -25,22 +25,16 @@ const api = axios.create({
 // 🔑 Interceptor de autenticação - Adiciona token JWT automaticamente
 api.interceptors.request.use(
   (config) => {
-    // Rotas públicas que não precisam de token
-    const publicRoutes = ['/products', '/product'];
-    const isPublicRoute = publicRoutes.some(route => config.url?.includes(route));
+    // Tenta pegar token de múltiplas fontes
+    const token = 
+      localStorage.getItem('token') || 
+      localStorage.getItem('authToken') ||
+      sessionStorage.getItem('token');
     
-    if (!isPublicRoute) {
-      // Tenta pegar token de múltiplas fontes
-      const token = 
-        localStorage.getItem('token') || 
-        localStorage.getItem('authToken') ||
-        sessionStorage.getItem('token');
-      
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      } else {
-        console.warn('⚠️ Token não encontrado. Requisição pode falhar se rota exigir autenticação.');
-      }
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    } else {
+      console.warn('⚠️ Token não encontrado. Requisição pode falhar se rota exigir autenticação.');
     }
     
     return config;
@@ -50,25 +44,16 @@ api.interceptors.request.use(
   }
 );
 
-// 🚨 Interceptor para tratamento de erros (incluindo autenticação)
+// 🚨 Interceptor para tratamento de erros
 api.interceptors.response.use(
   (response: AxiosResponse) => response,
   (error) => {
     console.error('API Error:', error);
     
-    // Erro de autenticação
+    // Erro de autenticação (apenas loga, não redireciona)
     if (error.response?.status === 401) {
-      console.error('🔒 Não autenticado. Token inválido ou expirado.');
-      localStorage.removeItem('token');
-      localStorage.removeItem('authToken');
-      
-      // Redireciona para login se não estiver na página de login
-      if (window.location.pathname !== '/login') {
-        const currentPath = window.location.pathname;
-        window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
-      }
-      
-      return Promise.reject({ message: 'Sessão expirada. Faça login novamente.' });
+      console.warn('⚠️ Requisição não autenticada. Algumas funcionalidades podem estar limitadas.');
+      return Promise.reject({ message: 'Esta ação requer autenticação.' });
     }
     
     if (error.code === 'ECONNABORTED') {
@@ -104,9 +89,11 @@ export const getProducts = async (filters?: ProductFilters): Promise<ApiResponse
   
   try {
     const response = await api.get('/products', { params });
+    // Backend retorna { product: [...] }
+    const products = response.data.product || response.data || [];
     return {
       success: true,
-      data: response.data.product || []
+      data: Array.isArray(products) ? products : []
     };
   } catch (error) {
     console.error('Error fetching products:', error);

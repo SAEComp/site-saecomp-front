@@ -79,9 +79,15 @@ const routes = createBrowserRouter([
                     },
                     {
                         path: "admin",
-                        element: <AuthPermissions permissions={["users:edit"]}>
-                            <LojinhaGerenciamento />
-                        </AuthPermissions>,
+                        element: <RequireAuth />,
+                        children: [
+                            {
+                                index: true,
+                                element: <AuthPermissions permissions={["users:edit"]}>
+                                    <LojinhaGerenciamento />
+                                </AuthPermissions>,
+                            }
+                        ]
                     },
                 ],
             },

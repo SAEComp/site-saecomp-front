@@ -18,7 +18,7 @@ const NavBar = () => {
     const { user, isAuthenticated } = useAuth();
     const { getTotalItems } = useCart();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-
+    
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
     
     // Verifica se estamos na página da lojinha ou suas sub-rotas
@@ -76,14 +76,18 @@ const NavBar = () => {
                 )}
         
                 {isAuthenticated ? (
-                    <div className="flex items-center space-x-2 cursor-pointer" onClick={() => {navigate('/login'); toggleMenu()}}>
+                    <Link 
+                        to="/login" 
+                        className="flex items-center space-x-2 cursor-pointer hover:opacity-80 transition-opacity"
+                        onClick={toggleMenu}
+                    >
                         <img
                             src={user?.picture}
                             alt="user"
-                            className={`${isLojinhaPage ? 'w-7 h-7 sm:w-8 sm:h-8' : 'w-8 h-8'} rounded-full border`}
+                            className={`${isLojinhaPage ? 'w-7 h-7 sm:w-8 sm:h-8' : 'w-8 h-8'} rounded-full border border-white`}
                         />
                         <span className={`text-sm text-white font-bold ${isLojinhaPage ? 'hidden sm:inline' : ''}`}>{user?.name}</span>
-                    </div>
+                    </Link>
 
                 ) : (
                     <Link 
