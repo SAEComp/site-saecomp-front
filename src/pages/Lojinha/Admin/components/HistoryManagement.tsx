@@ -16,7 +16,14 @@ const HistoryManagement: React.FC = () => {
     // Estados para filtros
     const [showFilterModal, setShowFilterModal] = useState(false);
     const [filters, setFilters] = useState({
-        productName: '',
+        productId: '',
+        minPrice: '',
+        maxPrice: '',
+        startDate: '',
+        endDate: ''
+    });
+    const [appliedFilters, setAppliedFilters] = useState({
+        productId: '',
         minPrice: '',
         maxPrice: '',
         startDate: '',
@@ -25,8 +32,7 @@ const HistoryManagement: React.FC = () => {
 
     useEffect(() => {
         loadHistory();
-        setCurrentPage(1); // Reset para primeira página quando filtros mudam
-    }, [filters]);
+    }, [appliedFilters]); // Atualiza apenas quando appliedFilters muda
 
     const loadHistory = async () => {
         try {
@@ -45,39 +51,41 @@ const HistoryManagement: React.FC = () => {
             if (historyResponse.success && historyResponse.data) {
                 let filteredHistory = historyResponse.data;
                 
-                // Apply filters
-                if (filters.productName) {
+                // Apply filters (usa appliedFilters)
+                if (appliedFilters.productId) {
+                    const productIdNum = parseInt(appliedFilters.productId);
                     filteredHistory = filteredHistory.filter(entry => 
-                        entry.productName && entry.productName.toLowerCase().includes(filters.productName.toLowerCase())
+                        entry.productId === productIdNum
                     );
                 }
                 
-                if (filters.startDate) {
-                    const startDate = new Date(filters.startDate);
-                    filteredHistory = filteredHistory.filter(entry => 
-                        new Date(entry.date) >= startDate
-                    );
+                if (appliedFilters.startDate) {
+                    const startDate = new Date(appliedFilters.startDate + 'T00:00:00');
+                    filteredHistory = filteredHistory.filter(entry => {
+                        const entryDate = new Date(entry.date);
+                        return entryDate >= startDate;
+                    });
                 }
                 
-                if (filters.endDate) {
-                    const endDate = new Date(filters.endDate);
-                    endDate.setHours(23, 59, 59, 999); // Incluir todo o dia final
-                    filteredHistory = filteredHistory.filter(entry => 
-                        new Date(entry.date) <= endDate
-                    );
+                if (appliedFilters.endDate) {
+                    const endDate = new Date(appliedFilters.endDate + 'T23:59:59.999');
+                    filteredHistory = filteredHistory.filter(entry => {
+                        const entryDate = new Date(entry.date);
+                        return entryDate <= endDate;
+                    });
                 }
                 
-                if (filters.minPrice || filters.maxPrice) {
+                if (appliedFilters.minPrice || appliedFilters.maxPrice) {
                     filteredHistory = filteredHistory.filter(entry => {
                         const entryValue = entry.value || 0;
                         
-                        if (filters.minPrice) {
-                            const minPriceValue = parseFloat(filters.minPrice.replace(/[^\d,]/g, '').replace(',', '.'));
+                        if (appliedFilters.minPrice) {
+                            const minPriceValue = parseFloat(appliedFilters.minPrice.replace(/[^\d,]/g, '').replace(',', '.'));
                             if (entryValue < minPriceValue) return false;
                         }
                         
-                        if (filters.maxPrice) {
-                            const maxPriceValue = parseFloat(filters.maxPrice.replace(/[^\d,]/g, '').replace(',', '.'));
+                        if (appliedFilters.maxPrice) {
+                            const maxPriceValue = parseFloat(appliedFilters.maxPrice.replace(/[^\d,]/g, '').replace(',', '.'));
                             if (entryValue > maxPriceValue) return false;
                         }
                         
@@ -86,6 +94,7 @@ const HistoryManagement: React.FC = () => {
                 }
                 
                 setHistory(filteredHistory);
+                setCurrentPage(1); // Reset para primeira página quando filtros são aplicados
             } else {
                 throw new Error(historyResponse.message || 'Erro ao carregar histórico');
             }
@@ -117,7 +126,7 @@ const HistoryManagement: React.FC = () => {
         // Se vazio, retorna vazio
         if (!numbers) return '';
         
-        // Converte para número e divide por 100 para ter centavos
+        // Converte para número e divide por 100 para ter centavos (preenche da direita para esquerda)
         const amount = parseFloat(numbers) / 100;
         
         // Formata como moeda brasileira
@@ -155,15 +164,76 @@ const HistoryManagement: React.FC = () => {
         }
     };
 
+    const applyFilters = () => {
+        setAppliedFilters({ ...filters });
+        setShowFilterModal(false);
+    };
+
     const clearAllFilters = () => {
-        setFilters({
-            productName: '',
+        const emptyFilters = {
+            productId: '',
             minPrice: '',
             maxPrice: '',
             startDate: '',
             endDate: ''
-        });
-        setCurrentPage(1);
+        };
+        setFilters(emptyFilters);
+        setAppliedFilters(emptyFilters);
+        setShowFilterModal(false);
+    };
+
+    const mobileView = (entry: HistoryEntry) => {
+        const product = getProductById(entry.productId);
+        const quantityChange = entry.quantity || 0;
+        const quantityColor = quantityChange > 0 ? 'text-green-600' : quantityChange < 0 ? 'text-red-600' : 'text-gray-600';
+        
+        return (
+            <div className="p-4">
+                <div className="flex items-start gap-3 mb-3">
+                    {product ? (
+                        <img 
+                            className="h-12 w-12 rounded-lg object-cover flex-shrink-0" 
+                            src={getProductImageUrl(product)} 
+                            alt={entry.productName}
+                        />
+                    ) : (
+                        <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center border-2 border-blue-300 flex-shrink-0">
+                            <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                        <div className="text-sm font-medium text-gray-900">
+                            {entry.productName}
+                        </div>
+                        <div className="text-xs text-gray-500 mt-1">
+                            {formatDate(entry.date)}
+                        </div>
+                    </div>
+                </div>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div>
+                        <span className="text-gray-500">Quantidade:</span>
+                        <span className={`ml-1 font-medium ${quantityColor}`}>
+                            {quantityChange > 0 ? '+' : ''}{quantityChange}
+                        </span>
+                    </div>
+                    <div>
+                        <span className="text-gray-500">Preço Unit.:</span>
+                        <span className="ml-1 font-medium text-gray-900">
+                            R$ {(entry.value || 0).toFixed(2)}
+                        </span>
+                    </div>
+                    <div className="col-span-2">
+                        <span className="text-gray-500">Total:</span>
+                        <span className="ml-1 font-medium text-gray-900">
+                            R$ {((entry.quantity || 0) * (entry.value || 0)).toFixed(2)}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        );
     };
 
     const columns: ITableColumn<HistoryEntry>[] = [
@@ -285,7 +355,7 @@ const HistoryManagement: React.FC = () => {
                 const total = (entry.value || 0) * (entry.quantity || 0);
                 
                 return (
-                    <span className="text-sm font-semibold text-blue-600">
+                    <span className="text-sm font-semibold text-gray-900">
                         R$ {total.toFixed(2)}
                     </span>
                 );
@@ -420,6 +490,7 @@ const HistoryManagement: React.FC = () => {
                     loading={loading}
                     emptyText="Nenhuma entrada de estoque encontrada"
                     emptyIcon={erroIcon}
+                    mobileView={mobileView}
                 />
             )}
 
@@ -512,15 +583,20 @@ const HistoryManagement: React.FC = () => {
                                 {/* Nome do Produto */}
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Nome do Produto
+                                        Produto
                                     </label>
-                                    <input
-                                        type="text"
-                                        value={filters.productName}
-                                        onChange={(e) => setFilters(prev => ({ ...prev, productName: e.target.value }))}
-                                        placeholder="Digite o nome do produto"
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#03B04B] focus:border-[#03B04B]"
-                                    />
+                                    <select
+                                        value={filters.productId}
+                                        onChange={(e) => setFilters(prev => ({ ...prev, productId: e.target.value }))}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#03B04B] focus:border-[#03B04B] bg-white"
+                                    >
+                                        <option value="">Todos os produtos</option>
+                                        {products.map(product => (
+                                            <option key={product.id} value={product.id}>
+                                                {product.name} - R$ {product.value.toFixed(2)}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
 
                                 {/* Valor do Preço */}
@@ -589,7 +665,7 @@ const HistoryManagement: React.FC = () => {
                                         Cancelar
                                     </button>
                                     <button
-                                        onClick={() => setShowFilterModal(false)}
+                                        onClick={applyFilters}
                                         className="px-4 py-2 bg-[#03B04B] text-white rounded-lg hover:bg-green-600 transition-colors"
                                     >
                                         Aplicar Filtros

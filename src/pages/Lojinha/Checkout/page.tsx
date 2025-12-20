@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { useCart } from '../hooks/useCart';
-import { orderService, paymentService } from '../services/api';
+import { orderService, paymentService, productService } from '../services/api';
 import { useAuth } from '../../../auth/AuthContext';
+import { Product } from '../types';
+import { getProductImageUrl } from '../utils/imageUtils';
 import erroIcon from '../../../assets/lojinha-icons/perrys/ERRO.png';
 import concluirIcon from '../../../assets/lojinha-icons/perrys/concluir.png';
 import profileIcon from '../../../assets/lojinha-icons/perrys/profile.png';
@@ -16,6 +18,7 @@ const Checkout: React.FC = () => {
     const cartItems = state.items;
     const totalAmount = getTotalPrice();
     
+    const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [qrCodeData, setQrCodeData] = useState<string | null>(null);
@@ -48,6 +51,21 @@ const Checkout: React.FC = () => {
 
     // Get customer name from authenticated user or set as anonymous
     const customerName = user?.name ? getFirstAndLastName(user.name) : 'Cliente Anônimo';
+
+    // Load products for images
+    useEffect(() => {
+        const loadProducts = async () => {
+            try {
+                const response = await productService.getAll({ limit: 100, includeInactive: true });
+                if (response.success && response.data) {
+                    setProducts(response.data);
+                }
+            } catch (error) {
+                console.error('Erro ao carregar produtos:', error);
+            }
+        };
+        loadProducts();
+    }, []);
 
     // Timer effect for 10 seconds (teste)
     useEffect(() => {
@@ -240,18 +258,26 @@ const Checkout: React.FC = () => {
                     <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
                         <h2 className="text-xl font-semibold text-gray-900 mb-4">Resumo do Pedido</h2>
                         <div className="space-y-4">
-                            {cartItems.map((item) => (
-                                <div key={item.id} className="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg">
-                                    <div className="flex-1">
-                                        <h3 className="font-medium text-gray-900">{item.productName}</h3>
-                                        <p className="text-sm text-gray-600">Quantidade: {item.quantity}</p>
-                                        <p className="text-sm text-gray-600">Preço unitário: R$ {item.value.toFixed(2)}</p>
-                                        <p className="font-medium text-gray-900">
-                                            Subtotal: R$ {(item.value * item.quantity).toFixed(2)}
-                                        </p>
+                            {cartItems.map((item) => {
+                                const product = products.find(p => p.id === item.productId);
+                                return (
+                                    <div key={item.id} className="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg">
+                                        <img 
+                                            src={product ? getProductImageUrl(product) : `https://via.placeholder.com/64x64/e0e0e0/666666?text=${encodeURIComponent(item.productName)}`}
+                                            alt={item.productName}
+                                            className="w-16 h-16 object-cover rounded-lg flex-shrink-0"
+                                        />
+                                        <div className="flex-1">
+                                            <h3 className="font-medium text-gray-900">{item.productName}</h3>
+                                            <p className="text-sm text-gray-600">Quantidade: {item.quantity}</p>
+                                            <p className="text-sm text-gray-600">Preço unitário: R$ {item.value.toFixed(2)}</p>
+                                            <p className="font-medium text-gray-900">
+                                                Subtotal: R$ {(item.value * item.quantity).toFixed(2)}
+                                            </p>
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                         
                         <div className="mt-6 pt-6 border-t border-gray-200">
@@ -341,13 +367,13 @@ const Checkout: React.FC = () => {
                         <img 
                             src={timeoutIcon} 
                             alt="Tempo esgotado" 
-                            className="w-24 h-24 mx-auto mb-4 object-contain"
+                            className="w-32 h-32 md:w-40 md:h-40 mx-auto mb-4 object-contain"
                         />
                         <h2 className="text-xl font-bold text-red-600 mb-2">Tempo Esgotado</h2>
                         <p className="text-gray-600 mb-6">O tempo para pagamento expirou. Tente novamente.</p>
                         <button
                             onClick={() => navigate('/lojinha')}
-                            className="bg-[#03B04B] hover:bg-green-600 text-white px-8 py-3 rounded-lg font-medium transition"
+                            className="border-2 border-gray-400 text-gray-700 hover:border-gray-600 hover:text-gray-900 px-6 py-3 rounded-lg font-medium transition-colors"
                         >
                             Continuar Comprando
                         </button>
@@ -439,12 +465,7 @@ const Checkout: React.FC = () => {
                                         Cancelando...
                                     </>
                                 ) : (
-                                    <>
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                        Cancelar Pedido
-                                    </>
+                                    "Cancelar Pedido"
                                 )}
                             </button>
                         </div>

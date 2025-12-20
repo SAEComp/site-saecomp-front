@@ -79,6 +79,7 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
 interface CartContextType {
   state: CartState;
   addItem: (product: Product) => Promise<void>;
+  updateItem: (itemId: number, quantity: number) => Promise<void>;
   removeItem: (itemId: number) => Promise<void>;
   clearCart: () => Promise<void>;
   syncCart: () => Promise<void>;
@@ -140,12 +141,46 @@ export const CartProvider = ({ children }: CartProviderProps) => {
     }
   };
 
+  // Atualizar quantidade de um item no carrinho (servidor)
+  const updateItem = async (itemId: number, quantity: number) => {
+    if (quantity <= 0) {
+      await removeItem(itemId);
+      return;
+    }
+    
+    dispatch({ type: 'SET_LOADING', payload: true });
+    try {
+      const response = await cartService.update(itemId, quantity);
+      if (response.success && response.data) {
+        dispatch({ type: 'SET_CART', payload: response.data });
+      }
+    } catch (error) {
+      console.error('Erro ao atualizar item:', error);
+      throw error;
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false });
+    }
+  };
+
   // Remover item do carrinho (servidor)
   const removeItem = async (itemId: number) => {
     dispatch({ type: 'SET_LOADING', payload: true });
     try {
       await cartService.remove(itemId);
-      await syncCart(); // Atualizar carrinho após remover
+      // Tenta sincronizar o carrinho após remover
+      try {
+        const response = await cartService.get();
+        if (response.success && response.data) {
+          dispatch({ type: 'SET_CART', payload: response.data });
+        }
+      } catch (syncError: any) {
+        // Se o carrinho não existir mais (foi deletado por ser o último item), limpa o estado local
+        if (syncError?.message?.includes('Carrinho') || syncError?.code === 'API_ERROR') {
+          dispatch({ type: 'CLEAR_CART' });
+        } else {
+          throw syncError;
+        }
+      }
     } catch (error) {
       console.error('Erro ao remover item:', error);
       throw error;
@@ -194,6 +229,7 @@ export const CartProvider = ({ children }: CartProviderProps) => {
   const value: CartContextType = {
     state,
     addItem,
+    updateItem,
     removeItem,
     clearCart,
     syncCart,

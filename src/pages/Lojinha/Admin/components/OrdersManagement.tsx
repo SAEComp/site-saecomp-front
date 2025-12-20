@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { orderService } from '../../services/api';
-import { Order } from '../../types';
+import { orderService, productService } from '../../services/api';
+import { Order, Product } from '../../types';
 import erroIcon from '../../../../assets/lojinha-icons/perrys/ERRO.png';
 import ConfirmModal from '../../../../components/Inputs/ConfirmModal';
 import { Table, ITableColumn } from '../../../../components/Inputs';
@@ -27,11 +27,14 @@ const OrdersManagement: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-    const [statusFilter, setStatusFilter] = useState<string>('all');
     const [currentPage, setCurrentPage] = useState(1);
     const ORDERS_PER_PAGE = 40;
     const [showStatusConfirmModal, setShowStatusConfirmModal] = useState(false);
     const [pendingStatusChange, setPendingStatusChange] = useState<{orderId: string, newStatus: string, message: string} | null>(null);
+    
+    // Estados para produtos e clientes
+    const [allProducts, setAllProducts] = useState<Product[]>([]);
+    const [allCustomers, setAllCustomers] = useState<string[]>([]);
     
     // Estados para o modal de filtros
     const [showFilterModal, setShowFilterModal] = useState(false);
@@ -44,24 +47,44 @@ const OrdersManagement: React.FC = () => {
         endDate: '',
         status: 'all'
     });
-    const [itemInputs, setItemInputs] = useState(['']); // Array de inputs para itens
+    const [appliedFilters, setAppliedFilters] = useState({
+        customerName: '',
+        items: [] as string[],
+        minTotal: '',
+        maxTotal: '',
+        startDate: '',
+        endDate: '',
+        status: 'all'
+    });
 
     useEffect(() => {
         loadOrders();
-        setCurrentPage(1); // Reset para primeira página quando filtro muda
-    }, [statusFilter]);
+        loadProducts();
+    }, []);
+
+    useEffect(() => {
+        // Extrair clientes únicos dos pedidos
+        const uniqueCustomers = Array.from(new Set(orders.map(order => order.customerName || 'Cliente Anônimo')));
+        setAllCustomers(uniqueCustomers);
+    }, [orders]);
+
+    const loadProducts = async () => {
+        try {
+            const response = await productService.getAll({ limit: 100, includeInactive: true });
+            if (response.success && response.data) {
+                setAllProducts(response.data);
+            }
+        } catch (err) {
+            console.error('Error loading products:', err);
+        }
+    };
 
     const loadOrders = async () => {
         try {
             setLoading(true);
             setError(null);
             
-            let response;
-            if (statusFilter === 'all') {
-                response = await orderService.getAll({ limit: 100 });
-            } else {
-                response = await orderService.getByStatus(statusFilter);
-            }
+            const response = await orderService.getAll({ limit: 100 });
             
             if (response.success && response.data) {
                 setOrders(Array.isArray(response.data) ? response.data : [response.data]);
@@ -254,15 +277,12 @@ const OrdersManagement: React.FC = () => {
                 {order.items.length} item{order.items.length !== 1 ? 's' : ''} • {formatDate(order.createdAt)}
             </div>
             <div className="flex items-center justify-between">
-                <select
-                    value={order.status}
-                    onChange={(e) => handleStatusChange(order._id, e.target.value)}
-                    className={`text-xs font-medium rounded-full px-2 py-1 border-0 focus:ring-1 focus:ring-[#03B04B] ${getStatusClass(order.status)}`}
-                >
-                    <option value="pendente">Pendente</option>
-                    <option value="concluído">Concluído</option>
-                    <option value="cancelado">Cancelado</option>
-                </select>
+                <span className={`text-xs font-medium rounded-full px-3 py-1 ${getStatusClass(order.status)}`}>
+                    {order.status === 'pendingPayment' ? 'Pendente' : 
+                     order.status === 'finishedPayment' ? 'Concluído' : 
+                     order.status === 'canceled' ? 'Cancelado' : 
+                     order.status}
+                </span>
                 <button
                     onClick={() => setSelectedOrder(order)}
                     className="text-[#03B04B] hover:text-green-600 transition-colors text-sm"
@@ -273,11 +293,76 @@ const OrdersManagement: React.FC = () => {
         </div>
     );
 
+    // Aplicar filtros aos pedidos (usando appliedFilters, não filters)
+    const filteredOrders = orders.filter(order => {
+        // Filtro por cliente
+        if (appliedFilters.customerName && appliedFilters.customerName.trim() !== '') {
+            if (!order.customerName?.toLowerCase().includes(appliedFilters.customerName.toLowerCase())) {
+                return false;
+            }
+        }
+
+        // Filtro por status
+        if (appliedFilters.status && appliedFilters.status !== 'all') {
+            if (order.status !== appliedFilters.status) {
+                return false;
+            }
+        }
+
+        // Filtro por produtos
+        if (appliedFilters.items && appliedFilters.items.length > 0) {
+            const orderItemNames = order.items.map(item => item.name.toLowerCase());
+            const hasAllProducts = appliedFilters.items.every(filterItem => 
+                orderItemNames.some(orderItem => orderItem.includes(filterItem.toLowerCase()))
+            );
+            if (!hasAllProducts) {
+                return false;
+            }
+        }
+
+        // Filtro por valor mínimo
+        if (appliedFilters.minTotal && appliedFilters.minTotal.trim() !== '') {
+            const minValue = parseFloat(appliedFilters.minTotal.replace(/[^\d,]/g, '').replace(',', '.'));
+            if (!isNaN(minValue) && order.totalAmount < minValue) {
+                return false;
+            }
+        }
+
+        // Filtro por valor máximo
+        if (appliedFilters.maxTotal && appliedFilters.maxTotal.trim() !== '') {
+            const maxValue = parseFloat(appliedFilters.maxTotal.replace(/[^\d,]/g, '').replace(',', '.'));
+            if (!isNaN(maxValue) && order.totalAmount > maxValue) {
+                return false;
+            }
+        }
+
+        // Filtro por data inicial
+        if (appliedFilters.startDate && appliedFilters.startDate.trim() !== '') {
+            const startDate = new Date(appliedFilters.startDate);
+            const orderDate = new Date(order.createdAt);
+            if (orderDate < startDate) {
+                return false;
+            }
+        }
+
+        // Filtro por data final
+        if (appliedFilters.endDate && appliedFilters.endDate.trim() !== '') {
+            const endDate = new Date(appliedFilters.endDate);
+            endDate.setHours(23, 59, 59, 999);
+            const orderDate = new Date(order.createdAt);
+            if (orderDate > endDate) {
+                return false;
+            }
+        }
+
+        return true;
+    });
+
     // Lógica de paginação
-    const totalPages = Math.ceil(orders.length / ORDERS_PER_PAGE);
+    const totalPages = Math.ceil(filteredOrders.length / ORDERS_PER_PAGE);
     const startIndex = (currentPage - 1) * ORDERS_PER_PAGE;
     const endIndex = startIndex + ORDERS_PER_PAGE;
-    const currentOrders = orders.slice(startIndex, endIndex);
+    const currentOrders = filteredOrders.slice(startIndex, endIndex);
 
     const goToPage = (page: number) => {
         setCurrentPage(page);
@@ -292,32 +377,6 @@ const OrdersManagement: React.FC = () => {
     const goToNextPage = () => {
         if (currentPage < totalPages) {
             setCurrentPage(currentPage + 1);
-        }
-    };
-
-    // Funções para gerenciar filtros
-    const addNewItemInput = () => {
-        setItemInputs(prev => [...prev, '']);
-    };
-
-    const updateItemInput = (index: number, value: string) => {
-        const newInputs = [...itemInputs];
-        newInputs[index] = value;
-        setItemInputs(newInputs);
-        
-        // Atualizar a lista de itens removendo vazios
-        const validItems = newInputs.filter(item => item.trim() !== '');
-        setFilters(prev => ({ ...prev, items: validItems }));
-    };
-
-    const removeItemInput = (index: number) => {
-        if (itemInputs.length > 1) {
-            const newInputs = itemInputs.filter((_, i) => i !== index);
-            setItemInputs(newInputs);
-            
-            // Atualizar a lista de itens
-            const validItems = newInputs.filter(item => item.trim() !== '');
-            setFilters(prev => ({ ...prev, items: validItems }));
         }
     };
 
@@ -350,15 +409,15 @@ const OrdersManagement: React.FC = () => {
     };
 
     const applyFilters = () => {
-        setStatusFilter(filters.status);
+        console.log('Aplicando filtros:', filters);
+        setAppliedFilters({ ...filters });
         setCurrentPage(1);
         setShowFilterModal(false);
-        // Aqui você pode implementar a lógica de filtro personalizada
-        // Por enquanto, vamos manter a funcionalidade básica de status
+        console.log('Filtros aplicados');
     };
 
     const clearFilters = () => {
-        setFilters({
+        const emptyFilters = {
             customerName: '',
             items: [],
             minTotal: '',
@@ -366,9 +425,9 @@ const OrdersManagement: React.FC = () => {
             startDate: '',
             endDate: '',
             status: 'all'
-        });
-        setItemInputs(['']); // Reset para uma caixa vazia
-        setStatusFilter('all');
+        };
+        setFilters(emptyFilters);
+        setAppliedFilters(emptyFilters);
         setCurrentPage(1);
         setShowFilterModal(false);
     };
@@ -415,7 +474,8 @@ const OrdersManagement: React.FC = () => {
                 <div>
                     <h2 className="text-xl font-semibold text-gray-900">Gerenciar Pedidos</h2>
                     <p className="text-sm text-gray-600 mt-1">
-                        {orders.length} pedido{orders.length !== 1 ? 's' : ''} encontrado{orders.length !== 1 ? 's' : ''}
+                        {filteredOrders.length} pedido{filteredOrders.length !== 1 ? 's' : ''} encontrado{filteredOrders.length !== 1 ? 's' : ''} 
+                        {filteredOrders.length !== orders.length && ` (de ${orders.length} total)`}
                     </p>
                 </div>
                 
@@ -567,13 +627,16 @@ const OrdersManagement: React.FC = () => {
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
                                         Nome do Cliente
                                     </label>
-                                    <input
-                                        type="text"
+                                    <select
                                         value={filters.customerName}
                                         onChange={(e) => setFilters(prev => ({ ...prev, customerName: e.target.value }))}
-                                        placeholder="Digite o nome do cliente"
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#03B04B] focus:border-[#03B04B]"
-                                    />
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#03B04B] focus:border-[#03B04B] bg-white"
+                                    >
+                                        <option value="">Todos os clientes</option>
+                                        {allCustomers.map(customer => (
+                                            <option key={customer} value={customer}>{customer}</option>
+                                        ))}
+                                    </select>
                                 </div>
 
                                 {/* Status */}
@@ -593,48 +656,55 @@ const OrdersManagement: React.FC = () => {
                                     </select>
                                 </div>
 
-                                {/* Itens */}
+                                {/* Produtos */}
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-3">
-                                        Produtos no Pedido
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Produtos no Pedido {filters.items.length > 0 && (
+                                            <span className="text-xs text-gray-500 font-normal">
+                                                ({filters.items.length} selecionado{filters.items.length !== 1 ? 's' : ''})
+                                            </span>
+                                        )}
                                     </label>
-                                    <div className="space-y-3">
-                                        <div className="bg-gray-50 rounded-lg p-4 space-y-3">
-                                            {itemInputs.map((item, index) => (
-                                                <div key={index} className="flex items-center space-x-3">
-                                                    <div className="flex-1">
+                                    <div className="border border-gray-300 rounded-lg max-h-[200px] overflow-y-auto bg-white">
+                                        {allProducts.length === 0 ? (
+                                            <div className="p-4 text-center text-sm text-gray-500">
+                                                Nenhum produto disponível
+                                            </div>
+                                        ) : (
+                                            <div className="divide-y divide-gray-200">
+                                                {allProducts.map(product => (
+                                                    <label 
+                                                        key={product.id}
+                                                        className="flex items-center px-3 py-2.5 hover:bg-gray-50 cursor-pointer transition-colors"
+                                                    >
                                                         <input
-                                                            type="text"
-                                                            value={item}
-                                                            onChange={(e) => updateItemInput(index, e.target.value)}
-                                                            placeholder={`Produto ${index + 1}`}
-                                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#03B04B] focus:border-[#03B04B] bg-white text-sm"
+                                                            type="checkbox"
+                                                            checked={filters.items.includes(product.name)}
+                                                            onChange={(e) => {
+                                                                if (e.target.checked) {
+                                                                    setFilters(prev => ({ 
+                                                                        ...prev, 
+                                                                        items: [...prev.items, product.name] 
+                                                                    }));
+                                                                } else {
+                                                                    setFilters(prev => ({ 
+                                                                        ...prev, 
+                                                                        items: prev.items.filter(item => item !== product.name) 
+                                                                    }));
+                                                                }
+                                                            }}
+                                                            className="h-4 w-4 text-[#03B04B] border-gray-300 rounded focus:ring-[#03B04B] focus:ring-2"
                                                         />
-                                                    </div>
-                                                    {itemInputs.length > 1 && (
-                                                        <button
-                                                            onClick={() => removeItemInput(index)}
-                                                            className="w-8 h-8 bg-red-100 text-red-600 rounded-full hover:bg-red-200 transition-colors flex items-center justify-center text-sm font-medium"
-                                                            title="Remover produto"
-                                                        >
-                                                            ×
-                                                        </button>
-                                                    )}
-                                                </div>
-                                            ))}
-                                        </div>
-                                        
-                                        <div className="flex justify-start">
-                                            <button
-                                                onClick={addNewItemInput}
-                                                className="inline-flex items-center px-4 py-2 bg-gray-200 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-gray-400 transition-colors"
-                                            >
-                                                Adicionar Produto 
-                                                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                                </svg>
-                                            </button>
-                                        </div>
+                                                        <span className="ml-3 flex-1 text-sm text-gray-900">
+                                                            {product.name}
+                                                        </span>
+                                                        <span className="text-xs text-gray-500">
+                                                            R$ {product.value.toFixed(2)}
+                                                        </span>
+                                                    </label>
+                                                ))}
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
 

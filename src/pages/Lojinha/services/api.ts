@@ -198,9 +198,22 @@ export const addToCart = async (productId: number, quantity: number): Promise<Ap
   };
 };
 
+export const updateCartItem = async (itemId: number, quantity: number): Promise<ApiResponse<Cart>> => {
+  await api.put('/item', {
+    id: itemId,
+    quantity
+  });
+  // Após atualizar, buscar o carrinho atualizado
+  const cartResponse = await api.get('/cart');
+  return {
+    success: true,
+    data: cartResponse.data
+  };
+};
+
 export const removeFromCart = async (itemId: number): Promise<ApiResponse<any>> => {
   const response = await api.delete('/item', {
-    params: { id: itemId }
+    params: { itemId: itemId }
   });
   return {
     success: true,
@@ -418,6 +431,7 @@ export const productService = {
 export const cartService = {
   get: getCart,
   add: addToCart,
+  update: updateCartItem,
   remove: removeFromCart,
   clear: clearCart
 };
