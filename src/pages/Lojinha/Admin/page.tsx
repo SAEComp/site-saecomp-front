@@ -86,10 +86,10 @@ const LojinhaGerenciamento: React.FC = () => {
             {/* Tabs Navigation */}
             <div className="bg-white border-b">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <nav className="flex space-x-8">
+                    <nav className="flex space-x-8 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
                         <button
                             onClick={() => setActiveTab('stats')}
-                            className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                            className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
                                 activeTab === 'stats'
                                     ? 'border-green-500 text-green-600'
                                     : 'border-transparent text-gray-500 hover:text-gray-700'
@@ -99,7 +99,7 @@ const LojinhaGerenciamento: React.FC = () => {
                         </button>
                         <button
                             onClick={() => setActiveTab('products')}
-                            className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                            className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
                                 activeTab === 'products'
                                     ? 'border-green-500 text-green-600'
                                     : 'border-transparent text-gray-500 hover:text-gray-700'
@@ -109,7 +109,7 @@ const LojinhaGerenciamento: React.FC = () => {
                         </button>
                         <button
                             onClick={() => setActiveTab('orders')}
-                            className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                            className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
                                 activeTab === 'orders'
                                     ? 'border-green-500 text-green-600'
                                     : 'border-transparent text-gray-500 hover:text-gray-700'
@@ -119,7 +119,7 @@ const LojinhaGerenciamento: React.FC = () => {
                         </button>
                         <button
                             onClick={() => setActiveTab('pix')}
-                            className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                            className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
                                 activeTab === 'pix'
                                     ? 'border-green-500 text-green-600'
                                     : 'border-transparent text-gray-500 hover:text-gray-700'
@@ -129,7 +129,7 @@ const LojinhaGerenciamento: React.FC = () => {
                         </button>
                         <button
                             onClick={() => setActiveTab('history')}
-                            className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                            className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
                                 activeTab === 'history'
                                     ? 'border-green-500 text-green-600'
                                     : 'border-transparent text-gray-500 hover:text-gray-700'

@@ -587,9 +587,9 @@ const OrdersManagement: React.FC = () => {
                                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#03B04B] focus:border-[#03B04B] bg-white"
                                     >
                                         <option value="all">Todos os status</option>
-                                        <option value="pendente">Pendente</option>
-                                        <option value="concluído">Concluído</option>
-                                        <option value="cancelado">Cancelado</option>
+                                        <option value="pendingPayment">Pendente</option>
+                                        <option value="finishedPayment">Concluído</option>
+                                        <option value="canceled">Cancelado</option>
                                     </select>
                                 </div>
 

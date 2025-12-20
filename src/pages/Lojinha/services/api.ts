@@ -369,14 +369,14 @@ export const deletePixSettings = async (id: number): Promise<ApiResponse<any>> =
 
 export const getHistory = async (params?: { 
   page?: number; 
-  limit?: number; 
+  pageSize?: number; 
   entityType?: string; 
   action?: string 
 }): Promise<ApiResponse<HistoryEntry[]>> => {
   const queryParams = new URLSearchParams();
   
   if (params?.page) queryParams.append('page', params.page.toString());
-  if (params?.limit) queryParams.append('limit', params.limit.toString());
+  if (params?.pageSize) queryParams.append('pageSize', params.pageSize.toString());
   if (params?.entityType) queryParams.append('entityType', params.entityType);
   if (params?.action) queryParams.append('action', params.action);
   

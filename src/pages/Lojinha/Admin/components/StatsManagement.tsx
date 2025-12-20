@@ -39,6 +39,7 @@ interface StatsData {
 
 const StatsManagement: React.FC = () => {
     const [stats, setStats] = useState<StatsData | null>(null);
+    const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -50,7 +51,12 @@ const StatsManagement: React.FC = () => {
         try {
             setLoading(true);
             setError(null);
-            const response = await adminService.getStats();
+            const [statsResponse, productsResponse, ordersResponse] = await Promise.all([
+                adminService.getStats(),
+                (await import('../../services/api')).productService.getAll({ limit: 100, includeInactive: true }),
+                (await import('../../services/api')).orderService.getAll({ limit: 5, status: undefined })
+            ]);
+            const response = statsResponse;
             console.log('Stats response:', response);
             if (response.success && response.data) {
                 // Mapear os campos do backend para o formato esperado pelo frontend
@@ -61,14 +67,18 @@ const StatsManagement: React.FC = () => {
                     canceledOrders: response.data.canceledOrders || 0,
                     totalItemsSold: response.data.soldItems || 0,
                     totalProductsInStock: response.data.stockProducts || 0,
-                    totalItemsInStock: response.data.stockItems || 0,
+                    maxPotentialRevenue: response.data.maxPotentialRevenue || 0,
                     productsWithMoreSoldQuantity: response.data.productsWithMoreSoldQuantity || [],
                     productsWithMoreRevenueValue: response.data.productsWithMoreRevenueValue || [],
                     topProducts: [], // Legacy field
-                    recentOrders: [] // Not implemented yet
+                    recentOrders: ordersResponse.success && ordersResponse.data ? ordersResponse.data.slice(0, 5) : []
                 };
                 console.log('Stats data processed:', statsData);
                 setStats(statsData);
+                
+                if (productsResponse.success && productsResponse.data) {
+                    setProducts(productsResponse.data);
+                }
             } else {
                 throw new Error(response.message || 'Erro ao carregar estatísticas');
             }
@@ -97,34 +107,47 @@ const StatsManagement: React.FC = () => {
         });
     };
 
+    const getProductById = (id: number): Product | undefined => {
+        return products.find(p => p.id === id);
+    };
+
     // Colunas para a tabela de produtos mais vendidos (por quantidade)
     const topSoldProductsColumns: ITableColumn[] = [
         {
             key: 'product',
             title: 'Produto',
-            render: (_, item: any) => (
-                <div className="flex items-center">
-                    <div className="flex-shrink-0 h-12 w-12">
-                        <img 
-                            className="h-12 w-12 rounded-lg object-cover" 
-                            src={getProductImageUrl(item.product)} 
-                            alt={item.product.name}
-                        />
-                    </div>
-                    <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">
-                            {item.product.name}
+            render: (_, item: any) => {
+                const product = getProductById(item.id);
+                return (
+                    <div className="flex items-center">
+                        <div className="flex-shrink-0 h-12 w-12">
+                            {product ? (
+                                <img 
+                                    className="h-12 w-12 rounded-lg object-cover" 
+                                    src={getProductImageUrl(product)} 
+                                    alt={item.name}
+                                />
+                            ) : (
+                                <div className="h-12 w-12 rounded-lg bg-gray-200 flex items-center justify-center">
+                                    <span className="text-gray-400 text-xs">?</span>
+                                </div>
+                            )}
+                        </div>
+                        <div className="ml-4">
+                            <div className="text-sm font-medium text-gray-900">
+                                {item.name}
+                            </div>
                         </div>
                     </div>
-                </div>
-            )
+                );
+            }
         },
         {
             key: 'sold',
             title: 'Vendidos',
             render: (_, item: any) => (
                 <span className="text-sm font-medium text-gray-900">
-                    {item.totalSold} unidades
+                    {item.soldQuantity} unidades
                 </span>
             )
         }
@@ -135,42 +158,66 @@ const StatsManagement: React.FC = () => {
         {
             key: 'product',
             title: 'Produto',
-            render: (_, item: any) => (
-                <div className="flex items-center">
-                    <div className="flex-shrink-0 h-12 w-12">
-                        <img 
-                            className="h-12 w-12 rounded-lg object-cover" 
-                            src={getProductImageUrl(item.product)} 
-                            alt={item.product.name}
-                        />
-                    </div>
-                    <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">
-                            {item.product.name}
+            render: (_, item: any) => {
+                const product = getProductById(item.id);
+                return (
+                    <div className="flex items-center">
+                        <div className="flex-shrink-0 h-12 w-12">
+                            {product ? (
+                                <img 
+                                    className="h-12 w-12 rounded-lg object-cover" 
+                                    src={getProductImageUrl(product)} 
+                                    alt={item.name}
+                                />
+                            ) : (
+                                <div className="h-12 w-12 rounded-lg bg-gray-200 flex items-center justify-center">
+                                    <span className="text-gray-400 text-xs">?</span>
+                                </div>
+                            )}
+                        </div>
+                        <div className="ml-4">
+                            <div className="text-sm font-medium text-gray-900">
+                                {item.name}
+                            </div>
                         </div>
                     </div>
-                </div>
-            )
+                );
+            }
         },
         {
             key: 'revenue',
             title: 'Receita',
             render: (_, item: any) => (
                 <span className="text-sm font-medium text-gray-900">
-                    {formatCurrency(item.revenue)}
+                    {formatCurrency(item.revenueValue)}
                 </span>
             )
         }
     ];
 
     // Colunas para a tabela de pedidos recentes
+    const getStatusClass = (status: string) => {
+        switch (status) {
+            case 'finishedPayment':
+                return 'bg-green-100 text-green-800';
+            case 'canceled':
+                return 'bg-red-100 text-red-800';
+            case 'pendingPayment':
+                return 'bg-yellow-100 text-yellow-800';
+            case 'cart':
+                return 'bg-gray-100 text-gray-800';
+            default:
+                return 'bg-yellow-100 text-yellow-800';
+        }
+    };
+
     const recentOrdersColumns: ITableColumn<Order>[] = [
         {
             key: 'order',
             title: 'Pedido',
             render: (_, order) => (
                 <div className="text-sm font-mono font-medium text-gray-900">
-                    #{order._id.slice(-8)}
+                    #{(order._id || order.id || '').toString().slice(-8)}
                 </div>
             )
         },
@@ -184,11 +231,37 @@ const StatsManagement: React.FC = () => {
             )
         },
         {
+            key: 'items',
+            title: 'Itens',
+            render: (_, order) => (
+                <div>
+                    <div className="text-sm text-gray-900">
+                        {order.items.length} item{order.items.length !== 1 ? 's' : ''}
+                    </div>
+                    <div className="text-xs text-gray-500 max-w-xs truncate">
+                        {order.items.map(item => `${item.quantity}x ${item.name}`).join(', ')}
+                    </div>
+                </div>
+            )
+        },
+        {
             key: 'total',
             title: 'Total',
             render: (_, order) => (
                 <span className="text-sm font-medium text-gray-900">
                     {formatCurrency(order.totalAmount)}
+                </span>
+            )
+        },
+        {
+            key: 'status',
+            title: 'Status',
+            render: (_, order) => (
+                <span className={`text-xs font-medium rounded-full px-3 py-1 ${getStatusClass(order.status)}`}>
+                    {order.status === 'pendingPayment' ? 'Pendente' : 
+                     order.status === 'finishedPayment' ? 'Concluído' : 
+                     order.status === 'canceled' ? 'Cancelado' : 
+                     order.status}
                 </span>
             )
         },
@@ -291,8 +364,8 @@ const StatsManagement: React.FC = () => {
 
                     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 md:p-6">
                         <div>
-                            <p className="text-sm md:text-lg font-medium text-gray-900 mb-1">Itens em Estoque</p>
-                            <p className="text-xl md:text-2xl font-medium text-green-600">{stats.totalItemsInStock || 0}</p>
+                            <p className="text-sm md:text-lg font-medium text-gray-900 mb-1">Valor em Estoque</p>
+                            <p className="text-xl md:text-2xl font-medium text-green-600">{formatCurrency(stats.maxPotentialRevenue || 0)}</p>
                         </div>
                     </div>
                 </div>
@@ -300,7 +373,7 @@ const StatsManagement: React.FC = () => {
 
             {/* Produtos mais vendidos */}
             <div>
-                <h2 className="text-xl font-medium text-gray-900 mb-4">Top 3 Produtos</h2>
+                <h2 className="text-xl font-medium text-gray-900 mb-4">Top 4 Produtos</h2>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {/* Mais vendidos por quantidade */}
                     <div className="bg-white rounded-lg shadow overflow-hidden">
@@ -313,34 +386,43 @@ const StatsManagement: React.FC = () => {
                             data={Array.isArray(stats.productsWithMoreSoldQuantity) ? stats.productsWithMoreSoldQuantity : []}
                             emptyText="Nenhum produto vendido ainda"
                             responsive={true}
-                            mobileView={(item, index) => (
-                                <div className="p-4">
-                                    <div className="flex items-center space-x-3">
-                                        <div className="flex-shrink-0 h-10 w-10">
-                                            <img 
-                                                className="h-10 w-10 rounded-lg object-cover" 
-                                                src={getProductImageUrl(item.product)} 
-                                                alt={item.product.name}
-                                            />
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex items-center justify-between">
-                                                <div>
-                                                    <p className="text-sm font-medium text-gray-900 truncate">
-                                                        {item.product.name}
-                                                    </p>
-                                                    <p className="text-xs text-gray-500">
-                                                        #{index + 1}
-                                                    </p>
-                                                </div>
-                                                <div className="text-sm font-medium text-gray-900">
-                                                    {item.totalSold} un.
+                            mobileView={(item, index) => {
+                                const product = getProductById(item.id);
+                                return (
+                                    <div className="p-4">
+                                        <div className="flex items-center space-x-3">
+                                            <div className="flex-shrink-0 h-10 w-10">
+                                                {product ? (
+                                                    <img 
+                                                        className="h-10 w-10 rounded-lg object-cover" 
+                                                        src={getProductImageUrl(product)} 
+                                                        alt={item.name}
+                                                    />
+                                                ) : (
+                                                    <div className="h-10 w-10 rounded-lg bg-gray-200 flex items-center justify-center">
+                                                        <span className="text-gray-400 text-xs">?</span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <div className="flex items-center justify-between">
+                                                    <div>
+                                                        <p className="text-sm font-medium text-gray-900 truncate">
+                                                            {item.name}
+                                                        </p>
+                                                        <p className="text-xs text-gray-500">
+                                                            #{index + 1}
+                                                        </p>
+                                                    </div>
+                                                    <div className="text-sm font-medium text-gray-900">
+                                                        {item.soldQuantity} un.
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            )}
+                                );
+                            }}
                         />
                     </div>
 
@@ -358,25 +440,18 @@ const StatsManagement: React.FC = () => {
                             mobileView={(item, index) => (
                                 <div className="p-4">
                                     <div className="flex items-center space-x-3">
-                                        <div className="flex-shrink-0 h-10 w-10">
-                                            <img 
-                                                className="h-10 w-10 rounded-lg object-cover" 
-                                                src={getProductImageUrl(item.product)} 
-                                                alt={item.product.name}
-                                            />
-                                        </div>
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center justify-between">
                                                 <div>
                                                     <p className="text-sm font-medium text-gray-900 truncate">
-                                                        {item.product.name}
+                                                        {item.name}
                                                     </p>
                                                     <p className="text-xs text-gray-500">
                                                         #{index + 1}
                                                     </p>
                                                 </div>
                                                 <div className="text-sm font-medium text-green-600">
-                                                    {formatCurrency(item.revenue)}
+                                                    {formatCurrency(item.revenueValue)}
                                                 </div>
                                             </div>
                                         </div>

@@ -37,32 +37,25 @@ const HistoryManagement: React.FC = () => {
             const [historyResponse, productsResponse] = await Promise.all([
                 historyService.getHistory({
                     page: 1,
-                    limit: 1000, // Get all entries
-                    action: undefined // Don't filter on server
+                    pageSize: 1000, // Get all entries
                 }),
-                productService.getAll({ limit: 100 })
+                productService.getAll({ limit: 100, includeInactive: true })
             ]);
             
             if (historyResponse.success && historyResponse.data) {
                 let filteredHistory = historyResponse.data;
                 
-                // Filter only UPDATE actions with price changes
-                filteredHistory = filteredHistory.filter(entry => {
-                    if (entry.action !== 'UPDATE') return false;
-                    return entry.changes.some(change => change.field === 'price');
-                });
-                
                 // Apply filters
                 if (filters.productName) {
                     filteredHistory = filteredHistory.filter(entry => 
-                        entry.entityName.toLowerCase().includes(filters.productName.toLowerCase())
+                        entry.productName && entry.productName.toLowerCase().includes(filters.productName.toLowerCase())
                     );
                 }
                 
                 if (filters.startDate) {
                     const startDate = new Date(filters.startDate);
                     filteredHistory = filteredHistory.filter(entry => 
-                        new Date(entry.timestamp) >= startDate
+                        new Date(entry.date) >= startDate
                     );
                 }
                 
@@ -70,25 +63,22 @@ const HistoryManagement: React.FC = () => {
                     const endDate = new Date(filters.endDate);
                     endDate.setHours(23, 59, 59, 999); // Incluir todo o dia final
                     filteredHistory = filteredHistory.filter(entry => 
-                        new Date(entry.timestamp) <= endDate
+                        new Date(entry.date) <= endDate
                     );
                 }
                 
                 if (filters.minPrice || filters.maxPrice) {
                     filteredHistory = filteredHistory.filter(entry => {
-                        const priceChange = entry.changes.find(change => change.field === 'price');
-                        if (!priceChange || priceChange.newValue === null || priceChange.newValue === undefined) return false;
-                        
-                        const newPrice = priceChange.newValue;
+                        const entryValue = entry.value || 0;
                         
                         if (filters.minPrice) {
                             const minPriceValue = parseFloat(filters.minPrice.replace(/[^\d,]/g, '').replace(',', '.'));
-                            if (newPrice < minPriceValue) return false;
+                            if (entryValue < minPriceValue) return false;
                         }
                         
                         if (filters.maxPrice) {
                             const maxPriceValue = parseFloat(filters.maxPrice.replace(/[^\d,]/g, '').replace(',', '.'));
-                            if (newPrice > maxPriceValue) return false;
+                            if (entryValue > maxPriceValue) return false;
                         }
                         
                         return true;
@@ -115,8 +105,8 @@ const HistoryManagement: React.FC = () => {
         return new Date(dateString).toLocaleString('pt-BR');
     };
 
-    const getProductById = (id: string): Product | undefined => {
-        return products.find(product => product.id.toString() === id);
+    const getProductById = (id: number): Product | undefined => {
+        return products.find(product => product.id === id);
     };
 
     // Função para formatar valores monetários
@@ -181,7 +171,7 @@ const HistoryManagement: React.FC = () => {
             key: 'product',
             title: 'Produto',
             render: (_, entry) => {
-                const product = getProductById(entry.entityId);
+                const product = getProductById(entry.productId);
                 
                 return (
                     <div className="flex items-center">
@@ -190,7 +180,7 @@ const HistoryManagement: React.FC = () => {
                                 <img 
                                     className="h-12 w-12 rounded-lg object-cover" 
                                     src={getProductImageUrl(product)} 
-                                    alt={entry.entityName}
+                                    alt={entry.productName}
                                 />
                             ) : (
                                 <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center border-2 border-blue-300">
@@ -202,141 +192,111 @@ const HistoryManagement: React.FC = () => {
                         </div>
                         <div className="ml-4">
                             <div className="text-sm font-medium text-gray-900">
-                                {entry.entityName}
+                                {entry.productName}
                             </div>
-                            <div className="text-sm text-gray-500 max-w-xs truncate">
-                                {product?.description || 'Produto não encontrado'}
-                            </div>
+                            {product?.description && (
+                                <div className="text-sm text-gray-500 max-w-xs truncate">
+                                    {product.description}
+                                </div>
+                            )}
                         </div>
                     </div>
                 );
             }
         },
         {
-            key: 'stock',
-            title: 'Estoque',
+            key: 'quantity',
+            title: 'Quantidade',
             render: (_, entry) => {
-                const stockChange = entry.changes.find(change => change.field === 'stock');
+                const quantity = entry.quantity || 0;
                 
-                if (stockChange) {
-                    const oldStock = stockChange.oldValue ?? 0;
-                    const newStock = stockChange.newValue ?? 0;
-                    const diff = newStock - oldStock;
-                    const isIncrease = diff > 0;
-                    
+                if (quantity === 0) {
                     return (
-                        <div className="text-sm">
-                            <div className="flex items-center space-x-2 mb-1">
-                                <span className="text-gray-500">{oldStock}</span>
-                                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                                </svg>
-                                <span className={`font-medium ${isIncrease ? 'text-green-600' : 'text-red-600'}`}>
-                                    {newStock}
-                                </span>
-                            </div>
-                            <div className={`text-xs ${isIncrease ? 'text-green-600' : 'text-red-600'}`}>
-                                {isIncrease ? '+' : ''}{diff} unidades
-                            </div>
-                        </div>
-                    );
-                } else {
-                    return (
-                        <span className="text-xs text-gray-400">
-                            Sem alteração
+                        <span className="text-sm font-medium text-gray-500">
+                            0 unidades
                         </span>
                     );
                 }
-            }
-        },
-        {
-            key: 'oldPrice',
-            title: 'Preço Anterior',
-            render: (_, entry) => {
-                const priceChange = entry.changes.find(change => change.field === 'price');
-                const oldPrice = priceChange?.oldValue !== null && priceChange?.oldValue !== undefined 
-                    ? priceChange.oldValue.toFixed(2) 
-                    : '0.00';
-                const newPrice = priceChange?.newValue !== null && priceChange?.newValue !== undefined 
-                    ? priceChange.newValue 
-                    : 0;
                 
-                // Se não houve alteração de preço, mostrar em preto sem risco
-                const hasChanged = oldPrice !== newPrice.toFixed(2);
-                
-                return (
-                    <span className={`text-sm font-medium ${hasChanged ? 'text-red-600 line-through' : 'text-gray-900'}`}>
-                        R$ {oldPrice}
-                    </span>
-                );
-            }
-        },
-        {
-            key: 'newPrice',
-            title: 'Novo Preço',
-            render: (_, entry) => {
-                const priceChange = entry.changes.find(change => change.field === 'price');
-                const oldPrice = priceChange?.oldValue !== null && priceChange?.oldValue !== undefined 
-                    ? priceChange.oldValue 
-                    : 0;
-                const newPrice = priceChange?.newValue !== null && priceChange?.newValue !== undefined 
-                    ? priceChange.newValue.toFixed(2) 
-                    : '0.00';
-                
-                // Se não houve alteração de preço, mostrar em preto normal
-                const hasChanged = oldPrice.toFixed(2) !== newPrice;
-                
-                return (
-                    <span className={`text-sm font-semibold ${hasChanged ? 'text-green-600' : 'text-gray-900'}`}>
-                        R$ {newPrice}
-                    </span>
-                );
-            }
-        },
-        {
-            key: 'difference',
-            title: 'Diferença',
-            render: (_, entry) => {
-                const priceChange = entry.changes.find(change => change.field === 'price');
-                const oldPrice = priceChange?.oldValue ?? 0;
-                const newPrice = priceChange?.newValue ?? 0;
-                const diff = newPrice - oldPrice;
-                const isIncrease = diff > 0;
-                const isDecrease = diff < 0;
-                
-                // Se não há diferença (diff === 0), mostrar apenas o valor sem seta
-                if (diff === 0) {
-                    return (
-                        <span className="text-sm font-medium text-gray-900">
-                            R$ 0,00
-                        </span>
-                    );
-                }
+                const isPositive = quantity > 0;
                 
                 return (
                     <div className="flex items-center space-x-1">
-                        {isIncrease ? (
+                        {isPositive ? (
                             <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
                             </svg>
-                        ) : isDecrease ? (
+                        ) : (
                             <svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
                             </svg>
-                        ) : null}
-                        <span className={`text-sm font-medium ${isIncrease ? 'text-green-600' : 'text-red-600'}`}>
-                            R$ {Math.abs(diff).toFixed(2)}
+                        )}
+                        <span className={`text-sm font-medium ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
+                            {isPositive ? '+' : ''}{quantity} unidades
                         </span>
                     </div>
+                );
+            }
+        },
+        {
+            key: 'value',
+            title: 'Preço Unitário',
+            render: (_, entry, index) => {
+                const currentValue = entry.value || 0;
+                
+                // Encontrar a entrada anterior do mesmo produto
+                const previousEntry = history
+                    .slice(index + 1) // Entradas após esta (mais antigas)
+                    .find(h => h.productId === entry.productId);
+                
+                const previousValue = previousEntry?.value;
+                
+                // Se não há entrada anterior ou o preço não mudou
+                if (!previousValue || previousValue === currentValue) {
+                    return (
+                        <span className="text-sm font-semibold text-gray-900">
+                            R$ {currentValue.toFixed(2)}
+                        </span>
+                    );
+                }
+                
+                // Preço mudou - mostrar valor antigo riscado com seta para o novo
+                const isIncrease = currentValue > previousValue;
+                
+                return (
+                    <div className="flex items-center space-x-2">
+                        <span className="text-sm font-medium text-gray-400 line-through">
+                            R$ {previousValue.toFixed(2)}
+                        </span>
+                        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                        </svg>
+                        <span className={`text-sm font-semibold ${isIncrease ? 'text-green-600' : 'text-red-600'}`}>
+                            R$ {currentValue.toFixed(2)}
+                        </span>
+                    </div>
+                );
+            }
+        },
+        {
+            key: 'total',
+            title: 'Valor Total',
+            render: (_, entry) => {
+                const total = (entry.value || 0) * (entry.quantity || 0);
+                
+                return (
+                    <span className="text-sm font-semibold text-blue-600">
+                        R$ {total.toFixed(2)}
+                    </span>
                 );
             }
         },
         {
             key: 'date',
-            title: 'Data da Alteração',
+            title: 'Data da Entrada',
             render: (_, entry) => (
                 <span className="text-sm text-gray-900">
-                    {formatDate(entry.timestamp)}
+                    {formatDate(entry.date)}
                 </span>
             )
         }
@@ -436,13 +396,32 @@ const HistoryManagement: React.FC = () => {
             </div>
 
             {/* Tabela */}
-            <Table
-                columns={columns}
-                data={paginatedHistory}
-                loading={loading}
-                emptyText="Nenhuma alteração de preço encontrada"
-                emptyIcon={erroIcon}
-            />
+            {paginatedHistory.length === 0 && !loading ? (
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12">
+                    <div className="flex flex-col items-center justify-center text-center">
+                        <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                            <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                        </div>
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                            Nenhuma entrada de estoque encontrada
+                        </h3>
+                        <p className="text-sm text-gray-500 max-w-md">
+                            Não há registro de entradas de estoque. 
+                            Quando você adicionar produtos ao estoque, o histórico aparecerá aqui.
+                        </p>
+                    </div>
+                </div>
+            ) : (
+                <Table
+                    columns={columns}
+                    data={paginatedHistory}
+                    loading={loading}
+                    emptyText="Nenhuma entrada de estoque encontrada"
+                    emptyIcon={erroIcon}
+                />
+            )}
 
             {/* Paginação inferior */}
             {totalPages > 1 && (

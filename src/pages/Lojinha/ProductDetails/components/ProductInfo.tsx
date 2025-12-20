@@ -7,12 +7,22 @@ interface ProductInfoProps {
     product: Product;
 }
 
+// Mapeamento de categorias inglês -> português
+const getCategoryLabel = (category: string): string => {
+    const categoryMap: Record<string, string> = {
+        'sweet': 'Doces',
+        'salty': 'Salgados',
+        'drink': 'Bebidas'
+    };
+    return categoryMap[category] || category;
+};
+
 export const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => (
     <div className="mb-3 md:mb-8">
         <div className="mb-2 md:mb-4">
             <h1 className="text-lg md:text-3xl font-bold text-gray-900 mb-1 md:mb-2">{product.name}</h1>
             <p className="text-xs md:text-sm text-[#03B04B] font-medium uppercase tracking-wider">
-                {product.category}
+                {getCategoryLabel(product.category)}
             </p>
         </div>
         
