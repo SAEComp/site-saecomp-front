@@ -10,7 +10,7 @@ import {
   Statistics,
   HistoryEntry
 } from '../types';
-import authInterceptor from '../../../providers/authInterceptor';
+// import authInterceptor from '../../../providers/authInterceptor'; // Removido: não utilizado
 
 const API_BASE_URL = import.meta.env.VITE_LOJINHA_API_URL || 'http://localhost:3000/api/lojinha';
 
@@ -48,11 +48,9 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response: AxiosResponse) => response,
   (error) => {
-    // Não logar erros 404 de carrinho (são esperados após finalizar pedido)
+    // Não logar erros 404 de carrinho (são esperados após finalizar pedido ou quando vazio)
     const isCartNotFound = error.response?.status === 404 && 
-                          error.config?.url?.includes('/cart') &&
-                          (error.response?.data?.message?.includes('Carrinho inexistente') || 
-                           error.response?.data?.message?.includes('Cart not found'));
+                          error.config?.url?.includes('/cart');
     
     if (!isCartNotFound) {
       console.error('API Error:', error);

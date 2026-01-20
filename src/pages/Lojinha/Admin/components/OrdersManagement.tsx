@@ -1,9 +1,30 @@
 import { useState, useEffect } from 'react';
 import { orderService, productService } from '../../services/api';
-import { Order, Product } from '../../types';
+import { Product } from '../../types';
 import erroIcon from '../../../../assets/lojinha-icons/perrys/ERRO.png';
-import ConfirmModal from '../../../../components/Inputs/ConfirmModal';
+// import ConfirmModal from '../../../../components/Inputs/ConfirmModal'; // Removido - não utilizado
 import { Table, ITableColumn } from '../../../../components/Inputs';
+
+// Tipo específico para pedidos do admin (vem do backend)
+interface AdminOrder {
+    _id?: string;
+    id: number;
+    customerName?: string;
+    items?: Array<{
+        name?: string;
+        productName?: string;
+        quantity?: number;
+        value?: number;
+        price?: number;
+        subtotal?: number;
+    }>;
+    totalAmount?: number;
+    status: 'cart' | 'pendingPayment' | 'canceled' | 'finishedPayment';
+    paymentStatus?: string;
+    createdAt?: string | Date;
+    updatedAt?: string | Date;
+    confirmedAt?: string | Date;
+}
 
 // Função utilitária para extrair primeiro e último nome
 const getFirstAndLastName = (fullName: string): string => {
@@ -23,14 +44,14 @@ const getFirstAndLastName = (fullName: string): string => {
 };
 
 const OrdersManagement: React.FC = () => {
-    const [orders, setOrders] = useState<Order[]>([]);
+    const [orders, setOrders] = useState<AdminOrder[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+    const [selectedOrder, setSelectedOrder] = useState<AdminOrder | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
     const ORDERS_PER_PAGE = 40;
-    const [showStatusConfirmModal, setShowStatusConfirmModal] = useState(false);
-    const [pendingStatusChange, setPendingStatusChange] = useState<{orderId: string, newStatus: string, message: string} | null>(null);
+    // const [showStatusConfirmModal, setShowStatusConfirmModal] = useState(false); // Removido - não utilizado
+    // const [pendingStatusChange, setPendingStatusChange] = useState<{orderId: string, newStatus: string, message: string} | null>(null); // Removido
     
     // Estados para produtos e clientes
     const [allProducts, setAllProducts] = useState<Product[]>([]);
@@ -38,6 +59,8 @@ const OrdersManagement: React.FC = () => {
     
     // Estados para o modal de filtros
     const [showFilterModal, setShowFilterModal] = useState(false);
+    // const [showChangeStatusModal, setShowChangeStatusModal] = useState(false); // Removido - não utilizado
+    // const [pendingStatusChange, setPendingStatusChange] = useState<{orderId: string; newStatus: string} | null>(null); // Removido
     const [filters, setFilters] = useState({
         customerName: '',
         items: [] as string[],
@@ -99,57 +122,22 @@ const OrdersManagement: React.FC = () => {
         }
     };
 
+    // Função não utilizada - atualização de status não está implementada no backend
+    /*
     const handleStatusChange = async (orderId: string, newStatus: string) => {
         try {
-            // Find the order to get its current status
             const order = orders.find(o => o._id === orderId);
             if (!order) return;
-
-            const oldStatus = order.status;
             
-            // Show confirmation for status changes that affect stock
-            const needsConfirmation = (
-                (oldStatus === 'pendente' && newStatus === 'cancelado') ||
-                (oldStatus === 'concluído' && newStatus === 'cancelado') ||
-                (oldStatus === 'cancelado' && (newStatus === 'pendente' || newStatus === 'concluído'))
-            );
-
-            if (needsConfirmation) {
-                let message = '';
-                if (oldStatus === 'cancelado' && (newStatus === 'pendente' || newStatus === 'concluído')) {
-                    message = `Ao alterar de "${oldStatus}" para "${newStatus}", os itens serão descontados do estoque novamente. Continuar?`;
-                } else if (newStatus === 'cancelado') {
-                    message = `Ao alterar para "${newStatus}", os itens serão devolvidos ao estoque. Continuar?`;
-                }
-                
-                setPendingStatusChange({ orderId, newStatus, message });
-                setShowStatusConfirmModal(true);
-                return;
-            }
-
-            await orderService.updateStatus(orderId, newStatus);
-            await loadOrders(); // Recarregar lista
+            // Backend não possui endpoint de updateStatus
+            // await orderService.updateStatus(orderId, newStatus);
+            await loadOrders();
         } catch (err: any) {
             console.error('Error updating order status:', err);
             alert('Erro ao atualizar status: ' + (err.message || 'Erro desconhecido'));
         }
     };
-
-    const confirmStatusChange = async () => {
-        if (!pendingStatusChange) return;
-
-        try {
-            await orderService.updateStatus(pendingStatusChange.orderId, pendingStatusChange.newStatus);
-            await loadOrders(); // Recarregar lista
-            setShowStatusConfirmModal(false);
-            setPendingStatusChange(null);
-        } catch (err: any) {
-            console.error('Error updating order status:', err);
-            alert('Erro ao atualizar status: ' + (err.message || 'Erro desconhecido'));
-            setShowStatusConfirmModal(false);
-            setPendingStatusChange(null);
-        }
-    };
+    */
 
     const formatCurrency = (value: number) => {
         return new Intl.NumberFormat('pt-BR', {
@@ -183,7 +171,7 @@ const OrdersManagement: React.FC = () => {
         }
     };
 
-    const columns: ITableColumn<Order>[] = [
+    const columns: ITableColumn<AdminOrder>[] = [
         {
             key: 'order',
             title: 'Pedido',
@@ -208,10 +196,10 @@ const OrdersManagement: React.FC = () => {
             render: (_, order) => (
                 <div>
                     <div className="text-sm text-gray-900">
-                        {order.items.length} item{order.items.length !== 1 ? 's' : ''}
+                        {order.items?.length ?? 0} item{(order.items?.length ?? 0) !== 1 ? 's' : ''}
                     </div>
                     <div className="text-xs text-gray-500 max-w-xs">
-                        {order.items.map(item => `${item.quantity}x ${item.name}`).join(', ')}
+                        {(order.items ?? []).map(item => `${item.quantity ?? 0}x ${item.name ?? ''}`).join(', ')}
                     </div>
                 </div>
             ),
@@ -222,7 +210,7 @@ const OrdersManagement: React.FC = () => {
             title: 'Total',
             render: (_, order) => (
                 <span className="text-sm font-medium text-gray-900">
-                    {formatCurrency(order.totalAmount)}
+                    {formatCurrency(order.totalAmount ?? 0)}
                 </span>
             )
         },
@@ -243,7 +231,7 @@ const OrdersManagement: React.FC = () => {
             title: 'Data',
             render: (_, order) => (
                 <div className="text-sm text-gray-900">
-                    {formatDate(order.createdAt)}
+                    {formatDate(order.createdAt?.toString() ?? new Date().toISOString())}
                 </div>
             )
         },
@@ -262,19 +250,19 @@ const OrdersManagement: React.FC = () => {
         }
     ];
 
-    const mobileView = (order: Order) => (
+    const mobileView = (order: AdminOrder) => (
         <div className="p-4">
             <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-mono text-gray-900">#{order._id.slice(-8)}</span>
-                <span className="text-sm font-medium text-gray-900">
-                    {formatCurrency(order.totalAmount)}
+                <span className="text-sm font-mono text-gray-900">#{order._id?.slice(-8) || order.id}</span>
+                <span className="text-sm font-semibold text-gray-900">
+                    {formatCurrency(order.totalAmount ?? 0)}
                 </span>
             </div>
-            <div className="text-sm text-gray-900 mb-1">
+            <div className="text-sm text-gray-900 font-medium mb-1">
                 {getFirstAndLastName(order.customerName || '')}
             </div>
             <div className="text-xs text-gray-500 mb-2">
-                {order.items.length} item{order.items.length !== 1 ? 's' : ''} • {formatDate(order.createdAt)}
+                {order.items?.length ?? 0} item{(order.items?.length ?? 0) !== 1 ? 's' : ''} • {formatDate(order.createdAt?.toString() ?? new Date().toISOString())}
             </div>
             <div className="flex items-center justify-between">
                 <span className={`text-xs font-medium rounded-full px-3 py-1 ${getStatusClass(order.status)}`}>
@@ -311,7 +299,7 @@ const OrdersManagement: React.FC = () => {
 
         // Filtro por produtos
         if (appliedFilters.items && appliedFilters.items.length > 0) {
-            const orderItemNames = order.items.map(item => item.name.toLowerCase());
+            const orderItemNames = (order.items ?? []).map(item => (item.name ?? item.productName ?? '').toLowerCase());
             const hasAllProducts = appliedFilters.items.every(filterItem => 
                 orderItemNames.some(orderItem => orderItem.includes(filterItem.toLowerCase()))
             );
@@ -323,7 +311,7 @@ const OrdersManagement: React.FC = () => {
         // Filtro por valor mínimo
         if (appliedFilters.minTotal && appliedFilters.minTotal.trim() !== '') {
             const minValue = parseFloat(appliedFilters.minTotal.replace(/[^\d,]/g, '').replace(',', '.'));
-            if (!isNaN(minValue) && order.totalAmount < minValue) {
+            if (!isNaN(minValue) && (order.totalAmount ?? 0) < minValue) {
                 return false;
             }
         }
@@ -331,7 +319,7 @@ const OrdersManagement: React.FC = () => {
         // Filtro por valor máximo
         if (appliedFilters.maxTotal && appliedFilters.maxTotal.trim() !== '') {
             const maxValue = parseFloat(appliedFilters.maxTotal.replace(/[^\d,]/g, '').replace(',', '.'));
-            if (!isNaN(maxValue) && order.totalAmount > maxValue) {
+            if (!isNaN(maxValue) && (order.totalAmount ?? 0) > maxValue) {
                 return false;
             }
         }
@@ -339,7 +327,7 @@ const OrdersManagement: React.FC = () => {
         // Filtro por data inicial
         if (appliedFilters.startDate && appliedFilters.startDate.trim() !== '') {
             const startDate = new Date(appliedFilters.startDate);
-            const orderDate = new Date(order.createdAt);
+            const orderDate = new Date(order.createdAt?.toString() ?? new Date());
             if (orderDate < startDate) {
                 return false;
             }
@@ -349,7 +337,7 @@ const OrdersManagement: React.FC = () => {
         if (appliedFilters.endDate && appliedFilters.endDate.trim() !== '') {
             const endDate = new Date(appliedFilters.endDate);
             endDate.setHours(23, 59, 59, 999);
-            const orderDate = new Date(order.createdAt);
+            const orderDate = new Date(order.createdAt?.toString() ?? new Date());
             if (orderDate > endDate) {
                 return false;
             }
@@ -527,7 +515,7 @@ const OrdersManagement: React.FC = () => {
             </div>
 
             {/* Lista de pedidos */}
-            <Table<Order>
+            <Table<AdminOrder>
                 columns={columns}
                 data={currentOrders}
                 loading={loading}
@@ -793,7 +781,7 @@ const OrdersManagement: React.FC = () => {
                         <div className="p-6">
                             <div className="flex items-center justify-between mb-6">
                                 <h2 className="text-xl font-semibold text-gray-900">
-                                    Detalhes do Pedido #{selectedOrder._id.slice(-8)}
+                                    Detalhes do Pedido #{selectedOrder._id?.slice(-8) || selectedOrder.id}
                                 </h2>
                                 <button
                                     onClick={() => setSelectedOrder(null)}
@@ -831,19 +819,19 @@ const OrdersManagement: React.FC = () => {
                                                 </tr>
                                             </thead>
                                             <tbody className="bg-white divide-y divide-gray-200">
-                                                {selectedOrder.items.map((item, index) => (
+                                                {(selectedOrder.items ?? []).map((item, index) => (
                                                     <tr key={index}>
-                                                        <td className="px-4 py-3 text-sm text-gray-900">{item.name}</td>
-                                                        <td className="px-4 py-3 text-sm text-gray-900">{item.quantity}</td>
-                                                        <td className="px-4 py-3 text-sm text-gray-900">{formatCurrency(item.price)}</td>
-                                                        <td className="px-4 py-3 text-sm font-medium text-gray-900">{formatCurrency(item.subtotal)}</td>
+                                                        <td className="px-4 py-3 text-sm text-gray-900">{item.name ?? item.productName}</td>
+                                                        <td className="px-4 py-3 text-sm text-gray-900">{item.quantity ?? 0}</td>
+                                                        <td className="px-4 py-3 text-sm text-gray-900">{formatCurrency(item.price ?? item.value ?? 0)}</td>
+                                                        <td className="px-4 py-3 text-sm font-medium text-gray-900">{formatCurrency(item.subtotal ?? ((item.price ?? item.value ?? 0) * (item.quantity ?? 0)))}</td>
                                                     </tr>
                                                 ))}
                                             </tbody>
                                             <tfoot className="bg-gray-50">
                                                 <tr>
                                                     <td colSpan={3} className="px-4 py-3 text-sm font-medium text-gray-900 text-right">Total:</td>
-                                                    <td className="px-4 py-3 text-sm font-bold text-green-600">{formatCurrency(selectedOrder.totalAmount)}</td>
+                                                    <td className="px-4 py-3 text-sm font-bold text-green-600">{formatCurrency(selectedOrder.totalAmount ?? 0)}</td>
                                                 </tr>
                                             </tfoot>
                                         </table>
@@ -855,14 +843,14 @@ const OrdersManagement: React.FC = () => {
                                     <h3 className="text-lg font-medium text-gray-900 mb-3">Status do Pedido</h3>
                                     <div className="bg-gray-50 rounded-lg p-4">
                                         <span className={`inline-flex px-3 py-1 text-sm font-semibold rounded-full ${
-                                            selectedOrder.status === 'concluído' 
+                                            selectedOrder.status === 'finishedPayment' 
                                                 ? 'bg-green-100 text-green-800'
-                                                : selectedOrder.status === 'cancelado'
+                                                : selectedOrder.status === 'canceled'
                                                 ? 'bg-red-100 text-red-800'
                                                 : 'bg-yellow-100 text-yellow-800'
                                         }`}>
-                                            {selectedOrder.status === 'concluído' ? 'Concluído' : 
-                                             selectedOrder.status === 'cancelado' ? 'Cancelado' : 'Pendente'}
+                                            {selectedOrder.status === 'finishedPayment' ? 'Concluído' : 
+                                             selectedOrder.status === 'canceled' ? 'Cancelado' : 'Pendente'}
                                         </span>
                                     </div>
                                 </div>
@@ -874,26 +862,17 @@ const OrdersManagement: React.FC = () => {
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div>
                                                 <p className="text-sm font-medium text-gray-500">Data de Criação</p>
-                                                <p className="text-sm text-gray-900">{formatDate(selectedOrder.createdAt)}</p>
+                                                <p className="text-sm text-gray-900">{formatDate(selectedOrder.createdAt?.toString() ?? new Date().toISOString())}</p>
                                             </div>
                                             {selectedOrder.confirmedAt && (
                                                 <div>
                                                     <p className="text-sm font-medium text-gray-500">Data de Confirmação</p>
-                                                    <p className="text-sm text-gray-900">{formatDate(selectedOrder.confirmedAt)}</p>
+                                                    <p className="text-sm text-gray-900">{formatDate(typeof selectedOrder.confirmedAt === 'string' ? selectedOrder.confirmedAt : selectedOrder.confirmedAt.toISOString())}</p>
                                                 </div>
                                             )}
                                         </div>
                                     </div>
                                 </div>
-
-                                {selectedOrder.notes && (
-                                    <div>
-                                        <h3 className="text-lg font-medium text-gray-900 mb-3">Observações</h3>
-                                        <div className="bg-gray-50 rounded-lg p-4">
-                                            <p className="text-sm text-gray-900">{selectedOrder.notes}</p>
-                                        </div>
-                                    </div>
-                                )}
                             </div>
 
                             <div className="flex justify-end pt-6 border-t border-gray-200 mt-6">
@@ -908,21 +887,6 @@ const OrdersManagement: React.FC = () => {
                     </div>
                 </div>
             )}
-
-            {/* Confirm Status Change Modal */}
-            <ConfirmModal
-                isOpen={showStatusConfirmModal}
-                title="Alterar Status do Pedido"
-                message={pendingStatusChange?.message || ""}
-                confirmText="Confirmar"
-                cancelText="Cancelar"
-                type="warning"
-                onConfirm={confirmStatusChange}
-                onCancel={() => {
-                    setShowStatusConfirmModal(false);
-                    setPendingStatusChange(null);
-                }}
-            />
         </div>
     );
 };

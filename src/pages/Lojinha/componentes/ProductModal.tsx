@@ -5,7 +5,7 @@ import erroIcon from '../../../assets/lojinha-icons/perrys/ERRO.png';
 import TextInput from '../../../components/Inputs/TextInput';
 import NumberInput from '../../../components/Inputs/NumberInput';
 import TextareaInput from '../../../components/Inputs/TextareaInput';
-import DropDown, { IOption } from '../../../components/Inputs/DropDown';
+import DropDown from '../../../components/Inputs/DropDown';
 import FileUploadInput from '../../../components/Inputs/FileUploadInput';
 
 interface ProductModalProps {

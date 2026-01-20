@@ -30,7 +30,7 @@ const Checkout: React.FC = () => {
     const [copied, setCopied] = useState(false);
     const [showCancelModal, setShowCancelModal] = useState(false);
     const [checkIntervalRef, setCheckIntervalRef] = useState<NodeJS.Timeout | null>(null);
-    const [checkInterval, setCheckInterval] = useState<NodeJS.Timeout | null>(null);
+    // const [checkInterval, setCheckInterval] = useState<NodeJS.Timeout | null>(null); // Removido: não utilizado
 
     // Function to get first and last name from full name
     const getFirstAndLastName = (fullName: string): string => {
@@ -108,7 +108,7 @@ const Checkout: React.FC = () => {
     };
 
     // Handle order timeout
-    const handleOrderTimeout = async (paymentId: number) => {
+    const handleOrderTimeout = async (_paymentId: number) => {
         if (!buyOrderId) return;
         
         // Limpar interval de checagem
@@ -220,6 +220,8 @@ const Checkout: React.FC = () => {
         }
     };
 
+    // Função para retry - atualmente não utilizada
+    /*
     const handleRetry = () => {
         setError(null);
         setQrCodeData(null);
@@ -228,6 +230,7 @@ const Checkout: React.FC = () => {
         setTimeLeft(null);
         setIsExpired(false);
     };
+    */
 
     // Don't render if cart is empty and no order in progress
     if (cartItems.length === 0 && !orderId) {

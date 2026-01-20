@@ -210,9 +210,9 @@ export const CartProvider = ({ children }: CartProviderProps) => {
   };
 
   // Limpar apenas o estado local (sem chamar backend)
-  const clearCartLocal = () => {
-    dispatch({ type: 'CLEAR_CART' });
-  };
+  // const clearCartLocal = () => {
+  //   dispatch({ type: 'CLEAR_CART' });
+  // };
 
   const toggleCart = () => dispatch({ type: 'TOGGLE_CART' });
   const openCart = () => dispatch({ type: 'OPEN_CART' });
@@ -233,7 +233,6 @@ export const CartProvider = ({ children }: CartProviderProps) => {
     removeItem,
     clearCart,
     syncCart,
-    clearCartLocal,
     toggleCart,
     openCart,
     closeCart,

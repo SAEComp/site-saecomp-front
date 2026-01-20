@@ -39,7 +39,7 @@ export const FALLBACK_IMAGE = `https://via.placeholder.com/400x300/cccccc/666666
  * @param product - Product object with imgUrl (backend field name)
  * @returns Image URL with fallback handling
  */
-export const getProductImageUrl = (product: { imgUrl?: string; name?: string }): string => {
+export const getProductImageUrl = (product: { imgUrl?: string | null; name?: string }): string => {
   if (!product.imgUrl) {
     return `https://via.placeholder.com/400x300/e0e0e0/666666?text=${encodeURIComponent(product.name || 'Produto')}`;
   }
