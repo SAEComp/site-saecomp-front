@@ -4,6 +4,7 @@ import { Product } from '../../types';
 import { ProductModal } from '../../componentes';
 import { getProductImageUrl } from '../../utils/imageUtils';
 import erroIcon from '../../../../assets/lojinha-icons/perrys/ERRO.png';
+import tristeIcon from '../../../../assets/lojinha-icons/perrys/triste.png';
 import ConfirmModal from '../../../../components/Inputs/ConfirmModal';
 import { Table, ITableColumn } from '../../../../components/Inputs';
 
@@ -370,7 +371,7 @@ const ProductsManagement: React.FC = () => {
                 data={products}
                 loading={loading}
                 emptyText="Nenhum produto encontrado"
-                emptyIcon={erroIcon}
+                emptyIcon={tristeIcon}
                 emptyAction={{
                     text: "Criar primeiro produto",
                     onClick: handleCreateProduct

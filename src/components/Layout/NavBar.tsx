@@ -6,11 +6,11 @@ import { Link } from "react-router";
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import { useAuth } from "../../auth/AuthContext.tsx";
+import { AuthRequiredModal } from "../../pages/Lojinha/componentes";
 import { useCart } from "../../pages/Lojinha/hooks/useCart.tsx";
 import homeIcon from '../../assets/lojinha-icons/Home.png';
 import carrinhoIcon from '../../assets/lojinha-icons/carrinho.png';
 import loginIcon from '../../assets/lojinha-icons/Login.png';
-import ConfirmModal from "../Inputs/ConfirmModal.tsx";
 
 
 const NavBar = () => {
@@ -132,15 +132,10 @@ const NavBar = () => {
                 </div>
             )}            
             {/* Modal de aviso de login */}
-            <ConfirmModal
+            <AuthRequiredModal
                 isOpen={showLoginModal}
-                title="Autenticação Necessária"
-                message="Você precisa estar logado para acessar a lojinha. Deseja ir para a página de login?"
-                confirmText="Ir para Login"
-                cancelText="Cancelar"
                 onConfirm={handleGoToLogin}
                 onCancel={() => setShowLoginModal(false)}
-                type="info"
             />        </div>
     );
 };

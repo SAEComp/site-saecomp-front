@@ -3,9 +3,13 @@ import { historyService, productService } from '../../services/api';
 import { HistoryEntry, Product } from '../../types';
 import { getProductImageUrl } from '../../utils/imageUtils';
 import erroIcon from '../../../../assets/lojinha-icons/perrys/ERRO.png';
+import tristeIcon from '../../../../assets/lojinha-icons/perrys/triste.png';
 import { Table, ITableColumn } from '../../../../components/Inputs';
+import { EmptyDatabaseMessage } from '../../componentes/EmptyDatabaseMessage';
+import { useProductsCheck } from '../../hooks/useProductsCheck';
 
 const HistoryManagement: React.FC = () => {
+    const { hasProducts, isChecking } = useProductsCheck();
     const [history, setHistory] = useState<HistoryEntry[]>([]);
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
@@ -31,8 +35,12 @@ const HistoryManagement: React.FC = () => {
     });
 
     useEffect(() => {
-        loadHistory();
-    }, [appliedFilters]); // Atualiza apenas quando appliedFilters muda
+        if (hasProducts) {
+            loadHistory();
+        } else if (hasProducts === false) {
+            setLoading(false);
+        }
+    }, [appliedFilters, hasProducts]); // Atualiza apenas quando appliedFilters ou hasProducts muda
 
     const loadHistory = async () => {
         try {
@@ -372,7 +380,7 @@ const HistoryManagement: React.FC = () => {
         }
     ];
 
-    if (loading) {
+    if (isChecking || loading) {
         return (
             <div className="flex justify-center items-center py-12">
                 <div className="text-center">
@@ -381,6 +389,10 @@ const HistoryManagement: React.FC = () => {
                 </div>
             </div>
         );
+    }
+
+    if (hasProducts === false) {
+        return <EmptyDatabaseMessage featureName="Histórico" />;
     }
 
     if (error) {
@@ -489,7 +501,7 @@ const HistoryManagement: React.FC = () => {
                     data={paginatedHistory}
                     loading={loading}
                     emptyText="Nenhuma entrada de estoque encontrada"
-                    emptyIcon={erroIcon}
+                    emptyIcon={tristeIcon}
                     mobileView={mobileView}
                 />
             )}

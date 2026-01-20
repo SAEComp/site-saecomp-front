@@ -77,7 +77,7 @@ const Table = <T extends any>({
                         <img 
                             src={emptyIcon} 
                             alt="Vazio" 
-                            className="mx-auto h-16 w-16 mb-4 opacity-50"
+                            className="w-48 h-48 mx-auto mb-2 object-contain"
                         />
                     )}
                     <p className="text-gray-500 mb-4">{emptyText}</p>

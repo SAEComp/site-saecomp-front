@@ -4,6 +4,8 @@ import { Product } from '../../types';
 import erroIcon from '../../../../assets/lojinha-icons/perrys/ERRO.png';
 // import ConfirmModal from '../../../../components/Inputs/ConfirmModal'; // Removido - não utilizado
 import { Table, ITableColumn } from '../../../../components/Inputs';
+import { EmptyDatabaseMessage } from '../../componentes/EmptyDatabaseMessage';
+import { useProductsCheck } from '../../hooks/useProductsCheck';
 
 // Tipo específico para pedidos do admin (vem do backend)
 interface AdminOrder {
@@ -44,6 +46,7 @@ const getFirstAndLastName = (fullName: string): string => {
 };
 
 const OrdersManagement: React.FC = () => {
+    const { hasProducts, isChecking } = useProductsCheck();
     const [orders, setOrders] = useState<AdminOrder[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -81,9 +84,13 @@ const OrdersManagement: React.FC = () => {
     });
 
     useEffect(() => {
-        loadOrders();
-        loadProducts();
-    }, []);
+        if (hasProducts) {
+            loadOrders();
+            loadProducts();
+        } else if (hasProducts === false) {
+            setLoading(false);
+        }
+    }, [hasProducts]);
 
     useEffect(() => {
         // Extrair clientes únicos dos pedidos
@@ -420,7 +427,7 @@ const OrdersManagement: React.FC = () => {
         setShowFilterModal(false);
     };
 
-    if (loading) {
+    if (isChecking || loading) {
         return (
             <div className="flex items-center justify-center py-12">
                 <div className="flex items-center space-x-2">
@@ -429,6 +436,10 @@ const OrdersManagement: React.FC = () => {
                 </div>
             </div>
         );
+    }
+
+    if (hasProducts === false) {
+        return <EmptyDatabaseMessage featureName="Pedidos" />;
     }
 
     if (error) {

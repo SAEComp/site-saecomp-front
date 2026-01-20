@@ -4,6 +4,8 @@ import { Product, Order } from '../../types';
 import { getProductImageUrl } from '../../utils/imageUtils';
 import erroIcon from '../../../../assets/lojinha-icons/perrys/ERRO.png';
 import { Table, ITableColumn } from '../../../../components/Inputs';
+import { EmptyDatabaseMessage } from '../../componentes/EmptyDatabaseMessage';
+import { useProductsCheck } from '../../hooks/useProductsCheck';
 
 // Função utilitária para extrair primeiro e último nome
 const getFirstAndLastName = (fullName: string): string => {
@@ -38,14 +40,19 @@ interface StatsData {
 }
 
 const StatsManagement: React.FC = () => {
+    const { hasProducts, isChecking } = useProductsCheck();
     const [stats, setStats] = useState<StatsData | null>(null);
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        loadStats();
-    }, []);
+        if (hasProducts) {
+            loadStats();
+        } else if (hasProducts === false) {
+            setLoading(false);
+        }
+    }, [hasProducts]);
 
     const loadStats = async () => {
         try {
@@ -276,7 +283,7 @@ const StatsManagement: React.FC = () => {
         }
     ];
 
-    if (loading) {
+    if (isChecking || loading) {
         return (
             <div className="flex items-center justify-center py-12">
                 <div className="flex items-center space-x-2">
@@ -285,6 +292,10 @@ const StatsManagement: React.FC = () => {
                 </div>
             </div>
         );
+    }
+
+    if (hasProducts === false) {
+        return <EmptyDatabaseMessage featureName="Estatísticas" />;
     }
 
     if (error) {

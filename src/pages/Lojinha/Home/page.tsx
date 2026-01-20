@@ -4,6 +4,7 @@ import { CategoryTabs, LoadingState, ErrorState, EmptyState } from '../component
 import { HomeHeader, ProductGrid } from './components';
 import { getProducts } from '../services/api';
 import { Product, ProductFilters } from '../types';
+import emptyImage from '../../../assets/lojinha-icons/perrys/pngwing.com.png';
 
 const Lojinha = () => {
     const { user } = useAuth();
@@ -70,8 +71,10 @@ const Lojinha = () => {
                     <div className="mb-8">
                         {products.length === 0 ? (
                             <EmptyState 
-                                icon="🍽️"
-                                message="Nenhum produto encontrado nesta categoria."
+                                image={emptyImage}
+                                message={selectedCategory === 'all' 
+                                    ? "Nenhum produto disponível no momento. A lojinha está vazia!"
+                                    : "Nenhum produto encontrado nesta categoria."}
                             />
                         ) : (
                             <ProductGrid products={products} />

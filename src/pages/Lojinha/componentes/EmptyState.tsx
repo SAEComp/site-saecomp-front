@@ -3,6 +3,8 @@ import React from 'react';
 interface EmptyStateProps {
     /** Ícone a ser exibido (emoji ou texto) */
     icon?: string;
+    /** Caminho da imagem a ser exibida (opcional, sobrescreve icon) */
+    image?: string;
     /** Mensagem principal a ser exibida */
     message: string;
     /** Descrição adicional (opcional) */
@@ -15,6 +17,7 @@ interface EmptyStateProps {
 
 export const EmptyState: React.FC<EmptyStateProps> = ({ 
     icon = '📭',
+    image,
     message,
     description,
     layout = 'inline',
@@ -31,7 +34,15 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
     return (
         <div className={containerClasses}>
             <div className={contentClasses}>
-                <span className="text-4xl mb-4 block">{icon}</span>
+                {image ? (
+                    <img 
+                        src={image} 
+                        alt="Vazio" 
+                        className="w-48 h-48 mx-auto mb-3 object-contain"
+                    />
+                ) : (
+                    <span className="text-4xl mb-4 block">{icon}</span>
+                )}
                 <p className={`text-gray-600 ${layout === 'fullscreen' ? 'text-xl' : 'text-lg'}`}>
                     {message}
                 </p>
