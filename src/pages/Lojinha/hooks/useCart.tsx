@@ -79,7 +79,8 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
 interface CartContextType {
   state: CartState;
   addItem: (product: Product) => Promise<void>;
-  updateItem: (itemId: number, quantity: number) => Promise<void>;
+  incrementItem: (productId: number) => Promise<void>;
+  decrementItem: (productId: number) => Promise<void>;
   removeItem: (itemId: number) => Promise<void>;
   clearCart: () => Promise<void>;
   syncCart: () => Promise<void>;
@@ -141,22 +142,39 @@ export const CartProvider = ({ children }: CartProviderProps) => {
     }
   };
 
-  // Atualizar quantidade de um item no carrinho (servidor)
-  const updateItem = async (itemId: number, quantity: number) => {
-    if (quantity <= 0) {
-      await removeItem(itemId);
-      return;
-    }
-    
+  // Incrementar quantidade de um item no carrinho (servidor)
+  const incrementItem = async (productId: number) => {
     dispatch({ type: 'SET_LOADING', payload: true });
     try {
-      const response = await cartService.update(itemId, quantity);
+      const response = await cartService.add(productId, 1);
       if (response.success && response.data) {
         dispatch({ type: 'SET_CART', payload: response.data });
       }
     } catch (error) {
-      console.error('Erro ao atualizar item:', error);
+      console.error('Erro ao incrementar item:', error);
       throw error;
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false });
+    }
+  };
+
+  // Decrementar quantidade de um item no carrinho (servidor)
+  const decrementItem = async (productId: number) => {
+    dispatch({ type: 'SET_LOADING', payload: true });
+    try {
+      const response = await cartService.add(productId, -1);
+      if (response.success && response.data) {
+        dispatch({ type: 'SET_CART', payload: response.data });
+      }
+    } catch (error: any) {
+      // Se o erro for quantidade inválida (item chegou a 0), remover do carrinho
+      if (error?.message?.includes('Quantidade inválida')) {
+        console.log('Item chegou a 0, será removido automaticamente');
+        await syncCart();
+      } else {
+        console.error('Erro ao decrementar item:', error);
+        throw error;
+      }
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false });
     }
@@ -229,7 +247,8 @@ export const CartProvider = ({ children }: CartProviderProps) => {
   const value: CartContextType = {
     state,
     addItem,
-    updateItem,
+    incrementItem,
+    decrementItem,
     removeItem,
     clearCart,
     syncCart,

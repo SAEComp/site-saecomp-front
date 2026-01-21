@@ -8,7 +8,7 @@ import carrinhoIcon from '../../../assets/lojinha-icons/perrys/carrinho.png';
 import ConfirmModal from '../../../components/Inputs/ConfirmModal';
 
 const CartPage = () => {
-    const { state, updateItem, removeItem, clearCart, getTotalPrice, getTotalItems } = useCart();
+    const { state, incrementItem, decrementItem, removeItem, clearCart, getTotalPrice, getTotalItems } = useCart();
     const [showClearModal, setShowClearModal] = useState(false);
     const [products, setProducts] = useState<Product[]>([]);
 
@@ -34,11 +34,19 @@ const CartPage = () => {
         }
     };
 
-    const handleUpdateQuantity = async (itemId: number, newQuantity: number) => {
+    const handleIncrementItem = async (productId: number) => {
         try {
-            await updateItem(itemId, newQuantity);
+            await incrementItem(productId);
         } catch (error) {
-            console.error('Erro ao atualizar quantidade:', error);
+            console.error('Erro ao incrementar item:', error);
+        }
+    };
+
+    const handleDecrementItem = async (productId: number) => {
+        try {
+            await decrementItem(productId);
+        } catch (error) {
+            console.error('Erro ao decrementar item:', error);
         }
     };
 
@@ -128,14 +136,14 @@ const CartPage = () => {
                                         <div className="flex items-center justify-between pt-2 border-t">
                                             <div className="flex items-center gap-2">
                                                 <button
-                                                    onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
+                                                    onClick={() => handleDecrementItem(item.productId)}
                                                     className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
                                                 >
                                                     <span className="text-gray-700 font-medium">−</span>
                                                 </button>
                                                 <span className="w-10 text-center font-medium">{item.quantity}</span>
                                                 <button
-                                                    onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
+                                                    onClick={() => handleIncrementItem(item.productId)}
                                                     disabled={item.quantity >= item.productStock}
                                                     className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                                 >
@@ -166,14 +174,14 @@ const CartPage = () => {
                                         </div>
                                         <div className="flex items-center gap-3">
                                             <button
-                                                onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
+                                                onClick={() => handleDecrementItem(item.productId)}
                                                 className="w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
                                             >
                                                 <span className="text-gray-700 font-medium text-lg">−</span>
                                             </button>
                                             <span className="w-12 text-center font-medium text-lg">{item.quantity}</span>
                                             <button
-                                                onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
+                                                onClick={() => handleIncrementItem(item.productId)}
                                                 disabled={item.quantity >= item.productStock}
                                                 className="w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                             >
