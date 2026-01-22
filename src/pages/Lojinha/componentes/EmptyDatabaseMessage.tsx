@@ -1,4 +1,6 @@
 import React from 'react';
+import { Link } from 'react-router';
+import tristeIcon from '../../../assets/lojinha-icons/perrys/triste.png';
 
 interface EmptyDatabaseMessageProps {
     allowedFeature?: boolean;
@@ -14,22 +16,26 @@ export const EmptyDatabaseMessage: React.FC<EmptyDatabaseMessageProps> = ({
     }
 
     return (
-        <div className="bg-yellow-50 border-2 border-yellow-200 rounded-lg p-8 text-center">
-            <div className="flex flex-col items-center space-y-4">
-                <div className="text-6xl">⚠️</div>
-                <h3 className="text-xl font-semibold text-yellow-900">
-                    Banco de Dados Vazio
-                </h3>
-                <p className="text-yellow-700 max-w-md">
-                    Não é possível acessar a aba de <strong>{featureName}</strong> porque não há produtos cadastrados no banco de dados.
-                </p>
-                <p className="text-yellow-600 text-sm">
-                    Por favor, cadastre produtos na aba <strong>Produtos</strong> para acessar esta funcionalidade.
-                </p>
-                <div className="mt-4 p-4 bg-yellow-100 rounded-md">
-                    <p className="text-sm text-yellow-800">
-                        💡 <strong>Dica:</strong> Vá para a aba "Produtos" e adicione itens ao catálogo da lojinha.
+        <div className="min-h-screen bg-gray-50 py-8">
+            <div className="max-w-4xl mx-auto px-4">
+                <div className="bg-white rounded-lg shadow-sm p-8 text-center">
+                    <img 
+                        src={tristeIcon} 
+                        alt="Perry triste" 
+                        className="w-28 h-28 md:w-32 md:h-32 mx-auto mb-4 object-contain drop-shadow-lg"
+                    />
+                    <h2 className="text-2xl font-semibold text-gray-800 mb-2">
+                        Nenhum produto cadastrado
+                    </h2>
+                    <p className="text-gray-600 mb-6">
+                        A aba de <strong>{featureName}</strong> só ficará disponível após adicionar produtos ao catálogo.
                     </p>
+                    <Link 
+                        to="/lojinha/admin" 
+                        className="inline-block bg-[#03B04B] hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg transition duration-300"
+                    >
+                        Ir para Produtos
+                    </Link>
                 </div>
             </div>
         </div>
