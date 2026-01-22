@@ -60,7 +60,7 @@ const StatsManagement: React.FC = () => {
             setError(null);
             const [statsResponse, productsResponse, ordersResponse] = await Promise.all([
                 adminService.getStats(),
-                (await import('../../services/api')).productService.getAll({ limit: 100, includeInactive: true }),
+                (await import('../../services/api')).productService.getAll({ pageSize: 100, includeInactive: true }),
                 (await import('../../services/api')).orderService.getAll({ limit: 5, status: undefined })
             ]);
             const response = statsResponse;

@@ -72,7 +72,7 @@ const Checkout: React.FC = () => {
     useEffect(() => {
         const loadProducts = async () => {
             try {
-                const response = await productService.getAll({ limit: 100, includeInactive: true });
+                const response = await productService.getAll({ pageSize: 100, includeInactive: true });
                 if (response.success && response.data) {
                     setProducts(response.data);
                 }

@@ -37,7 +37,7 @@ const ProductsManagement: React.FC = () => {
             
             const response = await productService.getAll({ 
                 category: categoryMap[filter],
-                limit: 100,
+                pageSize: 100,
                 includeInactive: true // Admin vê todos os produtos (ativos e inativos)
             });
             

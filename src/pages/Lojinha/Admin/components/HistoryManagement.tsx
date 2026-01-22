@@ -53,7 +53,7 @@ const HistoryManagement: React.FC = () => {
                     page: 1,
                     pageSize: 1000, // Get all entries
                 }),
-                productService.getAll({ limit: 100, includeInactive: true })
+                productService.getAll({ pageSize: 100, includeInactive: true })
             ]);
             
             if (historyResponse.success && historyResponse.data) {

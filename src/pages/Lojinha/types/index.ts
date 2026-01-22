@@ -94,9 +94,9 @@ export interface ApiResponse<T> {
 
 export interface ProductFilters {
   category?: 'sweet' | 'salty' | 'drink' | 'all';
-  search?: string;
+  name?: string;
   page?: number;
-  limit?: number;
+  pageSize?: number;
   includeInactive?: boolean; // Para admin ver produtos inativos
 }
 

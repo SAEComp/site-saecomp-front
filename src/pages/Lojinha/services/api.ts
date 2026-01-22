@@ -86,12 +86,16 @@ api.interceptors.response.use(
 export const getProducts = async (filters?: ProductFilters): Promise<ApiResponse<Product[]>> => {
   const params = new URLSearchParams();
   
+  // Adicionar page e pageSize com valores padrão
+  params.append('page', filters?.page?.toString() || '1');
+  params.append('pageSize', filters?.pageSize?.toString() || '100');
+  
   if (filters?.category && filters.category !== 'all') {
     params.append('category', filters.category);
   }
   
-  if (filters?.search) {
-    params.append('search', filters.search);
+  if (filters?.name) {
+    params.append('name', filters.name);
   }
   
   if (filters?.includeInactive) {
@@ -220,20 +224,34 @@ export const clearCart = async (): Promise<ApiResponse<any>> => {
 // ======================
 
 export const finishOrder = async (): Promise<ApiResponse<PixPaymentResponse & { buyOrderId: number }>> => {
-  // Primeiro busca o carrinho para pegar o buyOrderId
-  const cartResponse = await api.get('/cart');
-  const buyOrderId = cartResponse.data.id;
-  
-  const response = await api.post('/finish-order', {
-    buyOrderId
-  });
-  return {
-    success: true,
-    data: {
-      ...response.data,
-      buyOrderId // Retorna o buyOrderId para uso futuro
+  try {
+    // Primeiro busca o carrinho para pegar o buyOrderId
+    const cartResponse = await api.get('/cart');
+    
+    if (!cartResponse.data || !cartResponse.data.id) {
+      throw new Error('Pedido não encontrado. Adicione itens ao carrinho primeiro.');
     }
-  };
+    
+    const buyOrderId = cartResponse.data.id;
+    
+    const response = await api.post('/finish-order', {
+      buyOrderId
+    });
+    
+    return {
+      success: true,
+      data: {
+        ...response.data,
+        buyOrderId // Retorna o buyOrderId para uso futuro
+      }
+    };
+  } catch (error: any) {
+    // Se for 404, significa que não há carrinho
+    if (error.response?.status === 404) {
+      throw new Error('Pedido não encontrado. Adicione itens ao carrinho primeiro.');
+    }
+    throw error;
+  }
 };
 
 export const cancelPayment = async (buyOrderId: number): Promise<ApiResponse<any>> => {

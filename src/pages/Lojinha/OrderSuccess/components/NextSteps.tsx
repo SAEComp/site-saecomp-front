@@ -8,7 +8,7 @@ const NextSteps: React.FC = () => {
             </div>
             <div className="text-sm text-gray-700 space-y-1">
                 <p>• Você pode retirar seu pedido na lojinha SAEComp</p>
-                <p>• Aguarde a confirmação do pagamento</p>
+                <p>• Volte sempre!</p>
             </div>
         </div>
     );
