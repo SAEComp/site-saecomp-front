@@ -52,6 +52,27 @@ export interface Payment {
   pixCopiaECola: string;
 }
 
+export interface PendingOrderItem {
+  id: number;
+  productName: string;
+  quantity: number;
+  value: number;
+}
+
+export interface PendingOrder {
+  id: number;
+  totalValue: number;
+  paymentId: number;
+  qrCodeBase64: string;
+  pixCopiaECola: string;
+  item: PendingOrderItem[];
+  date: string | Date;
+}
+
+export interface PendingPaymentsResponse {
+  buyOrder: PendingOrder[];
+}
+
 export interface PixPaymentRequest {
   orderId: string;
   amount: number;

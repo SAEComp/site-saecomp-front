@@ -15,7 +15,7 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({ orderId }) => {
                 </div>
                 <div className="flex justify-between">
                     <span className="text-gray-600">Status:</span>
-                    <span className="font-medium text-yellow-600">Aguardando Confirmação</span>
+                    <span className="font-medium text-green-600">Concluído</span>
                 </div>
                 <div className="flex justify-between">
                     <span className="text-gray-600">Método de Pagamento:</span>

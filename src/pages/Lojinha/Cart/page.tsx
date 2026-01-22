@@ -1,16 +1,37 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { useCart } from '../hooks/useCart';
-import { productService } from '../services/api';
+import { productService, getPendingPayments } from '../services/api';
 import { Product } from '../types';
 import { getProductImageUrl } from '../utils/imageUtils';
 import carrinhoIcon from '../../../assets/lojinha-icons/perrys/carrinho.png';
 import ConfirmModal from '../../../components/Inputs/ConfirmModal';
 
 const CartPage = () => {
+    const navigate = useNavigate();
     const { state, incrementItem, decrementItem, removeItem, clearCart, getTotalPrice, getTotalItems } = useCart();
     const [showClearModal, setShowClearModal] = useState(false);
     const [products, setProducts] = useState<Product[]>([]);
+    const [checkingPending, setCheckingPending] = useState(true);
+
+    // Check for pending payments on mount - redirect to checkout if found
+    useEffect(() => {
+        const checkPendingPayments = async () => {
+            try {
+                const response = await getPendingPayments();
+                if (response.success && response.data && response.data.length > 0) {
+                    // Redirecionar para checkout se há pagamento pendente
+                    navigate('/lojinha/checkout', { replace: true });
+                }
+            } catch (error) {
+                console.error('Erro ao verificar pagamentos pendentes:', error);
+            } finally {
+                setCheckingPending(false);
+            }
+        };
+
+        checkPendingPayments();
+    }, [navigate]);
 
     useEffect(() => {
         const loadProducts = async () => {
@@ -62,6 +83,18 @@ const CartPage = () => {
             console.error('Erro ao limpar carrinho:', error);
         }
     };
+
+    // Show loading while checking pending payments
+    if (checkingPending) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
+                    <p className="text-gray-600">Verificando pagamentos pendentes...</p>
+                </div>
+            </div>
+        );
+    }
 
     if (state.items.length === 0) {
         return (

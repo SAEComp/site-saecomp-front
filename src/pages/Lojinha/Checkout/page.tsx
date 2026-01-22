@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router';
 import { useCart } from '../hooks/useCart';
-import { orderService, paymentService, productService } from '../services/api';
+import { orderService, paymentService, productService, getPendingPayments, listenToPayment } from '../services/api';
 import { useAuth } from '../../../auth/AuthContext';
-import { Product } from '../types';
+import { Product, PendingOrder } from '../types';
 import { getProductImageUrl } from '../utils/imageUtils';
 import erroIcon from '../../../assets/lojinha-icons/perrys/ERRO.png';
 import concluirIcon from '../../../assets/lojinha-icons/perrys/concluir.png';
@@ -11,26 +11,34 @@ import profileIcon from '../../../assets/lojinha-icons/perrys/profile.png';
 import timeoutIcon from '../../../assets/lojinha-icons/perrys/timeout.png';
 import ConfirmModal from '../../../components/Inputs/ConfirmModal';
 
+const PAYMENT_TIMEOUT = 30 * 60; // 30 minutos em segundos
+
 const Checkout: React.FC = () => {
     const navigate = useNavigate();
     const { state, clearCart, getTotalPrice } = useCart();
     const { user } = useAuth();
-    const cartItems = state.items;
-    const totalAmount = getTotalPrice();
     
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(false);
+    const [checkingPending, setCheckingPending] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [qrCodeData, setQrCodeData] = useState<string | null>(null);
     const [pixCopyPaste, setPixCopyPaste] = useState<string | null>(null);
     const [orderId, setOrderId] = useState<string | null>(null);
+    const [paymentId, setPaymentId] = useState<number | null>(null);
     const [buyOrderId, setBuyOrderId] = useState<number | null>(null);
     const [timeLeft, setTimeLeft] = useState<number | null>(null);
     const [isExpired, setIsExpired] = useState(false);
     const [copied, setCopied] = useState(false);
     const [showCancelModal, setShowCancelModal] = useState(false);
-    const [checkIntervalRef, setCheckIntervalRef] = useState<NodeJS.Timeout | null>(null);
-    // const [checkInterval, setCheckInterval] = useState<NodeJS.Timeout | null>(null); // Removido: não utilizado
+    const [orderCreatedAt, setOrderCreatedAt] = useState<Date | null>(null);
+    const [pendingOrderTotal, setPendingOrderTotal] = useState<number | null>(null);
+    const [pendingOrderItems, setPendingOrderItems] = useState<any[]>([]);
+    
+    const eventSourceRef = useRef<EventSource | null>(null);
+    
+    const cartItems = pendingOrderItems.length > 0 ? pendingOrderItems : state.items;
+    const totalAmount = pendingOrderTotal !== null ? pendingOrderTotal : getTotalPrice();
 
     // Function to get first and last name from full name
     const getFirstAndLastName = (fullName: string): string => {
@@ -52,6 +60,14 @@ const Checkout: React.FC = () => {
     // Get customer name from authenticated user or set as anonymous
     const customerName = user?.name ? getFirstAndLastName(user.name) : 'Cliente Anônimo';
 
+    // Calculate time left based on order creation date
+    const calculateTimeLeft = (createdAt: Date): number => {
+        const now = new Date();
+        const elapsedSeconds = Math.floor((now.getTime() - createdAt.getTime()) / 1000);
+        const remaining = PAYMENT_TIMEOUT - elapsedSeconds;
+        return Math.max(0, remaining);
+    };
+
     // Load products for images
     useEffect(() => {
         const loadProducts = async () => {
@@ -67,7 +83,52 @@ const Checkout: React.FC = () => {
         loadProducts();
     }, []);
 
-    // Timer effect for 10 seconds (teste)
+    // Check for pending payments on mount
+    useEffect(() => {
+        const checkPendingPayments = async () => {
+            try {
+                const response = await getPendingPayments();
+                if (response.success && response.data && response.data.length > 0) {
+                    const pendingOrder = response.data[0];
+                    
+                    setPaymentId(pendingOrder.paymentId);
+                    setBuyOrderId(pendingOrder.id);
+                    setOrderId(String(pendingOrder.id));
+                    setQrCodeData(pendingOrder.qrCodeBase64);
+                    setPixCopyPaste(pendingOrder.pixCopiaECola);
+                    setPendingOrderTotal(pendingOrder.totalValue);
+                    setPendingOrderItems(pendingOrder.item || []);
+                    
+                    const createdAt = new Date(pendingOrder.date);
+                    setOrderCreatedAt(createdAt);
+                    
+                    const remaining = calculateTimeLeft(createdAt);
+                    setTimeLeft(remaining);
+                    
+                    if (remaining <= 0) {
+                        setIsExpired(true);
+                    } else {
+                        startPaymentListener(pendingOrder.paymentId);
+                    }
+                }
+            } catch (error) {
+                console.error('Erro ao verificar pagamentos pendentes:', error);
+            } finally {
+                setCheckingPending(false);
+            }
+        };
+
+        checkPendingPayments();
+
+        return () => {
+            if (eventSourceRef.current) {
+                eventSourceRef.current.close();
+                eventSourceRef.current = null;
+            }
+        };
+    }, []);
+
+    // Timer effect - decrements every second (calculation only on mount)
     useEffect(() => {
         if (timeLeft === null || timeLeft <= 0) return;
 
@@ -75,6 +136,10 @@ const Checkout: React.FC = () => {
             setTimeLeft(prev => {
                 if (prev === null || prev <= 1) {
                     setIsExpired(true);
+                    if (eventSourceRef.current) {
+                        eventSourceRef.current.close();
+                        eventSourceRef.current = null;
+                    }
                     return 0;
                 }
                 return prev - 1;
@@ -86,10 +151,34 @@ const Checkout: React.FC = () => {
 
     // Handle timeout expiration
     useEffect(() => {
-        if (isExpired && orderId && buyOrderId) {
-            handleOrderTimeout(parseInt(orderId));
+        if (isExpired && buyOrderId) {
+            handleOrderTimeout();
         }
-    }, [isExpired, orderId, buyOrderId]);
+    }, [isExpired, buyOrderId]);
+
+    // Start SSE listener for payment updates
+    const startPaymentListener = (pmtId: number) => {
+        if (eventSourceRef.current) {
+            eventSourceRef.current.close();
+        }
+
+        const eventSource = listenToPayment(pmtId, (status, data) => {
+            console.log('Payment status update:', status, data);
+            
+            if (status === 'approved') {
+                eventSource.close();
+                clearCart();
+                navigate(`/lojinha/sucesso/${pmtId}`, { replace: true });
+            } else if (status === 'cancelled' || status === 'expired') {
+                eventSource.close();
+                setIsExpired(true);
+            } else if (status === 'error') {
+                console.error('Erro no SSE:', data);
+            }
+        });
+
+        eventSourceRef.current = eventSource;
+    };
 
     // Format time left as MM:SS
     const formatTimeLeft = (seconds: number) => {
@@ -108,18 +197,11 @@ const Checkout: React.FC = () => {
     };
 
     // Handle order timeout
-    const handleOrderTimeout = async (_paymentId: number) => {
+    const handleOrderTimeout = async () => {
         if (!buyOrderId) return;
-        
-        // Limpar interval de checagem
-        if (checkIntervalRef) {
-            clearInterval(checkIntervalRef);
-            setCheckIntervalRef(null);
-        }
         
         try {
             await paymentService.cancel(buyOrderId);
-            clearCart();
             console.log('Order automatically cancelled due to timeout');
         } catch (err) {
             console.error('Error cancelling order on timeout:', err);
@@ -128,10 +210,10 @@ const Checkout: React.FC = () => {
 
     // Redirect if cart is empty (but not if order exists - payment or expired screen)
     useEffect(() => {
-        if (cartItems.length === 0 && !orderId) {
+        if (!checkingPending && cartItems.length === 0 && !orderId) {
             navigate('/lojinha');
         }
-    }, [cartItems, navigate, orderId]);
+    }, [checkingPending, cartItems, navigate, orderId]);
 
     const handleSubmitOrder = async () => {
         setError(null);
@@ -144,34 +226,20 @@ const Checkout: React.FC = () => {
             const pixResponse = await orderService.finish();
 
             if (pixResponse.success && pixResponse.data) {
-                const newOrderId = pixResponse.data.paymentData.paymentId.toString();
+                const newPaymentId = pixResponse.data.paymentData.paymentId;
                 const newBuyOrderId = pixResponse.data.buyOrderId;
-                setOrderId(newOrderId);
+                const createdAt = new Date();
+                
+                setPaymentId(newPaymentId);
                 setBuyOrderId(newBuyOrderId);
+                setOrderId(String(newPaymentId));
                 setQrCodeData(pixResponse.data.paymentData.qrCodeBase64);
                 setPixCopyPaste(pixResponse.data.paymentData.pixCopiaECola);
-                setTimeLeft(10); // 10 segundos para teste
+                setOrderCreatedAt(createdAt);
+                setTimeLeft(PAYMENT_TIMEOUT);
                 
-                // Start checking payment status
-                const interval = setInterval(async () => {
-                    try {
-                        const statusResponse = await paymentService.getStatus(parseInt(newOrderId));
-                        if (statusResponse.success && statusResponse.data?.paymentStatus === 'completed') {
-                            clearInterval(interval);
-                            await clearCart();
-                            navigate(`/lojinha/sucesso/${newOrderId}`, { replace: true });
-                        }
-                    } catch (err) {
-                        console.error('Error checking payment status:', err);
-                    }
-                }, 3000); // Check a cada 3 segundos
-                
-                setCheckIntervalRef(interval);
-
-                // Clear interval after timeout (10 segundos + 5 segundos)
-                setTimeout(() => {
-                    clearInterval(interval);
-                }, 15000); // 15s
+                // Start SSE listener
+                startPaymentListener(newPaymentId);
             } else {
                 throw new Error(pixResponse.message || 'Falha ao gerar PIX');
             }
@@ -198,10 +266,9 @@ const Checkout: React.FC = () => {
             return;
         }
         
-        // Limpar interval de checagem
-        if (checkIntervalRef) {
-            clearInterval(checkIntervalRef);
-            setCheckIntervalRef(null);
+        if (eventSourceRef.current) {
+            eventSourceRef.current.close();
+            eventSourceRef.current = null;
         }
         
         try {
@@ -232,6 +299,18 @@ const Checkout: React.FC = () => {
     };
     */
 
+    // Show loading while checking pending payments
+    if (checkingPending) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
+                    <p className="text-gray-600">Verificando pagamentos pendentes...</p>
+                </div>
+            </div>
+        );
+    }
+
     // Don't render if cart is empty and no order in progress
     if (cartItems.length === 0 && !orderId) {
         return null; // Will redirect
@@ -261,17 +340,21 @@ const Checkout: React.FC = () => {
                     <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
                         <h2 className="text-xl font-semibold text-gray-900 mb-4">Resumo do Pedido</h2>
                         <div className="space-y-4">
-                            {cartItems.map((item) => {
-                                const product = products.find(p => p.id === item.productId);
+                            {cartItems.map((item, index) => {
+                                // Itens do carrinho têm productId, itens do pedido pendente não
+                                const isCartItem = 'productId' in item;
+                                const product = isCartItem ? products.find(p => p.id === item.productId) : null;
+                                const displayName = isCartItem ? item.productName : item.productName;
+                                
                                 return (
-                                    <div key={item.id} className="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg">
+                                    <div key={item.id || index} className="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg">
                                         <img 
-                                            src={product ? getProductImageUrl(product) : `https://via.placeholder.com/64x64/e0e0e0/666666?text=${encodeURIComponent(item.productName)}`}
-                                            alt={item.productName}
+                                            src={product ? getProductImageUrl(product) : `https://via.placeholder.com/64x64/e0e0e0/666666?text=${encodeURIComponent(displayName)}`}
+                                            alt={displayName}
                                             className="w-16 h-16 object-cover rounded-lg flex-shrink-0"
                                         />
                                         <div className="flex-1">
-                                            <h3 className="font-medium text-gray-900">{item.productName}</h3>
+                                            <h3 className="font-medium text-gray-900">{displayName}</h3>
                                             <p className="text-sm text-gray-600">Quantidade: {item.quantity}</p>
                                             <p className="text-sm text-gray-600">Preço unitário: R$ {item.value.toFixed(2)}</p>
                                             <p className="font-medium text-gray-900">
@@ -404,13 +487,19 @@ const Checkout: React.FC = () => {
                         
                         {/* QR Code */}
                         <div className="text-center mb-8">
-                            <div className="font-mono text-sm break-all bg-gray-100 p-6 rounded-lg border w-64 h-64 mx-auto flex items-center justify-center">
-                                <span className="text-gray-600 text-center">
-                                    QR Code PIX
-                                    <br />
-                                    <small className="text-xs">{qrCodeData?.substring(0, 30)}...</small>
-                                </span>
-                            </div>
+                            {qrCodeData ? (
+                                <img 
+                                    src={`data:image/gif;base64,${qrCodeData}`} 
+                                    alt="QR Code PIX" 
+                                    className="w-64 h-64 mx-auto border border-gray-300 rounded-lg object-contain"
+                                />
+                            ) : (
+                                <div className="font-mono text-sm break-all bg-gray-100 p-6 rounded-lg border w-64 h-64 mx-auto flex items-center justify-center">
+                                    <span className="text-gray-600 text-center">
+                                        Gerando QR Code...
+                                    </span>
+                                </div>
+                            )}
                         </div>
                         
                         {/* PIX Copy-Paste */}

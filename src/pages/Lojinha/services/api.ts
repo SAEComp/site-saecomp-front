@@ -8,7 +8,8 @@ import {
   ProductFilters,
   PixSettings,
   Statistics,
-  HistoryEntry
+  HistoryEntry,
+  PendingOrder
 } from '../types';
 // import authInterceptor from '../../../providers/authInterceptor'; // Removido: não utilizado
 
@@ -255,12 +256,45 @@ export const getPaymentStatus = async (paymentId: number): Promise<ApiResponse<a
   };
 };
 
-export const getPendingPayments = async (): Promise<ApiResponse<any[]>> => {
+export const getPendingPayments = async (): Promise<ApiResponse<PendingOrder[]>> => {
   const response = await api.get('/pending-payment');
   return {
     success: true,
-    data: response.data.pendingPayments || []
+    data: response.data.buyOrder || []
   };
+};
+
+export const listenToPayment = (paymentId: number, onUpdate: (status: string, data?: any) => void): EventSource => {
+  const token = localStorage.getItem('token') || localStorage.getItem('authToken') || sessionStorage.getItem('token');
+  const url = `${API_BASE_URL}/listen-payment?paymentId=${paymentId}${token ? `&token=${token}` : ''}`;
+  
+  const eventSource = new EventSource(url);
+  
+  eventSource.addEventListener('connected', () => {
+    console.log('Connected to payment SSE');
+  });
+  
+  eventSource.addEventListener('payment-status', (event) => {
+    const data = JSON.parse(event.data);
+    onUpdate(data.status, data);
+  });
+  
+  eventSource.addEventListener('payment-approved', (event) => {
+    const data = JSON.parse(event.data);
+    onUpdate('approved', data);
+  });
+  
+  eventSource.addEventListener('payment-cancelled', (event) => {
+    const data = JSON.parse(event.data);
+    onUpdate('cancelled', data);
+  });
+  
+  eventSource.onerror = (error) => {
+    console.error('SSE error:', error);
+    onUpdate('error', error);
+  };
+  
+  return eventSource;
 };
 
 // ======================
