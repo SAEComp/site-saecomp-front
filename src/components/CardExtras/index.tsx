@@ -29,7 +29,7 @@ import img25 from '../../assets/img/extra/img25.png';
 
 type Props = {
     title:string;
-    text: string;
+    text: React.ReactNode;
     url: string;
   }
   
