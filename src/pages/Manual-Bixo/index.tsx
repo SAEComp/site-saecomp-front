@@ -3,7 +3,7 @@ import { Button } from "../../components/Button/styles";
 import TopicosManual from "../../components/TopicosManual";
 import CardExtraScreen from "../../components/CardExtraScreen";
 import Perry from "../../components/Perry";
-import logo from "../../assets/img/header_024.png";
+import logo from "../../assets/img/header_026.png";
 import BurgerBixo from "./BurgerBixo"
 
 const Manual = ()=>{
@@ -15,7 +15,7 @@ const Manual = ()=>{
        <>
             <BurgerBixo/>
             <HeaderBixo>
-               <img src={logo} alt="Perry 023"/>
+               <img src={logo} alt="Perry 026"/>
                <Button style={{padding: "2rem"}} onClick = {scrollbar}>O que fazer para não ser um bixo burro?</Button>
             </HeaderBixo>
             <TopicosManual />
