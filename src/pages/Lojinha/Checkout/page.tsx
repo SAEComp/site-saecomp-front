@@ -232,7 +232,7 @@ const Checkout: React.FC = () => {
                 
                 setPaymentId(newPaymentId);
                 setBuyOrderId(newBuyOrderId);
-                setOrderId(String(newPaymentId));
+                setOrderId(String(newBuyOrderId));
                 setQrCodeData(pixResponse.data.paymentData.qrCodeBase64);
                 setPixCopyPaste(pixResponse.data.paymentData.pixCopiaECola);
                 setOrderCreatedAt(createdAt);
