@@ -163,12 +163,12 @@ const Checkout: React.FC = () => {
         }
 
         const eventSource = listenToPayment(pmtId, (status, data) => {
-            console.log('Payment status update:', status, data);
+            console.log('Payment status update:', status);
             
             if (status === 'approved') {
                 eventSource.close();
                 clearCart();
-                navigate(`/lojinha/sucesso/${pmtId}`, { replace: true });
+                navigate(`/lojinha/sucesso/${buyOrderId}`, { replace: true });
             } else if (status === 'cancelled' || status === 'expired') {
                 eventSource.close();
                 setIsExpired(true);

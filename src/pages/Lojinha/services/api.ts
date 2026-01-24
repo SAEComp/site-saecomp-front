@@ -289,22 +289,20 @@ export const listenToPayment = (paymentId: number, onUpdate: (status: string, da
   const eventSource = new EventSource(url);
   
   eventSource.addEventListener('connected', () => {
-    console.log('Connected to payment SSE');
+    console.log('SSE conectado - aguardando pagamento');
   });
   
-  eventSource.addEventListener('payment-status', (event) => {
+  // Backend envia evento 'payment' com status no data
+  eventSource.addEventListener('payment', (event) => {
     const data = JSON.parse(event.data);
-    onUpdate(data.status, data);
-  });
-  
-  eventSource.addEventListener('payment-approved', (event) => {
-    const data = JSON.parse(event.data);
-    onUpdate('approved', data);
-  });
-  
-  eventSource.addEventListener('payment-cancelled', (event) => {
-    const data = JSON.parse(event.data);
-    onUpdate('cancelled', data);
+    
+    if (data.paid === true || data.status === 'confirmed') {
+      onUpdate('approved', data);
+    } else if (data.status === 'canceled') {
+      onUpdate('cancelled', data);
+    } else {
+      onUpdate(data.status, data);
+    }
   });
   
   eventSource.onerror = (error) => {
