@@ -50,7 +50,7 @@ const CardExtraScreen = () => {
 
                 <CardExtras 
                     title="EESC USP- Formula SAE" 
-                    text="A EESC-USP Formula SAE é uma equipe de competição que projeta, constrói e testa um protótipo tipo fórmula a combustão. Nossos pilares são a inovação tecnológica e o trabalho em equipe, acreditando que juntos podemos vencer qualquer desafio (#MenteForte). Além de aplicar a engenharia na prática, oferecemos um valioso networking com empresas parceiras. E não se preocupe: \textbf{ninguém é obrigado a entrar sabendo!} Desde o processo seletivo, a equipe treina e capacita os novos membros para serem o futuro do time."
+                    text="A EESC-USP Formula SAE é uma equipe de competição que projeta, constrói e testa um protótipo tipo fórmula a combustão. Nossos pilares são a inovação tecnológica e o trabalho em equipe, acreditando que juntos podemos vencer qualquer desafio (#MenteForte). Além de aplicar a engenharia na prática, oferecemos um valioso networking com empresas parceiras. E não se preocupe: ninguém é obrigado a entrar sabendo! Desde o processo seletivo, a equipe treina e capacita os novos membros para serem o futuro do time."
                     url="img7"
                 />
 
