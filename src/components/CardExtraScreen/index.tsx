@@ -38,19 +38,19 @@ const CardExtraScreen = () => {
 
                 <CardExtras 
                     title="EESC Jr." 
-                    text="A EESC jr. é a Empresa júnior de Engenharia e Arquitetura do campus. Aqui vivenciamos o dia-a-dia de uma empresa de consultoria já na graduação. Muito além disso, temos como nosso propósito tornar o Brasil um país mais empreendedor com a missão de Transformar Vidas por meio de Engenharia e Arquitetura. Atualmente executamos projetos em 6 áreas: Ambiental, Arq/Civil, Materiais, Mecânica/Mecatrônica, Produção e Tecnologia e também contamos com a área de backoffice; comercial (vendas e marketing), inovação e gestão (pessoas/performance e jurídico/financeiro). Vem conhecer mais sobre o nosso time!"
+                    text="A EESC Jr. é a Empresa júnior de Engenharia e Arquitetura do campus. Aqui vivenciamos o dia-a-dia de uma empresa de consultoria já na graduação. Muito além disso, temos como nosso propósito tornar o Brasil um país mais empreendedor com a missão de Transformar Vidas por meio de Engenharia e Arquitetura. Atualmente executamos projetos em 6 áreas: Ambiental, Arq/Civil, Materiais, Mecânica/Mecatrônica, Produção e Tecnologia e também contamos com a área de backoffice; comercial (vendas e marketing), inovação e gestão (pessoas/performance e jurídico/financeiro). Vem conhecer mais sobre o nosso time!"
                     url="img5"
                 />
 
                 <CardExtras 
                     title="EESC-USP AeroDesign" 
-                    text="A EESC jr. é a Empresa júnior de Engenharia e Arquitetura do campus. Aqui vivenciamos o dia-a-dia de uma empresa de consultoria já na graduação. Muito além disso, temos como nosso propósito tornar o Brasil um país mais empreendedor com a missão de Transformar Vidas por meio de Engenharia e Arquitetura. Atualmente executamos projetos em 6 áreas: Ambiental, Arq/Civil, Materiais, Mecânica/Mecatrônica, Produção e Tecnologia e também contamos com a área de backoffice; comercial (vendas e marketing), inovação e gestão (pessoas/performance e jurídico/financeiro). Vem conhecer mais sobre o nosso time!"
+                    text="Somos a equipe de AeroDesign mais vitoriosa do mundo, com 25 títulos nacionais e internacionais em 27 anos de história. Fundada em 1998, nosso objetivo é projetar, construir e voar aeronaves rádio-controladas de alta performance para a competição SAE Brasil AeroDesign. Atuamos nas classes Regular, Advanced e Micro, enfrentando desafios que envolvem desde o transporte de alta carga até sistemas autônomos e eletrônica embarcada. Contamos com o suporte do Laboratório de Aeronaves (LAE) para desenvolver os melhores engenheiros do país."
                     url="img8"
                 />
 
                 <CardExtras 
                     title="EESC USP- Formula SAE" 
-                    text="A EESC jr. é a Empresa júnior de Engenharia e Arquitetura do campus. Aqui vivenciamos o dia-a-dia de uma empresa de consultoria já na graduação. Muito além disso, temos como nosso propósito tornar o Brasil um país mais empreendedor com a missão de Transformar Vidas por meio de Engenharia e Arquitetura. Atualmente executamos projetos em 6 áreas: Ambiental, Arq/Civil, Materiais, Mecânica/Mecatrônica, Produção e Tecnologia e também contamos com a área de backoffice; comercial (vendas e marketing), inovação e gestão (pessoas/performance e jurídico/financeiro). Vem conhecer mais sobre o nosso time!"
+                    text="A EESC-USP Formula SAE é uma equipe de competição que projeta, constrói e testa um protótipo tipo fórmula a combustão. Nossos pilares são a inovação tecnológica e o trabalho em equipe, acreditando que juntos podemos vencer qualquer desafio (#MenteForte). Além de aplicar a engenharia na prática, oferecemos um valioso networking com empresas parceiras. E não se preocupe: \textbf{ninguém é obrigado a entrar sabendo!} Desde o processo seletivo, a equipe treina e capacita os novos membros para serem o futuro do time."
                     url="img7"
                 />
 
@@ -58,12 +58,6 @@ const CardExtraScreen = () => {
                     title="EESC-USP Mileage" 
                     text="Desenvolvemos veículos de alta eficiência energética e veículos autônomos, visando sempre tecnologia e sustentabilidade."
                     url="img6"
-                />
-
-                <CardExtras 
-                    title="Efestus" 
-                    text="A EESC jr. é a Empresa júnior de Engenharia e Arquitetura do campus. Aqui vivenciamos o dia-a-dia de uma empresa de consultoria já na graduação. Muito além disso, temos como nosso propósito tornar o Brasil um país mais empreendedor com a missão de Transformar Vidas por meio de Engenharia e Arquitetura. Atualmente executamos projetos em 6 áreas: Ambiental, Arq/Civil, Materiais, Mecânica/Mecatrônica, Produção e Tecnologia e também contamos com a área de backoffice; comercial (vendas e marketing), inovação e gestão (pessoas/performance e jurídico/financeiro). Vem conhecer mais sobre o nosso time!"
-                    url="img9"
                 />
 
                 <CardExtras 

@@ -134,7 +134,7 @@ const TopicosManual:React.FC = ()=>{
                     <Defaultmargin>  
                     <Title text = "O campus" number = "6"></Title>           
                     <Subtitle number = "6.1" text = "C1 e C2"></Subtitle>
-                    <Text>O campus de São Carlos é dividido em 2 áreas: a central apelidada de “campus 1” e <LineThrough>o novo Iraque</LineThrough> a nova área afastada do centro da cidade apelidada de “campus 2”. Nos seguintes mapas é possível localizar diversos prédios que você passará bastante tempo de sua vida sofrendo.<br></br><br></br> <b>Ao escolher sua moradia, SEMPRE escolha perto do Campus 1. É onde está localizado grande parte do comércio, bancos, hospitais e todo o resto! Como você poderá observar nos mapas o Campus 2 é um pouco deserto. A USP disponibiliza ônibus gratuito para o campus 2. </b></Text>
+                    <Text>O campus de São Carlos é dividido em 2 áreas: a central apelidada de “campus 1” e a nova área afastada do centro da cidade apelidada de “campus 2”. Nos seguintes mapas é possível localizar diversos prédios que você passará bastante tempo de sua vida sofrendo.<br></br><br></br> <b>Ao escolher sua moradia, SEMPRE escolha perto do Campus 1. É onde está localizado grande parte do comércio, bancos, hospitais e todo o resto! Como você poderá observar nos mapas o Campus 2 é um pouco deserto. A USP disponibiliza ônibus gratuito para o campus 2. </b></Text>
                         <Ulmap>
                       
                             
