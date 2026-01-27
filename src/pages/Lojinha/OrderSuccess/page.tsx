@@ -1,5 +1,6 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router';
+import axios from 'axios';
 import { GenericButton } from '../componentes';
 import { SuccessIcon, OrderDetails, NextSteps } from './components';
 
@@ -7,6 +8,7 @@ const OrderSuccess = () => {
   const { orderId } = useParams<{ orderId: string }>();
   const navigate = useNavigate();
   const location = useLocation();
+  const [earnedPoints, setEarnedPoints] = useState<number | undefined>(undefined);
 
   useEffect(() => {
     // Verificar se temos orderId na URL ou no state
@@ -14,8 +16,32 @@ const OrderSuccess = () => {
     
     if (!hasOrderId) {
       navigate('/lojinha');
+    } else {
+      // Buscar informações do pedido para calcular pontos
+      fetchOrderPoints(hasOrderId);
     }
   }, [orderId, location.state, navigate]);
+
+  const fetchOrderPoints = async (orderIdParam: string) => {
+    try {
+      const token = localStorage.getItem('token') || localStorage.getItem('authToken') || sessionStorage.getItem('token');
+      const API_BASE_URL = import.meta.env.VITE_LOJINHA_API_URL || 'http://localhost:3000/api/lojinha';
+      
+      const response = await axios.get(`${API_BASE_URL}/order/${orderIdParam}`, {
+        headers: {
+          'Authorization': token ? `Bearer ${token}` : ''
+        }
+      });
+      
+      if (response.data?.totalValue) {
+        // Calcular pontos: R$ 1,00 = 100 pontos
+        const points = Math.floor(response.data.totalValue * 100);
+        setEarnedPoints(points);
+      }
+    } catch (error) {
+      console.error('Erro ao buscar informações do pedido:', error);
+    }
+  };
 
   const handleBackToStore = () => {
     navigate('/lojinha');
@@ -46,7 +72,7 @@ const OrderSuccess = () => {
             Seu pedido foi processado com sucesso.
           </p>
           
-          <OrderDetails orderId={currentOrderId} />
+          <OrderDetails orderId={currentOrderId} earnedPoints={earnedPoints} />
           <NextSteps />
           <div className="space-y-2">
             <GenericButton 

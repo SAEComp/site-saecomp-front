@@ -10,6 +10,7 @@ import ProductDetails from "./pages/Lojinha/ProductDetails/page";
 import LojinhaGerenciamento from "./pages/Lojinha/Admin/page";
 import Lojinha from "./pages/Lojinha/Home/page";
 import CartPage from "./pages/Lojinha/Cart/page";
+import Leaderboard from "./pages/Lojinha/Leaderboard/page";
 import TeacherFeedback from "./pages/TeacherFeedback";
 import TeacherFeedbackResults from "./pages/TeacherFeedbackResults";
 import LayoutWrapper from "./components/Layout/LayoutWrapper";
@@ -79,6 +80,10 @@ const routes = createBrowserRouter([
                             {
                                 path: "sucesso/:orderId",
                                 element: <OrderSuccess />,
+                            },
+                            {
+                                path: "podio",
+                                element: <Leaderboard />,
                             },
                             {
                                 path: "admin",

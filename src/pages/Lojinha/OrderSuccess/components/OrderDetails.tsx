@@ -2,6 +2,7 @@ import React from 'react';
 
 interface OrderDetailsProps {
     orderId: string;
+    earnedPoints?: number;
 }
 
 const OrderDetails: React.FC<OrderDetailsProps> = ({ orderId }) => {
@@ -22,6 +23,18 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({ orderId }) => {
                     <span className="font-medium">PIX</span>
                 </div>
             </div>
+            
+            {/* Pontuação adquirida */}
+            {earnedPoints !== undefined && (
+                <div className="bg-green-50 rounded-lg p-3 mt-3 border border-green-200">
+                    <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-600">Pontuação da compra:</span>
+                        <span className="text-base font-bold text-[#03B04B]">
+                            +{earnedPoints.toLocaleString('pt-BR')}
+                        </span>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

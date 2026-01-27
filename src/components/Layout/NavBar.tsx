@@ -10,6 +10,7 @@ import { AuthRequiredModal } from "../../pages/Lojinha/componentes";
 import { useCart } from "../../pages/Lojinha/hooks/useCart.tsx";
 import homeIcon from '../../assets/lojinha-icons/Home.png';
 import carrinhoIcon from '../../assets/lojinha-icons/carrinho.png';
+import gameIcon from '../../assets/lojinha-icons/game.png';
 import loginIcon from '../../assets/lojinha-icons/Login.png';
 
 
@@ -90,6 +91,13 @@ const NavBar = () => {
                                     {cartItemCount > 99 ? '99+' : cartItemCount}
                                 </span>
                             )}
+                        </Link>
+                        <Link 
+                            to="/lojinha/podio" 
+                            className="p-1 sm:p-2 hover:bg-green-600 rounded-md transition-all duration-200 group"
+                            title="Pódio dos maiores compradores"
+                        >
+                            <img src={gameIcon} alt="Pódio" className="w-7 h-7 sm:w-8 sm:h-8 transition-transform duration-200 group-hover:scale-110" />
                         </Link>
                     </div>
                 )}

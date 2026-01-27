@@ -5,6 +5,7 @@ import { HomeHeader, ProductGrid } from './components';
 import { getProducts } from '../services/api';
 import { Product, ProductFilters } from '../types';
 import emptyImage from '../../../assets/lojinha-icons/perrys/pngwing.com.png';
+import axios from 'axios';
 
 const Lojinha = () => {
     const { user } = useAuth();
@@ -12,6 +13,7 @@ const Lojinha = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [selectedCategory, setSelectedCategory] = useState<'all' | 'sweet' | 'salty' | 'drink'>('all');
+    const [userPoints, setUserPoints] = useState<number | null>(null);
 
     const loadProducts = useCallback(async (category: 'all' | 'sweet' | 'salty' | 'drink') => {
         try {
@@ -40,7 +42,28 @@ const Lojinha = () => {
 
     useEffect(() => {
         loadProducts(selectedCategory);
+        loadUserPoints();
     }, [selectedCategory, loadProducts]);
+
+    const loadUserPoints = async () => {
+        try {
+            const token = localStorage.getItem('token') || localStorage.getItem('authToken') || sessionStorage.getItem('token');
+            const API_BASE_URL = import.meta.env.VITE_LOJINHA_API_URL || 'http://localhost:3000/api/lojinha';
+
+            const response = await axios.get(`${API_BASE_URL}/punctuation`, {
+                headers: {
+                    'Authorization': token ? `Bearer ${token}` : ''
+                }
+            });
+
+            if (response.data) {
+                setUserPoints(response.data.punctuation || 0);
+            }
+        } catch (err: any) {
+            console.error('Erro ao carregar pontuação do usuário:', err);
+            setUserPoints(0);
+        }
+    };
 
     const handleCategoryChange = useCallback((category: 'all' | 'sweet' | 'salty' | 'drink') => {
         if (category !== selectedCategory) {
@@ -49,7 +72,7 @@ const Lojinha = () => {
     }, [selectedCategory]);
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 relative">
             <div className="max-w-7xl mx-auto px-4 py-8">
                 <HomeHeader hasAdminPermission={user?.permissions?.includes('users:edit') || false} />
                 

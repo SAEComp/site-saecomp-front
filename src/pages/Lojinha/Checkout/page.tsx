@@ -367,9 +367,19 @@ const Checkout: React.FC = () => {
                         </div>
                         
                         <div className="mt-6 pt-6 border-t border-gray-200">
-                            <div className="flex justify-between items-center">
+                            <div className="flex justify-between items-center mb-4">
                                 <span className="text-xl font-bold text-gray-900">Total:</span>
                                 <span className="text-xl font-bold text-green-600">R$ {totalAmount.toFixed(2)}</span>
+                            </div>
+                            
+                            {/* Pontuação a ser adquirida */}
+                            <div className="bg-green-50 rounded-lg p-3 border border-green-200">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-sm text-gray-600">Pontuação da compra:</span>
+                                    <span className="text-base font-bold text-[#03B04B]">
+                                        +{Math.floor(totalAmount * 100).toLocaleString('pt-BR')}
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -402,7 +412,7 @@ const Checkout: React.FC = () => {
                                     <p className="font-medium text-gray-900">💳 Pagamento via PIX</p>
                                 </div>
                                 <p className="text-sm text-gray-700 mt-1">
-                                    Após confirmar o pedido, você receberá um QR Code para pagamento via PIX com validade de 30 segundos.
+                                    Após confirmar o pedido, você receberá um QR Code para pagamento via PIX com validade de 30 minutos.
                                 </p>
                             </div>
                         </div>
