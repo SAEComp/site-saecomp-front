@@ -5,6 +5,7 @@ import axios from 'axios';
 import inicio1 from '../../../assets/lojinha-icons/perrys/inicio1.png';
 import inicio2 from '../../../assets/lojinha-icons/perrys/inicio2.png';
 import pedidos from '../../../assets/lojinha-icons/perrys/pedidos.png';
+import emptyImage from '../../../assets/lojinha-icons/perrys/pngwing.com.png';
 
 interface LeaderboardUser {
     userId: number;
@@ -37,7 +38,6 @@ const Leaderboard = () => {
 
             if (response.data) {
                 setUserPoints(response.data.punctuation || 0);
-                setUserName(response.data.userName || 'Você');
             }
         } catch (err: any) {
             console.error('Erro ao carregar pontuação do usuário:', err);
@@ -158,19 +158,26 @@ const Leaderboard = () => {
                 )}
 
                 {error && (
-                    <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
-                        <p className="text-red-600">{error}</p>
-                        <GenericButton onClick={loadLeaderboard} variant="primary" className="mt-4">
-                            Tentar Novamente
-                        </GenericButton>
+                    <div className="bg-white rounded-lg shadow-sm p-8 text-center max-w-md mx-auto">
+                        <img 
+                            src={emptyImage} 
+                            alt="Erro ao carregar" 
+                            className="w-40 h-40 md:w-48 md:h-48 mx-auto mb-4 object-contain"
+                        />
+                        <h2 className="text-2xl font-semibold text-gray-800 mb-2">Não foi possível carregar o ranking</h2>
+                        <p className="text-gray-600">Ocorreu um erro ao buscar os dados. Tente novamente mais tarde.</p>
                     </div>
                 )}
 
                 {!loading && !error && topUsers.length === 0 && (
-                    <div className="bg-white rounded-lg shadow-lg p-8 text-center">
-                        <p className="text-gray-600 text-lg">
-                            Ainda não há compradores registrados. Seja o primeiro!
-                        </p>
+                    <div className="bg-white rounded-lg shadow-sm p-8 text-center max-w-md mx-auto">
+                        <img 
+                            src={emptyImage} 
+                            alt="Sem compradores" 
+                            className="w-40 h-40 md:w-48 md:h-48 mx-auto mb-4 object-contain"
+                        />
+                        <h2 className="text-2xl font-semibold text-gray-800 mb-2">Ainda não há compradores</h2>
+                        <p className="text-gray-600">Seja o primeiro a aparecer no ranking! Faça sua primeira compra na lojinha.</p>
                     </div>
                 )}
 
