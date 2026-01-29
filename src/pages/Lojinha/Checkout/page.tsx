@@ -108,7 +108,7 @@ const Checkout: React.FC = () => {
                     if (remaining <= 0) {
                         setIsExpired(true);
                     } else {
-                        startPaymentListener(pendingOrder.paymentId);
+                        startPaymentListener(pendingOrder.paymentId, pendingOrder.id);
                     }
                 }
             } catch (error) {
@@ -157,18 +157,21 @@ const Checkout: React.FC = () => {
     }, [isExpired, buyOrderId]);
 
     // Start SSE listener for payment updates
-    const startPaymentListener = (pmtId: number) => {
+    const startPaymentListener = (pmtId: number, orderIdForNav: number) => {
         if (eventSourceRef.current) {
             eventSourceRef.current.close();
         }
 
         const eventSource = listenToPayment(pmtId, (status, data) => {
-            console.log('Payment status update:', status);
-            
             if (status === 'approved') {
                 eventSource.close();
                 clearCart();
-                navigate(`/lojinha/sucesso/${buyOrderId}`, { replace: true });
+                // Calcular pontos para passar ao OrderSuccess
+                const earnedPoints = Math.floor(totalAmount * 100);
+                navigate(`/lojinha/sucesso/${orderIdForNav}`, { 
+                    replace: true,
+                    state: { earnedPoints }
+                });
             } else if (status === 'cancelled' || status === 'expired') {
                 eventSource.close();
                 setIsExpired(true);
@@ -239,7 +242,7 @@ const Checkout: React.FC = () => {
                 setTimeLeft(PAYMENT_TIMEOUT);
                 
                 // Start SSE listener
-                startPaymentListener(newPaymentId);
+                startPaymentListener(newPaymentId, newBuyOrderId);
             } else {
                 throw new Error(pixResponse.message || 'Falha ao gerar PIX');
             }
@@ -515,12 +518,12 @@ const Checkout: React.FC = () => {
                         {/* PIX Copy-Paste */}
                         {pixCopyPaste && (
                             <div className="mb-8 max-w-2xl mx-auto px-4 sm:px-8">
-                                <div className="flex border border-gray-300 rounded-lg overflow-hidden">
+                                <div className="flex flex-col sm:flex-row border border-gray-300 rounded-lg overflow-hidden">
                                     <input
                                         type="text"
                                         value={pixCopyPaste}
                                         readOnly
-                                        className="flex-1 px-4 py-3 text-sm font-mono bg-gray-50 border-0 focus:outline-none"
+                                        className="flex-1 px-4 py-3 text-sm font-mono bg-gray-50 border-0 focus:outline-none text-center sm:text-left"
                                         style={{ fontSize: '12px' }}
                                     />
                                     <button

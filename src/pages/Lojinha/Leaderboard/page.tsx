@@ -1,21 +1,25 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { GenericButton } from '../componentes';
+import Table, { ITableColumn } from '../../../components/Inputs/Table/Table';
 import axios from 'axios';
 import inicio1 from '../../../assets/lojinha-icons/perrys/inicio1.png';
 import inicio2 from '../../../assets/lojinha-icons/perrys/inicio2.png';
 import pedidos from '../../../assets/lojinha-icons/perrys/pedidos.png';
 import emptyImage from '../../../assets/lojinha-icons/perrys/pngwing.com.png';
+import profileIcon from '../../../assets/lojinha-icons/perrys/profile.png';
 
 interface LeaderboardUser {
     userId: number;
     userName: string;
     userPunctuation: number;
+    userPicture?: string;
 }
 
 const Leaderboard = () => {
     const navigate = useNavigate();
     const [topUsers, setTopUsers] = useState<LeaderboardUser[]>([]);
+    const [allUsers, setAllUsers] = useState<LeaderboardUser[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [userPoints, setUserPoints] = useState<number | null>(null);
@@ -35,9 +39,8 @@ const Leaderboard = () => {
                     'Authorization': token ? `Bearer ${token}` : ''
                 }
             });
-
             if (response.data) {
-                setUserPoints(response.data.punctuation || 0);
+                setUserPoints(response.data.userPunctuation ?? 0);
             }
         } catch (err: any) {
             console.error('Erro ao carregar pontuação do usuário:', err);
@@ -54,18 +57,22 @@ const Leaderboard = () => {
             const API_BASE_URL = import.meta.env.VITE_LOJINHA_API_URL || 'http://localhost:3000/api/lojinha';
 
             const response = await axios.get(`${API_BASE_URL}/punctuations`, {
-                params: { page: 1, pageSize: 3 },
+                params: { page: 1, pageSize: 10 },
                 headers: {
                     'Authorization': token ? `Bearer ${token}` : ''
                 }
             });
 
             if (response.data?.punctuation) {
-                // Pegar apenas os 3 primeiros e ordenar por pontuação
-                const top3 = response.data.punctuation
-                    .sort((a: LeaderboardUser, b: LeaderboardUser) => b.userPunctuation - a.userPunctuation)
-                    .slice(0, 3);
+                const sortedUsers = response.data.punctuation
+                    .sort((a: LeaderboardUser, b: LeaderboardUser) => b.userPunctuation - a.userPunctuation);
+                
+                // Top 3 para o pódio
+                const top3 = sortedUsers.slice(0, 3);
                 setTopUsers(top3);
+                
+                // Todos os 10 para a tabela
+                setAllUsers(sortedUsers);
             }
         } catch (err: any) {
             console.error('Erro ao carregar ranking:', err);
@@ -248,6 +255,105 @@ const Leaderboard = () => {
                                 </div>
                             );
                         })}
+                    </div>
+                )}
+
+                {/* Tabela com Top 10 */}
+                {!loading && !error && allUsers.length > 0 && (
+                    <div className="mt-12 max-w-4xl mx-auto">
+                        <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Maiores Compradores</h2>
+                        <Table<LeaderboardUser>
+                            columns={[
+                                {
+                                    key: 'position',
+                                    title: 'Posição',
+                                    align: 'center',
+                                    width: '80px',
+                                    render: (_, __, index) => {
+                                        const getMedalStyle = (position: number) => {
+                                            switch (position) {
+                                                case 0:
+                                                    return 'bg-gradient-to-br from-yellow-400 via-yellow-500 to-yellow-600 text-white shadow-lg';
+                                                case 1:
+                                                    return 'bg-gradient-to-br from-gray-300 via-gray-400 to-gray-500 text-white shadow-lg';
+                                                case 2:
+                                                    return 'bg-gradient-to-br from-orange-400 via-orange-500 to-orange-600 text-white shadow-lg';
+                                                default:
+                                                    return 'text-gray-700';
+                                            }
+                                        };
+
+                                        return (
+                                            <span className={`text-lg font-bold ${index < 3 ? 'inline-flex items-center justify-center w-8 h-8 rounded-full ' + getMedalStyle(index) : getMedalStyle(index)}`}>
+                                                {index < 3 ? (index + 1) : `#${index + 1}`}
+                                            </span>
+                                        );
+                                    }
+                                },
+                                {
+                                    key: 'user',
+                                    title: 'Comprador',
+                                    dataIndex: 'userName',
+                                    render: (_, record) => (
+                                        <div className="flex items-center gap-3">
+                                            <img 
+                                                src={record.userPicture || profileIcon}
+                                                alt={record.userName}
+                                                className="w-10 h-10 rounded-full object-cover shadow-md"
+                                            />
+                                            <span className="font-medium text-gray-800">{record.userName}</span>
+                                        </div>
+                                    )
+                                },
+                                {
+                                    key: 'punctuation',
+                                    title: 'Pontuação',
+                                    dataIndex: 'userPunctuation',
+                                    align: 'right',
+                                    render: (value) => (
+                                        <span className="text-lg font-bold text-[#03B04B]">
+                                            {value.toLocaleString('pt-BR')} pts
+                                        </span>
+                                    )
+                                }
+                            ]}
+                            data={allUsers}
+                            emptyText="Nenhum comprador encontrado"
+                            responsive={true}
+                            mobileView={(record, index) => {
+                                const getMedalStyleMobile = (position: number) => {
+                                    switch (position) {
+                                        case 0:
+                                            return 'bg-gradient-to-br from-yellow-400 via-yellow-500 to-yellow-600 text-white shadow-lg';
+                                        case 1:
+                                            return 'bg-gradient-to-br from-gray-300 via-gray-400 to-gray-500 text-white shadow-lg';
+                                        case 2:
+                                            return 'bg-gradient-to-br from-orange-400 via-orange-500 to-orange-600 text-white shadow-lg';
+                                        default:
+                                            return 'text-gray-500';
+                                    }
+                                };
+
+                                return (
+                                    <div className="p-4 flex items-center justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <span className={`text-sm font-bold min-w-[30px] ${index < 3 ? 'inline-flex items-center justify-center w-7 h-7 rounded-full ' + getMedalStyleMobile(index) : getMedalStyleMobile(index)}`}>
+                                                {index < 3 ? (index + 1) : `#${index + 1}`}
+                                            </span>
+                                            <img 
+                                                src={record.userPicture || profileIcon}
+                                                alt={record.userName}
+                                                className="w-10 h-10 rounded-full object-cover shadow-md"
+                                            />
+                                            <div>
+                                                <p className="font-medium text-gray-800">{record.userName}</p>
+                                                <p className="text-sm text-[#03B04B] font-bold">{record.userPunctuation.toLocaleString('pt-BR')} pts</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            }}
+                        />
                     </div>
                 )}
 

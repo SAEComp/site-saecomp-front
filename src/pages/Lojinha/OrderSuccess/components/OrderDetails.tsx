@@ -5,7 +5,7 @@ interface OrderDetailsProps {
     earnedPoints?: number;
 }
 
-const OrderDetails: React.FC<OrderDetailsProps> = ({ orderId }) => {
+const OrderDetails: React.FC<OrderDetailsProps> = ({ orderId, earnedPoints }) => {
     return (
         <div className="bg-gray-50 rounded-lg p-4 mb-4 text-left">
             <h3 className="font-semibold text-gray-900 mb-3">Detalhes do Pedido</h3>
@@ -22,19 +22,13 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({ orderId }) => {
                     <span className="text-gray-600">Método de Pagamento:</span>
                     <span className="font-medium">PIX</span>
                 </div>
-            </div>
-            
-            {/* Pontuação adquirida */}
-            {earnedPoints !== undefined && (
-                <div className="bg-green-50 rounded-lg p-3 mt-3 border border-green-200">
-                    <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Pontuação da compra:</span>
-                        <span className="text-base font-bold text-[#03B04B]">
-                            +{earnedPoints.toLocaleString('pt-BR')}
-                        </span>
+                {earnedPoints !== undefined && (
+                    <div className="flex justify-between">
+                        <span className="text-gray-600">Pontuação da compra:</span>
+                        <span className="font-medium">+{earnedPoints.toLocaleString('pt-BR')}</span>
                     </div>
-                </div>
-            )}
+                )}
+            </div>
         </div>
     );
 };

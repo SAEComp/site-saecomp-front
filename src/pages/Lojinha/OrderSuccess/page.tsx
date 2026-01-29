@@ -16,6 +16,12 @@ const OrderSuccess = () => {
     
     if (!hasOrderId) {
       navigate('/lojinha');
+      return;
+    }
+    
+    // Se os pontos foram passados pelo state, usar eles
+    if (location.state?.earnedPoints !== undefined) {
+      setEarnedPoints(location.state.earnedPoints);
     } else {
       // Buscar informações do pedido para calcular pontos
       fetchOrderPoints(hasOrderId);
@@ -27,19 +33,24 @@ const OrderSuccess = () => {
       const token = localStorage.getItem('token') || localStorage.getItem('authToken') || sessionStorage.getItem('token');
       const API_BASE_URL = import.meta.env.VITE_LOJINHA_API_URL || 'http://localhost:3000/api/lojinha';
       
-      const response = await axios.get(`${API_BASE_URL}/order/${orderIdParam}`, {
+      // Endpoint correto: pending-payment retorna informações do pedido
+      const response = await axios.get(`${API_BASE_URL}/pending-payment`, {
         headers: {
           'Authorization': token ? `Bearer ${token}` : ''
         }
       });
       
-      if (response.data?.totalValue) {
+      // Buscar o pedido específico
+      const order = response.data?.find((o: any) => String(o.id) === String(orderIdParam));
+      
+      if (order?.totalValue) {
         // Calcular pontos: R$ 1,00 = 100 pontos
-        const points = Math.floor(response.data.totalValue * 100);
+        const points = Math.floor(order.totalValue * 100);
         setEarnedPoints(points);
       }
     } catch (error) {
       console.error('Erro ao buscar informações do pedido:', error);
+      // Não mostrar erro, apenas não mostrar pontos
     }
   };
 
