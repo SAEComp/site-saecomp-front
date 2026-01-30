@@ -19,3 +19,12 @@ export const authProvider = axios.create({
 authProvider.interceptors.request.use(authInterceptor(['/google-login', '/logout', '/refresh']));
 authProvider.interceptors.response.use(res => res, errorInterceptor);
 
+export const lojinhaProvider = axios.create({
+    baseURL: import.meta.env.VITE_LOJINHA_API_URL || 'http://localhost:3000/api/lojinha',
+    headers: {
+        "Content-Type": "application/json"
+    },
+    timeout: 30000
+});
+lojinhaProvider.interceptors.request.use(authInterceptor([]));
+

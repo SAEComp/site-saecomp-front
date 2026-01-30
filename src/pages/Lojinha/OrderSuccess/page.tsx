@@ -13,12 +13,12 @@ const OrderSuccess = () => {
   useEffect(() => {
     // Verificar se temos orderId na URL ou no state
     const hasOrderId = orderId || location.state?.orderId;
-    
+
     if (!hasOrderId) {
       navigate('/lojinha');
       return;
     }
-    
+
     // Se os pontos foram passados pelo state, usar eles
     if (location.state?.earnedPoints !== undefined) {
       setEarnedPoints(location.state.earnedPoints);
@@ -32,17 +32,17 @@ const OrderSuccess = () => {
     try {
       const token = localStorage.getItem('token') || localStorage.getItem('authToken') || sessionStorage.getItem('token');
       const API_BASE_URL = import.meta.env.VITE_LOJINHA_API_URL || 'http://localhost:3000/api/lojinha';
-      
+
       // Endpoint correto: pending-payment retorna informações do pedido
       const response = await axios.get(`${API_BASE_URL}/pending-payment`, {
         headers: {
           'Authorization': token ? `Bearer ${token}` : ''
         }
       });
-      
+
       // Buscar o pedido específico
       const order = response.data?.find((o: any) => String(o.id) === String(orderIdParam));
-      
+
       if (order?.totalValue) {
         // Calcular pontos: R$ 1,00 = 100 pontos
         const points = Math.floor(order.totalValue * 100);
@@ -64,7 +64,7 @@ const OrderSuccess = () => {
 
   // Verificar se temos orderId na URL ou no state
   const currentOrderId = orderId || location.state?.orderId;
-  
+
   if (!currentOrderId) {
     return null;
   }
@@ -74,26 +74,26 @@ const OrderSuccess = () => {
       <div className="max-w-md w-full text-center -mt-20">
         <div className="bg-white rounded-lg shadow-lg p-6">
           <SuccessIcon />
-          
+
           <h1 className="text-2xl font-bold text-gray-900 mb-3">
             Pedido Realizado com Sucesso!
           </h1>
-          
+
           <p className="text-gray-600 mb-4">
             Seu pedido foi processado com sucesso.
           </p>
-          
+
           <OrderDetails orderId={currentOrderId} earnedPoints={earnedPoints} />
           <NextSteps />
           <div className="space-y-2">
-            <GenericButton 
+            <GenericButton
               onClick={handleBackToStore}
               variant="primary"
               fullWidth
             >
               Fazer Novo Pedido
             </GenericButton>
-            <GenericButton 
+            <GenericButton
               onClick={handleGoHome}
               variant="secondary"
               fullWidth
