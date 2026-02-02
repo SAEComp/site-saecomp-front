@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { GenericButton } from '../componentes';
+import { GenericButton, LoadingState } from '../componentes';
 import Table, { ITableColumn } from '../../../components/Inputs/Table/Table';
 import lojinhaService from '../../../services/lojinha.service';
 import inicio1 from '../../../assets/lojinha-icons/perrys/inicio1.png';
@@ -146,9 +146,7 @@ const Leaderboard = () => {
                 )}
 
                 {loading && (
-                    <div className="flex justify-center items-center h-64">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#03B04B]"></div>
-                    </div>
+                    <LoadingState message="Carregando ranking..." size="lg" layout="inline" />
                 )}
 
                 {error && (

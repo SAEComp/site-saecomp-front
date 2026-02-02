@@ -2,10 +2,9 @@ import { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '../../../auth/AuthContext';
 import { CategoryTabs, LoadingState, ErrorState, EmptyState } from '../componentes';
 import { HomeHeader, ProductGrid } from './components';
-import { getProducts } from '../services/api';
+import { getProducts, punctuationService } from '../services/api';
 import { Product, ProductFilters } from '../types';
 import emptyImage from '../../../assets/lojinha-icons/perrys/pngwing.com.png';
-import axios from 'axios';
 
 const Lojinha = () => {
     const { user } = useAuth();
@@ -47,17 +46,10 @@ const Lojinha = () => {
 
     const loadUserPoints = async () => {
         try {
-            const token = localStorage.getItem('token') || localStorage.getItem('authToken') || sessionStorage.getItem('token');
-            const API_BASE_URL = import.meta.env.VITE_LOJINHA_API_URL || 'http://localhost:3000/api/lojinha';
-
-            const response = await axios.get(`${API_BASE_URL}/punctuation`, {
-                headers: {
-                    'Authorization': token ? `Bearer ${token}` : ''
-                }
-            });
-
-            if (response.data) {
-                setUserPoints(response.data.punctuation || 0);
+            const response = await punctuationService.getUserPoints();
+            
+            if (response.success && response.data) {
+                setUserPoints(response.data.userPunctuation || 0);
             }
         } catch (err: any) {
             console.error('Erro ao carregar pontuação do usuário:', err);

@@ -4,6 +4,7 @@ import { useCart } from '../hooks/useCart';
 import { productService, getPendingPayments } from '../services/api';
 import { Product } from '../types';
 import { getProductImageUrl } from '../utils/imageUtils';
+import { LoadingState } from '../componentes';
 import carrinhoIcon from '../../../assets/lojinha-icons/perrys/carrinho.png';
 import ConfirmModal from '../../../components/Inputs/ConfirmModal';
 
@@ -86,14 +87,7 @@ const CartPage = () => {
 
     // Show loading while checking pending payments
     if (checkingPending) {
-        return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
-                    <p className="text-gray-600">Verificando pagamentos pendentes...</p>
-                </div>
-            </div>
-        );
+        return <LoadingState message="Verificando pagamentos pendentes..." layout="fullscreen" />;
     }
 
     if (state.items.length === 0) {

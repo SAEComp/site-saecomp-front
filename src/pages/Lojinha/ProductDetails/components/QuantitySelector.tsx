@@ -28,7 +28,9 @@ export const QuantitySelector: React.FC<QuantitySelectorProps> = ({
             </button>
             <input
                 id="quantity"
-                type="number"
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 min="1"
                 max={maxQuantity}
                 value={quantity}

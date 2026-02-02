@@ -34,6 +34,8 @@ export const deletePixSettings = lojinhaService.deletePixSettings.bind(lojinhaSe
 
 export const getHistory = lojinhaService.getHistory.bind(lojinhaService);
 export const healthCheck = lojinhaService.healthCheck.bind(lojinhaService);
+export const getUserPunctuation = lojinhaService.getUserPunctuation.bind(lojinhaService);
+export const getLeaderboard = lojinhaService.getLeaderboard.bind(lojinhaService);
 
 // Serviços organizados (mantidos para compatibilidade)
 export const productService = {
@@ -87,6 +89,11 @@ export const pixService = {
 
 export const historyService = {
   getHistory
+};
+
+export const punctuationService = {
+  getUserPoints: getUserPunctuation,
+  getLeaderboard: getLeaderboard
 };
 
 // Exportar o service completo como default

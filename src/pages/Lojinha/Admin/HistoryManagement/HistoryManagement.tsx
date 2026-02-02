@@ -5,7 +5,7 @@ import { getProductImageUrl } from '../../utils/imageUtils';
 import erroIcon from '../../../../assets/lojinha-icons/perrys/ERRO.png';
 import tristeIcon from '../../../../assets/lojinha-icons/perrys/triste.png';
 import { Table, ITableColumn } from '../../../../components/Inputs';
-import { EmptyDatabaseMessage } from '../../componentes/EmptyDatabaseMessage';
+import { EmptyDatabaseMessage, LoadingState } from '../../componentes';
 import { useProductsCheck } from '../../hooks/useProductsCheck';
 
 const HistoryManagement: React.FC = () => {
@@ -51,7 +51,7 @@ const HistoryManagement: React.FC = () => {
             const [historyResponse, productsResponse] = await Promise.all([
                 historyService.getHistory({
                     page: 1,
-                    pageSize: 1000, // Get all entries
+                    pageSize: 50, // Reduzido para diminuir carga no servidor
                 }),
                 productService.getAll({ pageSize: 100, includeInactive: true })
             ]);
@@ -381,14 +381,7 @@ const HistoryManagement: React.FC = () => {
     ];
 
     if (isChecking || loading) {
-        return (
-            <div className="flex justify-center items-center py-12">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
-                    <p className="text-gray-600">Carregando histórico...</p>
-                </div>
-            </div>
-        );
+        return <LoadingState message="Carregando histórico..." />;
     }
 
     if (hasProducts === false) {

@@ -5,13 +5,12 @@ import NavButton from "./NavButton.tsx";
 import { Link } from "react-router";
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import HomeIcon from '@mui/icons-material/Home';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { useAuth } from "../../auth/AuthContext.tsx";
 import { AuthRequiredModal } from "../../pages/Lojinha/componentes";
 import { useCart } from "../../pages/Lojinha/hooks/useCart.tsx";
-import homeIcon from '../../assets/lojinha-icons/Home.png';
-import carrinhoIcon from '../../assets/lojinha-icons/carrinho.png';
-import gameIcon from '../../assets/lojinha-icons/game.png';
-import loginIcon from '../../assets/lojinha-icons/Login.png';
 
 
 const NavBar = () => {
@@ -78,14 +77,20 @@ const NavBar = () => {
                             className="p-1 sm:p-2 hover:bg-green-600 rounded-md transition-all duration-200 group"
                             title="Página inicial da lojinha"
                         >
-                            <img src={homeIcon} alt="Home" className="w-7 h-7 sm:w-8 sm:h-8 transition-transform duration-200 group-hover:scale-110" />
+                            <HomeIcon 
+                                className="text-white transition-transform duration-200 group-hover:scale-110" 
+                                sx={{ width: { xs: '28px', sm: '32px' }, height: { xs: '28px', sm: '32px' } }}
+                            />
                         </Link>
                         <Link 
                             to="/lojinha/carrinho" 
                             className="p-1 sm:p-2 hover:bg-green-600 rounded-md transition-all duration-200 group relative"
                             title="Ver carrinho"
                         >
-                            <img src={carrinhoIcon} alt="Carrinho" className="w-7 h-7 sm:w-8 sm:h-8 transition-transform duration-200 group-hover:scale-110" />
+                            <ShoppingCartIcon 
+                                className="text-white transition-transform duration-200 group-hover:scale-110" 
+                                sx={{ width: { xs: '28px', sm: '32px' }, height: { xs: '28px', sm: '32px' } }}
+                            />
                             {cartItemCount > 0 && (
                                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 font-bold shadow-md">
                                     {cartItemCount > 99 ? '99+' : cartItemCount}
@@ -97,7 +102,10 @@ const NavBar = () => {
                             className="p-1 sm:p-2 hover:bg-green-600 rounded-md transition-all duration-200 group"
                             title="Pódio dos maiores compradores"
                         >
-                            <img src={gameIcon} alt="Pódio" className="w-7 h-7 sm:w-8 sm:h-8 transition-transform duration-200 group-hover:scale-110" />
+                            <EmojiEventsIcon 
+                                className="text-yellow-300 transition-transform duration-200 group-hover:scale-110" 
+                                sx={{ width: { xs: '28px', sm: '32px' }, height: { xs: '28px', sm: '32px' } }}
+                            />
                         </Link>
                     </div>
                 )}
@@ -120,10 +128,9 @@ const NavBar = () => {
                     <Link 
                         to="/login" 
                         onClick={toggleMenu} 
-                        className="p-1 sm:p-2 hover:bg-green-600 rounded-md transition-all duration-200 group"
-                        title="Fazer login"
+                        className="bg-black text-white px-4 py-2 font-bold rounded-md ease-in-out text-lg duration-500 hover:bg-white hover:text-green-700"
                     >
-                        <img src={loginIcon} alt="Login" className="w-7 h-7 sm:w-8 sm:h-8 transition-transform duration-200 group-hover:scale-110" />
+                        Login
                     </Link>
                 )}
             </div>
