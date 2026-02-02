@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { GenericButton, LoadingState } from '../componentes';
-import Table, { ITableColumn } from '../../../components/Inputs/Table/Table';
+import { Table, ITableColumn } from '../../../components/Inputs';
 import lojinhaService from '../../../services/lojinha.service';
 import inicio1 from '../../../assets/lojinha-icons/perrys/inicio1.png';
 import inicio2 from '../../../assets/lojinha-icons/perrys/inicio2.png';

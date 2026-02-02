@@ -1,10 +1,8 @@
 // Export all input components
 export { default as TextInput } from './TextInput';
-export { default as TextareaInput } from './TextareaInput';
 export { default as NumberInput } from './NumberInput';
 export { default as EmailInput } from './EmailInput';
 export { default as DateInput } from './DateInput';
-export { default as SearchInput } from './SearchInput';
 export { default as FileUploadInput } from './FileUploadInput';
 export { default as ConfirmModal } from './ConfirmModal';
 export { default as DropDown } from './DropDown';

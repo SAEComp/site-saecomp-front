@@ -4,7 +4,6 @@ import { Product } from '../types';
 import erroIcon from '../../../assets/lojinha-icons/perrys/ERRO.png';
 import TextInput from '../../../components/Inputs/TextInput';
 import NumberInput from '../../../components/Inputs/NumberInput';
-import TextareaInput from '../../../components/Inputs/TextareaInput';
 import DropDown from '../../../components/Inputs/DropDown';
 import FileUploadInput from '../../../components/Inputs/FileUploadInput';
 
@@ -288,14 +287,13 @@ const ProductModal: React.FC<ProductModalProps> = ({
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                 Descrição *
                             </label>
-                            <TextareaInput
+                            <TextInput
                                 label="Descreva o produto..."
                                 value={formData.description}
                                 onChange={(value) => setFormData(prev => ({ ...prev, description: value }))}
+                                multiline
                                 rows={3}
-                                maxLength={500}
-                                required
-                                className="border border-gray-300"
+                                className="border border-gray-300 focus:ring-2 focus:ring-[#03B04B] focus:border-transparent"
                             />
                         </div>
 
