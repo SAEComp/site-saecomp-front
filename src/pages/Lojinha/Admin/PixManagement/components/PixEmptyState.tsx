@@ -1,4 +1,6 @@
 import React from 'react';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import AddIcon from '@mui/icons-material/Add';
 
 interface PixEmptyStateProps {
     onAddPix: () => void;

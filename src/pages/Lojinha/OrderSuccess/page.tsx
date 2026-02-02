@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router';
-import axios from 'axios';
+import { getPendingPayments } from '../services/api';
 import { GenericButton } from '../componentes';
 import { SuccessIcon, OrderDetails, NextSteps } from './components';
 
@@ -30,23 +30,18 @@ const OrderSuccess = () => {
 
   const fetchOrderPoints = async (orderIdParam: string) => {
     try {
-      const token = localStorage.getItem('token') || localStorage.getItem('authToken') || sessionStorage.getItem('token');
-      const API_BASE_URL = import.meta.env.VITE_LOJINHA_API_URL || 'http://localhost:3000/api/lojinha';
+      // Usar o service ao invés de chamada direta
+      const response = await getPendingPayments();
 
-      // Endpoint correto: pending-payment retorna informações do pedido
-      const response = await axios.get(`${API_BASE_URL}/pending-payment`, {
-        headers: {
-          'Authorization': token ? `Bearer ${token}` : ''
+      if (response.success && response.data) {
+        // Buscar o pedido específico
+        const order = response.data.find((o: any) => String(o.id) === String(orderIdParam));
+
+        if (order?.totalValue) {
+          // Calcular pontos: R$ 1,00 = 100 pontos
+          const points = Math.floor(order.totalValue * 100);
+          setEarnedPoints(points);
         }
-      });
-
-      // Buscar o pedido específico
-      const order = response.data?.find((o: any) => String(o.id) === String(orderIdParam));
-
-      if (order?.totalValue) {
-        // Calcular pontos: R$ 1,00 = 100 pontos
-        const points = Math.floor(order.totalValue * 100);
-        setEarnedPoints(points);
       }
     } catch (error) {
       console.error('Erro ao buscar informações do pedido:', error);

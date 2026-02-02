@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import { pixService } from '../services/api';
 import { PixSettings } from '../types';
 import erroIcon from '../../../assets/lojinha-icons/perrys/ERRO.png';
