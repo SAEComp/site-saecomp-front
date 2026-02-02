@@ -8,7 +8,6 @@ import concluirIcon from '../../../assets/lojinha-icons/perrys/concluir.png';
 import ConfirmModal from '../../../components/Inputs/ConfirmModal';
 import { OrderSummary, OrderInformation, PaymentExpired, PixPayment } from './components';
 import { usePaymentListener, usePaymentTimer } from './hooks';
-import { LoadingState } from '../componentes';
 import { getFirstAndLastName, calculateTimeLeft } from './utils';
 
 const PAYMENT_TIMEOUT = 30 * 60; // 30 minutos em segundos

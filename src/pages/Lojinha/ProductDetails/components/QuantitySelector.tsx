@@ -18,9 +18,8 @@ export const QuantitySelector: React.FC<QuantitySelectorProps> = ({
             Quantidade:
         </label>
         <NumberInput
-            label="Quantidade"
-            value={quantity}
-            onChange={onQuantityChange}
+            defaultValue={quantity}
+            onChange={(value) => value !== null && onQuantityChange(value)}
             min={1}
             max={maxQuantity}
             mobile={true}

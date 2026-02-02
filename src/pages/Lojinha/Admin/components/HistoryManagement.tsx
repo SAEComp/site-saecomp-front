@@ -2,10 +2,8 @@ import { useState, useEffect } from 'react';
 import { historyService, productService } from '../../services/api';
 import { HistoryEntry, Product } from '../../types';
 import { getProductImageUrl } from '../../utils/imageUtils';
-import erroIcon from '../../../../assets/lojinha-icons/perrys/ERRO.png';
-import tristeIcon from '../../../../assets/lojinha-icons/perrys/triste.png';
 import { Table, ITableColumn } from '../../../../components/Inputs';
-import { EmptyDatabaseMessage, LoadingState } from '../../componentes';
+import { EmptyDatabaseMessage } from '../../componentes/EmptyDatabaseMessage';
 import { useProductsCheck } from '../../hooks/useProductsCheck';
 
 const HistoryManagement: React.FC = () => {
@@ -51,7 +49,7 @@ const HistoryManagement: React.FC = () => {
             const [historyResponse, productsResponse] = await Promise.all([
                 historyService.getHistory({
                     page: 1,
-                    pageSize: 50, // Reduzido para diminuir carga no servidor
+                    pageSize: 1000, // Get all entries
                 }),
                 productService.getAll({ pageSize: 100, includeInactive: true })
             ]);
@@ -118,7 +116,7 @@ const HistoryManagement: React.FC = () => {
         }
     };
 
-    const formatDate = (dateString: string) => {
+    const formatDate = (dateString: string | Date) => {
         return new Date(dateString).toLocaleString('pt-BR');
     };
 
@@ -381,7 +379,14 @@ const HistoryManagement: React.FC = () => {
     ];
 
     if (isChecking || loading) {
-        return <LoadingState message="Carregando histórico..." />;
+        return (
+            <div className="flex justify-center items-center py-12">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+                    <p className="text-gray-600">Carregando histórico...</p>
+                </div>
+            </div>
+        );
     }
 
     if (hasProducts === false) {
@@ -392,11 +397,7 @@ const HistoryManagement: React.FC = () => {
         return (
             <div className="flex justify-center items-center min-h-[400px]">
                 <div className="text-center max-w-md">
-                    <img 
-                        src={erroIcon} 
-                        alt="Erro" 
-                        className="w-24 h-24 mx-auto mb-6 object-contain"
-                    />
+                    <div className="text-6xl mb-6">❌</div>
                     <h3 className="text-xl font-semibold text-gray-900 mb-2">
                         Erro ao carregar histórico
                     </h3>
@@ -494,7 +495,6 @@ const HistoryManagement: React.FC = () => {
                     data={paginatedHistory}
                     loading={loading}
                     emptyText="Nenhuma entrada de estoque encontrada"
-                    emptyIcon={tristeIcon}
                     mobileView={mobileView}
                 />
             )}

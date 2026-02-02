@@ -10,7 +10,7 @@ interface UsePaymentListenerProps {
 }
 
 export const usePaymentListener = ({
-    paymentId,
+    paymentId: _paymentId,
     totalAmount,
     onApproved,
     onCancelled,

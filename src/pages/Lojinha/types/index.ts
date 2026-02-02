@@ -144,27 +144,18 @@ export interface Statistics {
   stockProducts: number;
   stockItems: number;
   soldItems: number;
+  maxPotentialRevenue?: number; // Valor total do estoque
   productsWithMoreSoldQuantity: ProductStatistics[];
   productsWithMoreRevenueValue: ProductStatistics[];
 }
 
 export interface HistoryEntry {
   id: number;
-  action: 'CREATE' | 'UPDATE' | 'DELETE';
-  entityType: 'PRODUCT';
-  entityId: string;
-  entityName: string;
-  changes: {
-    field: string;
-    oldValue?: any;
-    newValue?: any;
-  }[];
-  timestamp: string;
-  details?: {
-    stockChange?: number;
-    previousStock?: number;
-    newStock?: number;
-  };
+  productId: number;
+  productName: string;
+  value: number;
+  quantity: number;
+  date: string | Date;
 }
 
 export interface HistoryStats {

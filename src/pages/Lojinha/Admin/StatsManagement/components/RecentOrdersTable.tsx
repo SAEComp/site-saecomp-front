@@ -1,9 +1,9 @@
 import React from 'react';
-import { Order } from '../../../types';
+import { AdminOrder } from '../../../types';
 import { Table, ITableColumn } from '../../../../../components/Inputs';
 
 interface RecentOrdersTableProps {
-    recentOrders: Order[];
+    recentOrders: AdminOrder[];
     formatCurrency: (value: number) => string;
     formatDate: (dateString: string) => string;
     getFirstAndLastName: (fullName: string) => string;
@@ -30,7 +30,7 @@ const RecentOrdersTable: React.FC<RecentOrdersTableProps> = ({
         }
     };
 
-    const recentOrdersColumns: ITableColumn<Order>[] = [
+    const recentOrdersColumns: ITableColumn<AdminOrder>[] = [
         {
             key: 'order',
             title: 'Pedido',
@@ -55,10 +55,10 @@ const RecentOrdersTable: React.FC<RecentOrdersTableProps> = ({
             render: (_, order) => (
                 <div>
                     <div className="text-sm text-gray-900">
-                        {order.items.length} item{order.items.length !== 1 ? 's' : ''}
+                        {(order.items || []).length} item{(order.items || []).length !== 1 ? 's' : ''}
                     </div>
                     <div className="text-xs text-gray-500 max-w-xs truncate">
-                        {order.items.map(item => `${item.quantity}x ${item.name}`).join(', ')}
+                        {(order.items || []).map((item: any) => `${item.quantity}x ${item.productName || item.name || ''}`).join(', ')}
                     </div>
                 </div>
             )
@@ -68,7 +68,7 @@ const RecentOrdersTable: React.FC<RecentOrdersTableProps> = ({
             title: 'Total',
             render: (_, order) => (
                 <span className="text-sm font-medium text-gray-900">
-                    {formatCurrency(order.totalAmount)}
+                    {formatCurrency(order.totalAmount || 0)}
                 </span>
             )
         },
@@ -89,7 +89,7 @@ const RecentOrdersTable: React.FC<RecentOrdersTableProps> = ({
             title: 'Data',
             render: (_, order) => (
                 <div className="text-sm text-gray-900">
-                    {formatDate(order.createdAt)}
+                    {formatDate(order.createdAt ? (typeof order.createdAt === 'string' ? order.createdAt : order.createdAt.toISOString()) : '')}
                 </div>
             )
         }
@@ -98,7 +98,7 @@ const RecentOrdersTable: React.FC<RecentOrdersTableProps> = ({
     return (
         <div>
             <h2 className="text-xl font-medium text-gray-900 mb-4">Pedidos Recentes</h2>
-            <Table<Order>
+            <Table<AdminOrder>
                 columns={recentOrdersColumns}
                 data={recentOrders}
                 emptyText="Nenhum pedido recente"
@@ -106,16 +106,16 @@ const RecentOrdersTable: React.FC<RecentOrdersTableProps> = ({
                 mobileView={(order) => (
                     <div className="p-4">
                         <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm font-mono text-gray-900">#{order._id.slice(-8)}</span>
+                            <span className="text-sm font-mono text-gray-900">#{(order._id || order.id || '').toString().slice(-8)}</span>
                             <span className="text-sm font-medium text-gray-900">
-                                {formatCurrency(order.totalAmount)}
+                                {formatCurrency(order.totalAmount || 0)}
                             </span>
                         </div>
                         <div className="text-sm text-gray-900 mb-1">
                             {getFirstAndLastName(order.customerName || '')}
                         </div>
                         <div className="text-xs text-gray-500">
-                            {formatDate(order.createdAt)}
+                            {formatDate(order.createdAt ? (typeof order.createdAt === 'string' ? order.createdAt : order.createdAt.toISOString()) : '')}
                         </div>
                     </div>
                 )}

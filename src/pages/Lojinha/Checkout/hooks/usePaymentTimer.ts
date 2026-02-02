@@ -6,7 +6,7 @@ interface UsePaymentTimerProps {
     onTimeout: () => void;
 }
 
-export const usePaymentTimer = ({ timeout, orderCreatedAt, onTimeout }: UsePaymentTimerProps) => {
+export const usePaymentTimer = ({ timeout, orderCreatedAt: _orderCreatedAt, onTimeout }: UsePaymentTimerProps) => {
     const [timeLeft, setTimeLeft] = useState<number | null>(null);
     const [isExpired, setIsExpired] = useState(false);
 

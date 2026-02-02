@@ -9,7 +9,7 @@ export const useProductsCheck = () => {
         try {
             setIsChecking(true);
             const response = await getProducts();
-            setHasProducts(response.data && response.data.length > 0);
+            setHasProducts(response.data ? response.data.length > 0 : false);
         } catch (error) {
             console.error('Erro ao verificar produtos:', error);
             setHasProducts(false);

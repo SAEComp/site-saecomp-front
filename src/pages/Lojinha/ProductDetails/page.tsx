@@ -28,7 +28,7 @@ const ProductDetails: React.FC = () => {
             }
 
             try {
-                const response = await productService.getById(id);
+                const response = await productService.getById(Number(id));
                 if (response.data) {
                     setProduct(response.data);
                 } else {

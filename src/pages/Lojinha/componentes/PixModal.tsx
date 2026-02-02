@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import { pixService } from '../services/api';
 import { PixSettings } from '../types';
 import erroIcon from '../../../assets/lojinha-icons/perrys/ERRO.png';
@@ -58,7 +57,7 @@ const PixModal: React.FC<PixModalProps> = ({
         setError(null);
 
         try {
-            if (pixSettings?._id) {
+            if (pixSettings?.id) {
                 // Atualizar configuração existente
                 await pixService.create(formData); // Backend não tem rota PUT, usa POST
             } else {

@@ -12,7 +12,6 @@ const Lojinha = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [selectedCategory, setSelectedCategory] = useState<'all' | 'sweet' | 'salty' | 'drink'>('all');
-    const [userPoints, setUserPoints] = useState<number | null>(null);
 
     const loadProducts = useCallback(async (category: 'all' | 'sweet' | 'salty' | 'drink') => {
         try {
@@ -49,11 +48,12 @@ const Lojinha = () => {
             const response = await punctuationService.getUserPoints();
             
             if (response.success && response.data) {
-                setUserPoints(response.data.userPunctuation || 0);
+                // setUserPoints(response.data.userPunctuation || 0); // TODO: Usar quando implementar display de pontos
+                console.log('Pontos do usuário:', response.data.userPunctuation);
             }
         } catch (err: any) {
             console.error('Erro ao carregar pontuação do usuário:', err);
-            setUserPoints(0);
+            // setUserPoints(0);
         }
     };
 
