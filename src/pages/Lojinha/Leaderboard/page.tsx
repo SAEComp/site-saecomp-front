@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { GenericButton } from '../componentes';
 import Table, { ITableColumn } from '../../../components/Inputs/Table/Table';
-import axios from 'axios';
+import lojinhaService from '../../../services/lojinha.service';
 import inicio1 from '../../../assets/lojinha-icons/perrys/inicio1.png';
 import inicio2 from '../../../assets/lojinha-icons/perrys/inicio2.png';
 import pedidos from '../../../assets/lojinha-icons/perrys/pedidos.png';
@@ -31,16 +31,11 @@ const Leaderboard = () => {
 
     const loadUserPoints = async () => {
         try {
-            const token = localStorage.getItem('token') || localStorage.getItem('authToken') || sessionStorage.getItem('token');
-            const API_BASE_URL = import.meta.env.VITE_LOJINHA_API_URL || 'http://localhost:3000/api/lojinha';
-
-            const response = await axios.get(`${API_BASE_URL}/punctuation`, {
-                headers: {
-                    'Authorization': token ? `Bearer ${token}` : ''
-                }
-            });
-            if (response.data) {
-                setUserPoints(response.data.userPunctuation ?? 0);
+            const response = await lojinhaService.getUserPunctuation();
+            console.log('Resposta da API /punctuation:', response.data);
+            
+            if (response.success && response.data) {
+                setUserPoints(response.data.userPunctuation || 0);
             }
         } catch (err: any) {
             console.error('Erro ao carregar pontuação do usuário:', err);
@@ -53,18 +48,10 @@ const Leaderboard = () => {
             setLoading(true);
             setError(null);
 
-            const token = localStorage.getItem('token') || localStorage.getItem('authToken') || sessionStorage.getItem('token');
-            const API_BASE_URL = import.meta.env.VITE_LOJINHA_API_URL || 'http://localhost:3000/api/lojinha';
+            const response = await lojinhaService.getLeaderboard(1, 10);
 
-            const response = await axios.get(`${API_BASE_URL}/punctuations`, {
-                params: { page: 1, pageSize: 10 },
-                headers: {
-                    'Authorization': token ? `Bearer ${token}` : ''
-                }
-            });
-
-            if (response.data?.punctuation) {
-                const sortedUsers = response.data.punctuation
+            if (response.success && response.data) {
+                const sortedUsers = response.data
                     .sort((a: LeaderboardUser, b: LeaderboardUser) => b.userPunctuation - a.userPunctuation);
                 
                 // Top 3 para o pódio
@@ -76,7 +63,7 @@ const Leaderboard = () => {
             }
         } catch (err: any) {
             console.error('Erro ao carregar ranking:', err);
-            setError(err.response?.data?.message || 'Erro ao carregar ranking');
+            setError(err?.message || 'Erro ao carregar ranking');
         } finally {
             setLoading(false);
         }

@@ -1,109 +1,84 @@
-import React from 'react';
-import { Link } from 'react-router';
-import concluirIcon from '../../../../assets/lojinha-icons/perrys/concluir.png';
-import timeoutIcon from '../../../../assets/lojinha-icons/perrys/timeout.png';
+import React, { useState } from 'react';
+import { formatTimeLeft } from '../utils';
 
-// Componente de pagamento PIX
 interface PixPaymentProps {
-    qrCodeData: string;
-    pixCopyPaste: string;
+    qrCodeData: string | null;
+    pixCopyPaste: string | null;
+    orderId: string | null;
+    totalAmount: number;
     timeLeft: number | null;
-    isExpired: boolean;
-    copied: boolean;
-    onCopyPix: () => void;
+    loading: boolean;
     onCancelOrder: () => void;
-    formatTimeLeft: (seconds: number) => string;
 }
 
-export const PixPayment: React.FC<PixPaymentProps> = ({ 
-    qrCodeData, 
-    pixCopyPaste, 
-    timeLeft, 
-    isExpired, 
-    copied, 
-    onCopyPix, 
-    onCancelOrder,
-    formatTimeLeft 
+const PixPayment: React.FC<PixPaymentProps> = ({
+    qrCodeData,
+    pixCopyPaste,
+    orderId,
+    totalAmount,
+    timeLeft,
+    loading,
+    onCancelOrder
 }) => {
-    if (isExpired) {
-        return (
-            <div className="text-center py-12">
-                <img 
-                    src={timeoutIcon} 
-                    alt="Tempo esgotado" 
-                    className="w-24 h-24 mx-auto mb-4 object-contain"
-                />
-                <h2 className="text-xl font-bold text-red-600 mb-2">Tempo Esgotado</h2>
-                <p className="text-gray-600 mb-6">O tempo para pagamento expirou. Tente novamente.</p>
-                <div className="space-y-3">
-                    <button
-                        onClick={onCancelOrder}
-                        className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-medium transition"
-                    >
-                        Tentar Novamente
-                    </button>
-                    <Link
-                        to="/lojinha"
-                        className="block text-gray-600 hover:text-gray-800"
-                    >
-                        Voltar à Lojinha
-                    </Link>
-                </div>
-            </div>
-        );
-    }
+    const [copied, setCopied] = useState(false);
+
+    const handleCopyPix = () => {
+        if (pixCopyPaste) {
+            navigator.clipboard.writeText(pixCopyPaste);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        }
+    };
 
     return (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <div className="text-center">
-                <img 
-                    src={concluirIcon}
-                    alt="PIX" 
-                    className="w-16 h-16 mx-auto mb-4 object-contain"
-                />
-                <h2 className="text-xl font-semibold text-gray-900 mb-2">Pague com PIX</h2>
-                <p className="text-gray-600 mb-4">Escaneie o QR Code ou copie o código PIX</p>
-                
-                {timeLeft !== null && (
-                    <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                        <p className="text-yellow-800 font-medium">
-                            Tempo restante: {formatTimeLeft(timeLeft)}
-                        </p>
-                    </div>
-                )}
-                
-                {/* QR Code Display */}
-                <div className="mb-6 flex justify-center">
-                    <div className="bg-white p-4 rounded-lg border-2 border-gray-200">
-                        <div 
-                            className="w-48 h-48 bg-gray-100 border border-gray-300 rounded flex items-center justify-center text-gray-500 text-sm"
-                            style={{
-                                backgroundImage: qrCodeData ? `url(data:image/png;base64,${qrCodeData})` : 'none',
-                                backgroundSize: 'contain',
-                                backgroundRepeat: 'no-repeat',
-                                backgroundPosition: 'center'
-                            }}
-                        >
-                            {!qrCodeData && 'QR Code será exibido aqui'}
+        <div className="bg-white rounded-lg shadow-lg p-6">
+            <div className="mb-6">
+                <h2 className="text-xl font-semibold text-gray-900">Pagamento PIX</h2>
+            </div>
+            
+            <p className="text-gray-600 mb-4">
+                Escaneie o QR Code ou copie o código PIX abaixo para realizar o pagamento:
+            </p>
+            
+            {timeLeft !== null && timeLeft > 0 && (
+                <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+                    <div className="flex items-center">
+                        <div className="text-yellow-800 text-sm">
+                            <strong>Atenção:</strong> Você tem <strong>{formatTimeLeft(timeLeft)}</strong> para completar o pagamento.
                         </div>
                     </div>
                 </div>
-                
-                {/* Copy PIX Code */}
-                <div className="mb-6">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Código PIX (Copiar e Colar)
-                    </label>
-                    <div className="flex space-x-2">
+            )}
+            
+            <div className="text-center mb-8">
+                {qrCodeData ? (
+                    <img 
+                        src={`data:image/gif;base64,${qrCodeData}`} 
+                        alt="QR Code PIX" 
+                        className="w-64 h-64 mx-auto border border-gray-300 rounded-lg object-contain"
+                    />
+                ) : (
+                    <div className="font-mono text-sm break-all bg-gray-100 p-6 rounded-lg border w-64 h-64 mx-auto flex items-center justify-center">
+                        <span className="text-gray-600 text-center">
+                            Gerando QR Code...
+                        </span>
+                    </div>
+                )}
+            </div>
+            
+            {pixCopyPaste && (
+                <div className="mb-8 max-w-2xl mx-auto px-4 sm:px-8">
+                    <div className="flex flex-col sm:flex-row border border-gray-300 rounded-lg overflow-hidden">
                         <input
                             type="text"
                             value={pixCopyPaste}
                             readOnly
-                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-sm font-mono"
+                            className="flex-1 px-4 py-3 text-sm font-mono bg-gray-50 border-0 focus:outline-none text-center sm:text-left"
+                            style={{ fontSize: '12px' }}
                         />
                         <button
-                            onClick={onCopyPix}
-                            className={`px-4 py-2 rounded-lg font-medium transition ${
+                            onClick={handleCopyPix}
+                            className={`px-6 py-3 font-medium transition-colors ${
                                 copied 
                                     ? 'bg-green-600 text-white' 
                                     : 'bg-gray-600 hover:bg-gray-700 text-white'
@@ -113,19 +88,43 @@ export const PixPayment: React.FC<PixPaymentProps> = ({
                         </button>
                     </div>
                 </div>
-                
-                <div className="space-y-3">
-                    <p className="text-sm text-gray-600">
-                        Após o pagamento, você será redirecionado automaticamente
-                    </p>
-                    <button
-                        onClick={onCancelOrder}
-                        className="text-red-600 hover:text-red-800 font-medium text-sm"
-                    >
-                        Cancelar Pedido
-                    </button>
+            )}
+            
+            <div className="bg-gray-50 rounded-lg p-6 mb-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Detalhes do Pedido</h3>
+                <div className="grid grid-cols-2 gap-4">
+                    <div>
+                        <span className="text-sm font-medium text-gray-700">Valor:</span>
+                        <p className="text-lg font-bold text-green-600">R$ {totalAmount.toFixed(2)}</p>
+                    </div>
+                    <div>
+                        <span className="text-sm font-medium text-gray-700">Pedido:</span>
+                        <p className="text-lg font-bold text-gray-900">#{orderId}</p>
+                    </div>
                 </div>
+            </div>
+            
+            <div className="flex justify-center">
+                <button
+                    onClick={onCancelOrder}
+                    disabled={loading}
+                    className="w-full sm:w-auto px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                    {loading ? (
+                        <>
+                            <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Cancelando...
+                        </>
+                    ) : (
+                        "Cancelar Pedido"
+                    )}
+                </button>
             </div>
         </div>
     );
 };
+
+export default PixPayment;

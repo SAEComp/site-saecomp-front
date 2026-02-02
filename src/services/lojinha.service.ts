@@ -376,6 +376,28 @@ class LojinhaService {
     }
 
     // ======================
+    // PONTUAÇÃO E LEADERBOARD
+    // ======================
+
+    async getUserPunctuation(): Promise<ApiResponse<{ userPunctuation: number }>> {
+        const response = await lojinhaProvider.get('/punctuation');
+        return {
+            success: true,
+            data: response.data
+        };
+    }
+
+    async getLeaderboard(page: number = 1, pageSize: number = 10): Promise<ApiResponse<any[]>> {
+        const response = await lojinhaProvider.get('/punctuations', {
+            params: { page, pageSize }
+        });
+        return {
+            success: true,
+            data: response.data.punctuation || []
+        };
+    }
+
+    // ======================
     // HEALTH CHECK
     // ======================
 

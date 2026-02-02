@@ -44,6 +44,27 @@ export interface Order {
   item: OrderItem[];
 }
 
+// Tipo específico para pedidos do admin (vem do backend)
+export interface AdminOrder {
+  _id?: string;
+  id: number;
+  customerName?: string;
+  items?: Array<{
+    name?: string;
+    productName?: string;
+    quantity?: number;
+    value?: number;
+    price?: number;
+    subtotal?: number;
+  }>;
+  totalAmount?: number;
+  status: 'cart' | 'pendingPayment' | 'canceled' | 'finishedPayment';
+  paymentStatus?: string;
+  createdAt?: string | Date;
+  updatedAt?: string | Date;
+  confirmedAt?: string | Date;
+}
+
 export type PaymentMethod = 'pix';
 
 export interface Payment {

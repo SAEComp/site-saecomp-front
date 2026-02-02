@@ -1,12 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { 
-    StatsManagement, 
-    ProductsManagement, 
-    OrdersManagement, 
-    HistoryManagement, 
-    PixManagement 
-} from './components';
+import StatsManagement from './StatsManagement';
+import ProductsManagement from './ProductsManagement';
+import OrdersManagement from './OrdersManagement';
+import HistoryManagement from './HistoryManagement';
+import PixManagement from './PixManagement';
 import perryGerente from '../../../assets/lojinha-icons/perrys/gerente.png';
 
 type TabType = 'stats' | 'products' | 'orders' | 'pix' | 'history';
