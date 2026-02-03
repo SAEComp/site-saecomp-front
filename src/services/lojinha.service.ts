@@ -177,6 +177,17 @@ class LojinhaService {
         } catch (error: unknown) {
             if (error && typeof error === 'object' && 'response' in error) {
                 const axiosError = error as { response?: { status?: number; data?: any } };
+
+                
+                // Erro de configuração PIX (500)
+                if (axiosError.response?.status === 500) {
+                    const errorMessage = axiosError.response?.data?.message || '';
+                    if (errorMessage.includes('configuração') || errorMessage.includes('PIX')) {
+                        throw new Error('Erro na configuração da chave PIX. Entre em contato com o administrador.');
+                    }
+                }
+                
+                // Erro 404
                 if (axiosError.response?.status === 404) {
                     // Verifica se o erro é sobre chave PIX não cadastrada
                     const errorMessage = axiosError.response?.data?.message || '';
