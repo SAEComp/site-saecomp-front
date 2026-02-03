@@ -176,13 +176,19 @@ class LojinhaService {
             };
         } catch (error: unknown) {
             if (error && typeof error === 'object' && 'response' in error) {
-                const axiosError = error as { response?: { status?: number } };
+                const axiosError = error as { response?: { status?: number; data?: any } };
                 if (axiosError.response?.status === 404) {
+                    // Verifica se o erro é sobre chave PIX não cadastrada
+                    const errorMessage = axiosError.response?.data?.message || '';
+                    if (errorMessage.includes('chave pix') || errorMessage.includes('Nenhuma chave pix')) {
+                        throw new Error('Nenhuma chave PIX configurada. Entre em contato com o administrador.');
+                    }
                     throw new Error('Pedido não encontrado. Adicione itens ao carrinho primeiro.');
                 }
             }
             throw error;
         }
+
     }
 
     async cancelPayment(buyOrderId: number): Promise<ApiResponse<{ message: string }>> {
