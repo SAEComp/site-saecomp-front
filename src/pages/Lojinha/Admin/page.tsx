@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
+import { useAuth } from '../../../auth/AuthContext';
 import StatsManagement from './StatsManagement';
 import ProductsManagement from './ProductsManagement';
 import OrdersManagement from './OrdersManagement';
@@ -10,8 +11,27 @@ import perryGerente from '../../../assets/lojinha-icons/perrys/gerente.png';
 type TabType = 'stats' | 'products' | 'orders' | 'pix' | 'history';
 
 const LojinhaGerenciamento: React.FC = () => {
-    const [activeTab, setActiveTab] = useState<TabType>('stats');
+    const { user } = useAuth();
+    const [activeTab, setActiveTab] = useState<TabType | null>(null);
     const navigate = useNavigate();
+
+    // Verifica permissões
+    const hasStatsPermission = user?.permissions?.includes('lojinha:stats') || false;
+    const hasProductsPermission = user?.permissions?.includes('lojinha:product-management') || false;
+    const hasOrdersPermission = user?.permissions?.includes('lojinha:orders-log') || false;
+    const hasPixPermission = user?.permissions?.includes('lojinha:pix-key-management') || false;
+    const hasHistoryPermission = user?.permissions?.includes('lojinha:entries-log') || false;
+
+    // Define a aba inicial com base nas permissões
+    useEffect(() => {
+        if (!activeTab) {
+            if (hasStatsPermission) setActiveTab('stats');
+            else if (hasProductsPermission) setActiveTab('products');
+            else if (hasOrdersPermission) setActiveTab('orders');
+            else if (hasPixPermission) setActiveTab('pix');
+            else if (hasHistoryPermission) setActiveTab('history');
+        }
+    }, [activeTab, hasStatsPermission, hasProductsPermission, hasOrdersPermission, hasPixPermission, hasHistoryPermission]);
 
     console.log('LojinhaGerenciamento renderizado, activeTab:', activeTab);
 
@@ -85,56 +105,66 @@ const LojinhaGerenciamento: React.FC = () => {
             <div className="bg-white border-b">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <nav className="flex space-x-8 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-                        <button
-                            onClick={() => setActiveTab('stats')}
-                            className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
-                                activeTab === 'stats'
-                                    ? 'border-green-500 text-green-600'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700'
-                            }`}
-                        >
-                            Estatísticas
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('products')}
-                            className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
-                                activeTab === 'products'
-                                    ? 'border-green-500 text-green-600'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700'
-                            }`}
-                        >
-                            Produtos
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('orders')}
-                            className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
-                                activeTab === 'orders'
-                                    ? 'border-green-500 text-green-600'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700'
-                            }`}
-                        >
-                            Pedidos
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('pix')}
-                            className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
-                                activeTab === 'pix'
-                                    ? 'border-green-500 text-green-600'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700'
-                            }`}
-                        >
-                            PIX
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('history')}
-                            className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
-                                activeTab === 'history'
-                                    ? 'border-green-500 text-green-600'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700'
-                            }`}
-                        >
-                            Histórico
-                        </button>
+                        {hasStatsPermission && (
+                            <button
+                                onClick={() => setActiveTab('stats')}
+                                className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
+                                    activeTab === 'stats'
+                                        ? 'border-green-500 text-green-600'
+                                        : 'border-transparent text-gray-500 hover:text-gray-700'
+                                }`}
+                            >
+                                Estatísticas
+                            </button>
+                        )}
+                        {hasProductsPermission && (
+                            <button
+                                onClick={() => setActiveTab('products')}
+                                className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
+                                    activeTab === 'products'
+                                        ? 'border-green-500 text-green-600'
+                                        : 'border-transparent text-gray-500 hover:text-gray-700'
+                                }`}
+                            >
+                                Produtos
+                            </button>
+                        )}
+                        {hasOrdersPermission && (
+                            <button
+                                onClick={() => setActiveTab('orders')}
+                                className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
+                                    activeTab === 'orders'
+                                        ? 'border-green-500 text-green-600'
+                                        : 'border-transparent text-gray-500 hover:text-gray-700'
+                                }`}
+                            >
+                                Pedidos
+                            </button>
+                        )}
+                        {hasPixPermission && (
+                            <button
+                                onClick={() => setActiveTab('pix')}
+                                className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
+                                    activeTab === 'pix'
+                                        ? 'border-green-500 text-green-600'
+                                        : 'border-transparent text-gray-500 hover:text-gray-700'
+                                }`}
+                            >
+                                PIX
+                            </button>
+                        )}
+                        {hasHistoryPermission && (
+                            <button
+                                onClick={() => setActiveTab('history')}
+                                className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
+                                    activeTab === 'history'
+                                        ? 'border-green-500 text-green-600'
+                                        : 'border-transparent text-gray-500 hover:text-gray-700'
+                                }`}
+                            >
+                                Histórico
+                            </button>
+                        )}
                     </nav>
                 </div>
             </div>
