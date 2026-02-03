@@ -3,6 +3,14 @@ import Enfases from "./pages/Enfases";
 import Manual from "./pages/Manual-Bixo";
 import SAEcomp from "./pages/SAEComp";
 import Login from "./pages/Login";
+import LojinhaLayout from "./pages/Lojinha/LojinhaLayout";
+import OrderSuccess from "./pages/Lojinha/OrderSuccess/page";
+import Checkout from "./pages/Lojinha/Checkout/page";
+import ProductDetails from "./pages/Lojinha/ProductDetails/page";
+import LojinhaGerenciamento from "./pages/Lojinha/Admin/page";
+import Lojinha from "./pages/Lojinha/Home/page";
+import CartPage from "./pages/Lojinha/Cart/page";
+import Leaderboard from "./pages/Lojinha/Leaderboard/page";
 import TeacherFeedback from "./pages/TeacherFeedback";
 import TeacherFeedbackResults from "./pages/TeacherFeedbackResults";
 import LayoutWrapper from "./components/Layout/LayoutWrapper";
@@ -41,6 +49,49 @@ const routes = createBrowserRouter([
             {
                 path: "manual",
                 element: <Manual />,
+            },
+            {
+                path: "lojinha",
+                element: <RequireAuth />,
+                children: [
+                    {
+                        element: <LojinhaLayout />,
+                        children: [
+                            {
+                                index: true,
+                                element: <Lojinha />,
+                            },
+                            {
+                                path: "loja",
+                                element: <Lojinha />,
+                            },
+                            {
+                                path: "produto/:id",
+                                element: <ProductDetails />,
+                            },
+                            {
+                                path: "carrinho",
+                                element: <CartPage />,
+                            },
+                            {
+                                path: "checkout",
+                                element: <Checkout />,
+                            },
+                            {
+                                path: "sucesso/:orderId",
+                                element: <OrderSuccess />,
+                            },
+                            {
+                                path: "podio",
+                                element: <Leaderboard />,
+                            },
+                            {
+                                path: "admin",
+                                element: <LojinhaGerenciamento />,
+                            },
+                        ],
+                    },
+                ],
             },
             {
                 path: "login",

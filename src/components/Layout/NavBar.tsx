@@ -1,64 +1,157 @@
 import { useState } from "react";
 import logo from '../../assets/svg/logo.svg';
-import { useNavigate } from "react-router";
+import { useNavigate, useLocation } from "react-router";
 import NavButton from "./NavButton.tsx";
 import { Link } from "react-router";
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import HomeIcon from '@mui/icons-material/Home';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { useAuth } from "../../auth/AuthContext.tsx";
+import { AuthRequiredModal } from "../../pages/Lojinha/componentes";
+import { useCart } from "../../pages/Lojinha/hooks/useCart.tsx";
 
 
 const NavBar = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const { user, isAuthenticated } = useAuth();
+    const { getTotalItems } = useCart();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-
+    const [showLoginModal, setShowLoginModal] = useState(false);
+    
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+    
+    // Verifica se estamos na página da lojinha ou suas sub-rotas
+    const isLojinhaPage = location.pathname.startsWith('/lojinha');
+    
+    // Obtém a quantidade de itens no carrinho
+    const cartItemCount = getTotalItems();
+    
+    // Função para lidar com clique na lojinha
+    const handleLojinhaClick = (e: React.MouseEvent) => {
+        if (!isAuthenticated) {
+            e.preventDefault();
+            setShowLoginModal(true);
+            toggleMenu();
+        } else {
+            toggleMenu();
+        }
+    };
+    
+    // Função para redirecionar para login
+    const handleGoToLogin = () => {
+        setShowLoginModal(false);
+        navigate('/login');
+    };
 
     return (
-        <div className="h-[100px] w-screen bg-[#03B04B] flex items-center justify-between z-10 px-[5%] sticky top-0">
-            <Link to="/" className="h-[40%] mr-5">
+        <div className="h-[100px] w-screen bg-[#03B04B] flex items-center justify-between z-10 px-[3%] sm:px-[5%] sticky top-0">
+            <Link to="/" className={`${isLojinhaPage ? 'h-[30%] sm:h-[40%]' : 'h-[40%]'} mr-2 sm:mr-5`}>
                 <img src={logo} alt="SAEComp" className="h-full cursor-pointer" />
             </Link>
 
             <div
-                className={`flex xl:relative xl:translate-x-0 xl:flex-row xl:shadow-none xl:rounded-none xl:p-0 gap-8 items-center fixed top-0 right-0 flex-col bg-[#03B04B] pt-20 pb-7 px-4 rounded-xl z-10 shadow ease-in-out transition-transform duration-300 ${isMenuOpen ? "translate-x-0" : "translate-x-full"}`}
+                className={`flex xl:relative xl:translate-x-0 xl:flex-row xl:shadow-none xl:rounded-none xl:p-0 ${isLojinhaPage ? 'gap-4 sm:gap-4' : 'gap-8'} items-center ${isLojinhaPage ? 'xl:flex' : 'fixed top-0 right-0 flex-col bg-[#03B04B] pt-20 pb-7 px-4 rounded-xl z-10 shadow ease-in-out transition-transform duration-300'} ${!isLojinhaPage && isMenuOpen ? "translate-x-0" : !isLojinhaPage ? "translate-x-full" : ""}`}
             >
-                {user?.permissions?.includes('users:edit') && (
-                    <NavButton navigateTo="/admin/usuarios" onClick={toggleMenu}>Admin</NavButton>
+                {!isLojinhaPage && (
+                    <>
+                        {user?.permissions?.includes('users:edit') && (
+                            <NavButton navigateTo="/admin/usuarios" onClick={toggleMenu}>Admin</NavButton>
+                        )}
+                        
+                        <NavButton navigateTo="/saecomp" onClick={toggleMenu}>A SAEComp</NavButton>
+                        <NavButton navigateTo="/lojinha" onClick={handleLojinhaClick}>Lojinha</NavButton>
+                        <NavButton navigateTo="/manual" onClick={toggleMenu}>Manual</NavButton>
+                        <NavButton navigateTo="/avaliacoes" onClick={toggleMenu}>Avaliação de Professores</NavButton>
+                        <NavButton navigateTo="/enfases" onClick={toggleMenu}>Ênfases</NavButton>
+                    </>
                 )}
-                <NavButton navigateTo="/saecomp" onClick={toggleMenu}>A SAEComp</NavButton>
-                <NavButton navigateTo="/manual" onClick={toggleMenu}>Manual</NavButton>
-                <NavButton navigateTo="/avaliacoes" onClick={toggleMenu}>Avaliação de Professores</NavButton>
-                <NavButton navigateTo="/enfases" onClick={toggleMenu}>Ênfases</NavButton>
 
+                {/* Ícones da lojinha quando estamos na lojinha */}
+                {isLojinhaPage && (
+                    <div className="flex items-center gap-2 sm:gap-3">
+                        <Link 
+                            to="/lojinha" 
+                            className="p-1 sm:p-2 hover:bg-green-600 rounded-md transition-all duration-200 group"
+                            title="Página inicial da lojinha"
+                        >
+                            <HomeIcon 
+                                className="text-white transition-transform duration-200 group-hover:scale-110" 
+                                sx={{ width: { xs: '28px', sm: '32px' }, height: { xs: '28px', sm: '32px' } }}
+                            />
+                        </Link>
+                        <Link 
+                            to="/lojinha/carrinho" 
+                            className="p-1 sm:p-2 hover:bg-green-600 rounded-md transition-all duration-200 group relative"
+                            title="Ver carrinho"
+                        >
+                            <ShoppingCartIcon 
+                                className="text-white transition-transform duration-200 group-hover:scale-110" 
+                                sx={{ width: { xs: '28px', sm: '32px' }, height: { xs: '28px', sm: '32px' } }}
+                            />
+                            {cartItemCount > 0 && (
+                                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 font-bold shadow-md">
+                                    {cartItemCount > 99 ? '99+' : cartItemCount}
+                                </span>
+                            )}
+                        </Link>
+                        <Link 
+                            to="/lojinha/podio" 
+                            className="p-1 sm:p-2 hover:bg-green-600 rounded-md transition-all duration-200 group"
+                            title="Pódio dos maiores compradores"
+                        >
+                            <EmojiEventsIcon 
+                                className="text-yellow-300 transition-transform duration-200 group-hover:scale-110" 
+                                sx={{ width: { xs: '28px', sm: '32px' }, height: { xs: '28px', sm: '32px' } }}
+                            />
+                        </Link>
+                    </div>
+                )}
+        
                 {isAuthenticated ? (
-                    <div className="flex items-center space-x-2 cursor-pointer" onClick={() => {navigate('/login'); toggleMenu()}}>
+                    <Link 
+                        to="/login" 
+                        className="flex items-center space-x-2 cursor-pointer hover:opacity-80 transition-opacity"
+                        onClick={toggleMenu}
+                    >
                         <img
                             src={user?.picture}
                             alt="user"
-                            className="w-8 h-8 rounded-full border"
+                            className={`${isLojinhaPage ? 'w-7 h-7 sm:w-8 sm:h-8' : 'w-8 h-8'} rounded-full border border-white`}
                         />
-                        <span className="text-sm text-white font-bold">{user?.name}</span>
-                    </div>
+                        <span className={`text-sm text-white font-bold ${isLojinhaPage ? 'hidden sm:inline' : ''}`}>{user?.name}</span>
+                    </Link>
 
                 ) : (
-                    <Link to="/login" onClick={toggleMenu} className="bg-black text-white px-4 py-2 font-bold rounded-md ease-in-out text-lg duration-500 hover:bg-white hover:text-green-700">
+                    <Link 
+                        to="/login" 
+                        onClick={toggleMenu} 
+                        className="bg-black text-white px-4 py-2 font-bold rounded-md ease-in-out text-lg duration-500 hover:bg-white hover:text-green-700"
+                    >
                         Login
                     </Link>
                 )}
             </div>
 
-            <div className="xl:hidden cursor-pointer z-10 text-white" onClick={toggleMenu}>
-                {
-                    isMenuOpen ? (
-                        <CloseIcon />
-                    ) : (
-                        <MenuIcon />
-                    )
-                }
-            </div>
-        </div>
+            {!isLojinhaPage && (
+                <div className="xl:hidden cursor-pointer z-10 text-white" onClick={toggleMenu}>
+                    {
+                        isMenuOpen ? (
+                            <CloseIcon />
+                        ) : (
+                            <MenuIcon />
+                        )
+                    }
+                </div>
+            )}            
+            {/* Modal de aviso de login */}
+            <AuthRequiredModal
+                isOpen={showLoginModal}
+                onConfirm={handleGoToLogin}
+                onCancel={() => setShowLoginModal(false)}
+            />        </div>
     );
 };
 

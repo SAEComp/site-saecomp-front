@@ -1,0 +1,1 @@
+export { useProductsCheck } from './useProductsCheck';

@@ -4,7 +4,7 @@ import { useLocation } from "react-router";
 
 interface NavButtonProps {
     navigateTo: string;
-    onClick?: () => void;
+    onClick?: (e: React.MouseEvent) => void;
     children: ReactNode;
 }
 

@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [tempCredential, setTempCredential] = useState<google.accounts.id.CredentialResponse | undefined>(undefined);
 
     const logout = async () => {
-        const resp = await authService.logout();
+        await authService.logout();
         // if (!resp) {
         //     throw new Error("Failed to logout");
         // }

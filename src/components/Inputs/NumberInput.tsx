@@ -80,6 +80,7 @@ export default function NumberInput({
             {mobile ? (
                 <div className={`flex items-center gap-2 ${className}`}>
                     <button
+                        type="button"
                         onClick={handleDecrement}
                         disabled={(value ?? min+1) <= min}
                         className="flex items-center justify-center w-10 h-10 bg-gray-100 text-gray-600 rounded-full hover:bg-gray-200 disabled:opacity-50"
@@ -100,6 +101,7 @@ export default function NumberInput({
                     />
 
                     <button
+                        type="button"
                         onClick={handleIncrement}
                         disabled={(value ?? max - 1) >= max}
                         className="flex items-center justify-center w-10 h-10 bg-gray-100 text-gray-600 rounded-full hover:bg-gray-200 disabled:opacity-50"
@@ -125,12 +127,14 @@ export default function NumberInput({
                     />
                     <div className="flex flex-col h-full p-1" >
                         <button
+                            type="button"
                             onClick={handleIncrement}
                             className="flex items-center justify-center w-[19px] h-1/2 bg-gray-50 text-gray-900 hover:bg-gray-100 cursor-pointer rounded-tl rounded-tr"
                         >
                             ▴
                         </button>
                         <button
+                            type="button"
                             onClick={handleDecrement}
                             className="flex items-center justify-center w-[19px] h-1/2 bg-gray-50 text-gray-900 hover:bg-gray-100 cursor-pointer rounded-bl rounded-br"
                         >
