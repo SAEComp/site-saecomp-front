@@ -4,7 +4,7 @@ import { listenToPayment } from '../../services/api';
 interface UsePaymentListenerProps {
     paymentId: number | null; // Used by parent component to trigger startListener
     totalAmount: number;
-    onApproved: (orderId: number, earnedPoints: number) => void;
+    onApproved: (orderId: number, earnedPoints: number) => void | Promise<void>;
     onCancelled: () => void;
     onExpired: () => void;
 }

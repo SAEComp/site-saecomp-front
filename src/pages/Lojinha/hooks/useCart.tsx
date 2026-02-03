@@ -213,11 +213,21 @@ export const CartProvider = ({ children }: CartProviderProps) => {
     try {
       await cartService.clear();
       dispatch({ type: 'CLEAR_CART' });
+      // Re-sincronizar com o backend para garantir estado consistente
+      await syncCart();
     } catch (error: any) {
-      // Se o carrinho já não existir (404), apenas limpar o estado local
-      if (error?.message?.includes('Carrinho inexistente') || error?.code === 'API_ERROR') {
+      // Se o carrinho já não existir (404 ou erro API), apenas limpar o estado local
+      const isCartNotFound = 
+        error?.response?.status === 404 ||
+        error?.message?.includes('Carrinho inexistente') || 
+        error?.message?.includes('404') ||
+        error?.code === 'API_ERROR';
+        
+      if (isCartNotFound) {
         console.log('Carrinho já foi removido, limpando apenas estado local');
         dispatch({ type: 'CLEAR_CART' });
+        // Re-sincronizar mesmo em caso de erro para garantir consistência
+        await syncCart();
       } else {
         console.error('Erro ao limpar carrinho:', error);
         throw error;

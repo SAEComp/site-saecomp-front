@@ -46,8 +46,8 @@ const Checkout: React.FC = () => {
     const { startListener, closeListener } = usePaymentListener({
         paymentId,
         totalAmount,
-        onApproved: (orderIdForNav, earnedPoints) => {
-            clearCart();
+        onApproved: async (orderIdForNav, earnedPoints) => {
+            await clearCart();
             navigate(`/lojinha/sucesso/${orderIdForNav}`, { 
                 replace: true,
                 state: { earnedPoints }
@@ -184,10 +184,27 @@ const Checkout: React.FC = () => {
         
         try {
             setLoading(true);
-            await paymentService.cancel(buyOrderId);
-            clearCart();
+            
+            let cancelMessage = 'Pedido cancelado com sucesso';
+            
+            // Tentar cancelar o pagamento
+            try {
+                await paymentService.cancel(buyOrderId);
+            } catch (cancelErr: any) {
+                // Se o pedido não foi encontrado (404), pode ser que já foi processado/cancelado
+                if (cancelErr?.response?.status === 404) {
+                    console.log('Pedido já foi processado ou cancelado');
+                    cancelMessage = 'Retornando à loja';
+                } else {
+                    throw cancelErr; // Re-lançar se for outro tipo de erro
+                }
+            }
+            
+            // Limpar carrinho (não falha se já foi limpo)
+            await clearCart();
+            
             navigate('/lojinha', { 
-                state: { message: 'Pedido cancelado com sucesso' },
+                state: { message: cancelMessage },
                 replace: true 
             });
         } catch (err: any) {
