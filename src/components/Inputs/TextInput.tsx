@@ -18,7 +18,7 @@ const TextInput = ({
     className = ''
 }: ITextInputProps) => {
     return (
-        <div className="relative" onClick={onClick}>
+        <div className="relative h-full w-full" onClick={onClick}>
             {multiline ? (
                 <textarea
                     value={value}
@@ -26,7 +26,7 @@ const TextInput = ({
                     rows={rows}
                     placeholder={label}
                     spellCheck={false}
-                    className={`block w-full h-full rounded-lg pr-16 py-3 pl-3 text-gray-900 font-inter overflow-hidden text-ellipsis placeholder-gray-400 placeholder-opacity-100 focus:placeholder-opacity-30 focus:outline-none focus:ring-0 focus:border-0 resize-none ${className}`}
+                    className={`block w-full h-full rounded-lg pr-16 py-3 pl-3 text-gray-900 font-inter overflow-auto text-ellipsis placeholder-gray-400 placeholder-opacity-100 focus:placeholder-opacity-30 focus:outline-none focus:ring-0 focus:border-0 resize-none ${className}`}
                 />
             ) : (
                 <input

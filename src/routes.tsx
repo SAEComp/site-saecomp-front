@@ -107,11 +107,15 @@ const routes = createBrowserRouter([
                     },
                     {
                         path: "resultados",
-                        element: <TeacherFeedbackResults />,
+                        element: <AuthPermissions permissions={['evaluation:results']}>
+                            <TeacherFeedbackResults />
+                        </AuthPermissions>
                     },
                     {
                         path: "avaliacao",
-                        element: <TeacherFeedback />,
+                        element: <AuthPermissions permissions={['evaluation:create']}>
+                            <TeacherFeedback />
+                        </AuthPermissions>
                     },
                     {
                         path: "admin",
@@ -126,7 +130,7 @@ const routes = createBrowserRouter([
                                 path: "questoes",
                                 element: <AuthPermissions permissions={['evaluation:edit']}>
                                     <TeacherQuestionsEdit />
-                                    </AuthPermissions>,
+                                </AuthPermissions>,
                             }
                         ]
                     }

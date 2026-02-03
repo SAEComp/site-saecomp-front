@@ -26,8 +26,8 @@ function RoleTable({ roles, setRoles, selectedRole, roleSelect }: RoleTableProps
     }
 
     return (
-        <div className="flex flex-col w-fit max-w-full bg-white rounded-2xl shadow p-3 py-6">
-            <div className="flex justify-between it">
+        <div className="flex flex-col bg-white rounded-2xl shadow p-3 py-6">
+            <div className="flex justify-between">
                 <p className="text-2xl font-bold mb-4 ml-2">Funções</p>
             </div>
             <div className="flex flex-col gap-3">
@@ -35,8 +35,8 @@ function RoleTable({ roles, setRoles, selectedRole, roleSelect }: RoleTableProps
                     <div
                         key={index}
                         className={`relative flex items-center justify-center bg-green-600 text-white rounded-md px-16 py-1 font-semibold cursor-pointer
-                                    transition-all duration-200 ease-in-out 
-                                    ${selectedRole == role.id ? 'translate-x-8 rounded-e-none' : 'hover:translate-x-2'}
+                                    transition-all duration-200 ease-in-out h-12 md:h-8
+                                    ${selectedRole == role.id ? 'scale-x-[1.03] max-md:shadow-inner max-md:bg-green-700 md:translate-x-8 md:rounded-e-none' : 'hover:scale-x-[1.02] md:hover:translate-x-2'}
                                 `}
                         onClick={() => roleSelect(role)}
                     >
@@ -54,7 +54,7 @@ function RoleTable({ roles, setRoles, selectedRole, roleSelect }: RoleTableProps
                                     setRoles(curr => curr.map(r => r.id === role.id ? { ...r, name: newValue } : r));
                                 }}
                                 onClick={e => e.stopPropagation()}
-                                className="text-center font-bold text-white placeholder-slate-200 h-2 bg-green-600"
+                                className="text-center font-bold text-white placeholder-slate-200 bg-transparent"
                             />
                         ) : (
                             <span className="text-center text-white select-none font-inter">{role.name}</span>

@@ -28,4 +28,15 @@ export const Container = styled.div`
         text-align: center;
     }
 `
-
+export const LinkSocial = styled.a`
+    color: #2e1bd2;
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 1.25rem;
+    @media (max-width: 768px){
+        font-size: .9rem;
+    }
+    &:hover{
+    color: #2616b4;
+    }
+`
