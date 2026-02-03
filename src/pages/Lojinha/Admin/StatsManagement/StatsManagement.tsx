@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useAuth } from '../../../../auth/AuthContext';
 import { adminService } from '../../services/api';
 import { Product } from '../../types';
 import erroIcon from '../../../../assets/lojinha-icons/perrys/ERRO.png';
@@ -31,11 +32,15 @@ interface StatsData {
 }
 
 const StatsManagement: React.FC = () => {
+    const { user } = useAuth();
     const { hasProducts, isChecking } = useProductsCheck();
     const [stats, setStats] = useState<StatsData | null>(null);
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+
+    // Verifica se o usuário tem permissão para ver pedidos
+    const hasOrdersPermission = user?.permissions?.includes('lojinha:orders-log') || false;
 
     useEffect(() => {
         if (hasProducts) {
@@ -49,11 +54,20 @@ const StatsManagement: React.FC = () => {
         try {
             setLoading(true);
             setError(null);
-            const [statsResponse, productsResponse, ordersResponse] = await Promise.all([
+            
+            // Fazer chamadas condicionais baseadas nas permissões
+            const promises: [
+                Promise<any>,
+                Promise<any>,
+                Promise<any> | null
+            ] = [
                 adminService.getStats(),
                 (await import('../../services/api')).productService.getAll({ pageSize: 100, includeInactive: true }),
-                (await import('../../services/api')).orderService.getAll({ limit: 5, status: undefined })
-            ]);
+                hasOrdersPermission ? (await import('../../services/api')).orderService.getAll({ limit: 5, status: undefined }) : null
+            ];
+            
+            const [statsResponse, productsResponse, ordersResponse] = await Promise.all(promises.filter(p => p !== null));
+            
             const response = statsResponse;
             console.log('Stats response:', response);
             if (response.success && response.data) {
@@ -69,7 +83,7 @@ const StatsManagement: React.FC = () => {
                     productsWithMoreSoldQuantity: response.data.productsWithMoreSoldQuantity || [],
                     productsWithMoreRevenueValue: response.data.productsWithMoreRevenueValue || [],
                     topProducts: [], // Legacy field
-                    recentOrders: ordersResponse.success && ordersResponse.data ? ordersResponse.data.slice(0, 5) : []
+                    recentOrders: hasOrdersPermission && ordersResponse?.success && ordersResponse?.data ? ordersResponse.data.slice(0, 5) : []
                 };
                 console.log('Stats data processed:', statsData);
                 setStats(statsData);
