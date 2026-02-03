@@ -67,11 +67,27 @@ const PixModal: React.FC<PixModalProps> = ({
             onSave();
         } catch (err: any) {
             console.error('Erro ao salvar configurações PIX:', err);
-            // Verificar se é erro de endpoint não implementado
-            if (err.message && (err.message.includes('Cannot GET') || err.message.includes('Cannot POST') || err.message.includes('Cannot PUT') || err.message.includes('404') || err.response?.status === 404)) {
+            
+            // Captura mensagem de erro do backend
+            const backendMessage = err.response?.data?.message || err.response?.data?.error || '';
+            
+            // Erro 400 - Validação (token inválido, campos obrigatórios, etc)
+            if (err.response?.status === 400) {
+                if (backendMessage.includes('Token') || backendMessage.includes('token')) {
+                    setError('Token da conta PIX inválido. Verifique o token de acesso do Mercado Pago.');
+                } else if (backendMessage) {
+                    setError(backendMessage);
+                } else {
+                    setError('Erro de validação. Verifique os dados informados.');
+                }
+            }
+            // Erro 404 - Endpoint não implementado
+            else if (err.response?.status === 404 || err.message?.includes('Cannot')) {
                 setError('Funcionalidade em desenvolvimento. O backend para gerenciar chaves PIX ainda não foi implementado.');
-            } else {
-                setError(err.message || 'Erro ao salvar configurações PIX');
+            }
+            // Outros erros
+            else {
+                setError(backendMessage || err.message || 'Erro ao salvar configurações PIX');
             }
         } finally {
             setLoading(false);
