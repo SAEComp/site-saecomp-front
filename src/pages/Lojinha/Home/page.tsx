@@ -63,10 +63,20 @@ const Lojinha = () => {
         }
     }, [selectedCategory]);
 
+    // Verifica se o usuário tem qualquer permissão administrativa da lojinha
+    const hasAdminPermission = user?.permissions?.some((permission: string) => 
+        permission.startsWith('lojinha:') && (
+            permission.includes('management') ||
+            permission.includes('stats') ||
+            permission.includes('orders-log') ||
+            permission.includes('entries-log')
+        )
+    ) || false;
+
     return (
         <div className="min-h-screen bg-gray-50 relative">
             <div className="max-w-7xl mx-auto px-4 py-8">
-                <HomeHeader hasAdminPermission={user?.permissions?.includes('users:edit') || false} />
+                <HomeHeader hasAdminPermission={hasAdminPermission} />
                 
                 <CategoryTabs 
                     selectedCategory={selectedCategory}
