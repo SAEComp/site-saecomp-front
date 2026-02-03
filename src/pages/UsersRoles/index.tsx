@@ -240,7 +240,7 @@ const UsersRoles = () => {
                 </div>
             )}
             <div className="flex flex-col gap-5 flex-grow items-center justify-center bg-slate-100 w-screen p-5">
-                <div className="grid grid-cols-[auto_auto] gap-5">
+                <div className="grid grid-cols-1 md:grid-cols-[auto_auto] gap-5">
                     <RoleTable
                         roles={roles}
                         setRoles={setRoles}
@@ -255,7 +255,7 @@ const UsersRoles = () => {
                     />
 
                     <div
-                        className="bg-white rounded-2xl shadow p-3 py-6 flex col-span-2 justify-center"
+                        className="bg-white rounded-2xl shadow p-3 py-6 flex md:col-span-2 justify-center"
                     >
                         <div
                             className="bg-black rounded-lg flex justify-center items-center p-2 cursor-pointer group aspect-square h-10"

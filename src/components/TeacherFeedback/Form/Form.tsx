@@ -99,7 +99,7 @@ const Form = () => {
     const createFeedback = async () => {
         setLoading(true);
         for (const evaluation of evaluationForm.state.evaluations) {
-            if (!evaluation.classId || !evaluation.teacherId || !evaluation.courseId) {
+            if (!evaluation.teacherId || !evaluation.courseId) {
                 toast.error('Por favor, preencha todas as informações das disciplinas e professores.');
                 setLoading(false);
                 return;
