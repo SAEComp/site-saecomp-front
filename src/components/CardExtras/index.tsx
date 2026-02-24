@@ -25,6 +25,8 @@ import img22 from '../../assets/img/extra/img22.png';
 import img23 from '../../assets/img/extra/img23.png';
 import img24 from '../../assets/img/extra/img24.png';
 import img25 from '../../assets/img/extra/img25.png';
+import img26 from '../../assets/img/extra/img26.png';
+
 
 
 type Props = {
@@ -109,6 +111,9 @@ const CardExtras:React.FC<Props> = ({title, text, url}) =>{
     }
     else if(url == 'img25'){
         img = img25
+    }
+    else if(url == 'img26'){
+        img = img26
     }
     
     return(

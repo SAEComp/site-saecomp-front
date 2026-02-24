@@ -15,6 +15,7 @@ import App4 from "../../assets/img/App4.png"
 import Internet from "../../assets/img/Internet.png"
 import Jupiter from "../../assets/img/Jupiter.jpg"
 import { Defaultmargin, DefaultTitle } from '../../pages/Default/styles';
+import hoodi from "../../assets/img/hoodi.png"
 
 type TitleProps = {
     text: string;
@@ -265,6 +266,25 @@ const TopicosManual:React.FC = ()=>{
                 </Defaultmargin>
             </ContentSection>
             
+            <ContentSection>
+                <Defaultmargin>
+                <Container id = "t18 ">
+                    <Title text = "Apps Externos Úteis" number = "18"></Title>
+
+                    <img
+                        src={hoodi}
+                        alt="Hoodi"
+                        style={{
+                            display: "block",
+                            margin: "2rem auto",
+                            width: "30vw",
+                        }}
+                    />
+
+                    <Text>O Hoodi nasceu para facilitar a sua vida. Precisa de alquém para consertar algo, fazer uma mudança ou dar uma aula? Aqui, você encontra prestadores de servico indicados por pessoas reais - seus vizinhos, amigos ou alguém da sua comunidade. Use sua localização para ver quem atende perto de você Converse direto com o profissional pelo app Veja recomendações reais e escolha com confiança Ideal para quem quer resolver rápido e com segurança.<br></br><br></br>Contratar alguém de confiança nunca foi tão fácil Baixe o Hoodi e experimente uma nova forma de encontrar serviços. O app está disponível na app store, play store e na versão web!                        <LinkSocial target="_blank" href="https://linktr.ee/hoodi.a">Acesso ao Link</LinkSocial></Text>
+                </Container>
+                </Defaultmargin>
+            </ContentSection>
         </div>
     );
 }

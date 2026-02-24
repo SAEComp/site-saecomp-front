@@ -79,6 +79,12 @@ const CardExtraScreen = () => {
                 />
 
                 <CardExtras 
+                    title = "Guepardo"
+                    text = "A EESC-USP Guepardo é a extracurricular dedicada à projetar e construir uma moto de alta performance visando se destacar como o veículo mais rápido do campus, contando com uma equipe dedicada separada em diversos subsistemas como o Motor, a Aerodinâmica, Telemetria (ou Aquisição de Dados), Chicote, Relações Empresariais e muito mais. Venha conhecer a melhor equipe de São Paulo participante na competição internacional MotoStudent."
+                    url = "img26"
+                />
+                
+                <CardExtras 
                     title="Grupo SEMEAR" 
                     text="O Grupo SEMEAR é uma organização estudantil da Escola de Engenharia de São Carlos (EESC) da Universidade de São Paulo (USP) voltada para o desenvolvimento de projetos de robótica, desde robôs autônomos e drones, até robôs de combate e iniciativas sociais de divulgação técnico-científica em engenharia e robótica. Nossa visão é construir um grupo de excelência em engenharia e de referência nacional em robótica. A cada ano nos aproximamos desse sonho, venha nos ajudar com isso!"
                     url="img13"
