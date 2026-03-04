@@ -47,6 +47,7 @@ const Checkout: React.FC = () => {
         paymentId,
         totalAmount,
         onApproved: async (orderIdForNav, earnedPoints) => {
+            localStorage.removeItem('lojinha:pending_order');
             await clearCart();
             navigate(`/lojinha/sucesso/${orderIdForNav}`, { 
                 replace: true,
@@ -61,6 +62,7 @@ const Checkout: React.FC = () => {
     function handleOrderTimeout() {
         if (!buyOrderId) return;
         
+        localStorage.removeItem('lojinha:pending_order');
         paymentService.cancel(buyOrderId)
             .then(() => console.log('Order automatically cancelled due to timeout'))
             .catch(err => console.error('Error cancelling order on timeout:', err));
@@ -88,8 +90,34 @@ const Checkout: React.FC = () => {
         const checkPendingPayments = async () => {
             try {
                 const response = await getPendingPayments();
-                if (response.success && response.data && response.data.length > 0) {
-                    const pendingOrder = response.data[0];
+                const pendingList = (response.success && response.data) ? response.data : [];
+
+                // Se há um pedido salvo no localStorage, verifica se ainda está pendente
+                const savedStr = localStorage.getItem('lojinha:pending_order');
+                if (savedStr) {
+                    const { buyOrderId: savedBuyOrderId } = JSON.parse(savedStr);
+                    const stillPending = pendingList.some(
+                        (o: any) => String(o.id) === String(savedBuyOrderId)
+                    );
+                    // Não está mais pendente → foi pago enquanto página estava fechada
+                    if (!stillPending) {
+                        localStorage.removeItem('lojinha:pending_order');
+                        // clearCart pode falhar pois o backend já limpou o pedido — ignorar
+                        try { await clearCart(); } catch { /* já limpo pelo backend */ }
+                        navigate(`/lojinha/sucesso/${savedBuyOrderId}`, { replace: true });
+                        return;
+                    }
+                }
+
+                // Fluxo normal: exibir pedido pendente existente
+                if (pendingList.length > 0) {
+                    const pendingOrder = pendingList[0];
+
+                    // Re-salva no localStorage caso tenha sido perdido (ex: outro dispositivo)
+                    localStorage.setItem('lojinha:pending_order', JSON.stringify({
+                        buyOrderId: pendingOrder.id,
+                        paymentId: pendingOrder.paymentId
+                    }));
                     
                     setPaymentId(pendingOrder.paymentId);
                     setBuyOrderId(pendingOrder.id);
@@ -152,6 +180,12 @@ const Checkout: React.FC = () => {
                 setPixCopyPaste(pixResponse.data.paymentData.pixCopiaECola);
                 setOrderCreatedAt(createdAt);
                 setTimeLeft(PAYMENT_TIMEOUT);
+
+                // Persiste o pedido no localStorage para recuperar caso a página seja fechada
+                localStorage.setItem('lojinha:pending_order', JSON.stringify({
+                    buyOrderId: newBuyOrderId,
+                    paymentId: newPaymentId
+                }));
                 
                 startListener(newPaymentId, newBuyOrderId);
             } else {
@@ -187,6 +221,9 @@ const Checkout: React.FC = () => {
             
             let cancelMessage = 'Pedido cancelado com sucesso';
             
+            // Limpa o localStorage ao cancelar
+            localStorage.removeItem('lojinha:pending_order');
+
             // Tentar cancelar o pagamento
             try {
                 await paymentService.cancel(buyOrderId);
