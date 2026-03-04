@@ -5,11 +5,13 @@ import tristeIcon from '../../../assets/lojinha-icons/perrys/triste.png';
 interface EmptyDatabaseMessageProps {
     allowedFeature?: boolean;
     featureName: string;
+    onGoToProducts?: () => void;
 }
 
 export const EmptyDatabaseMessage: React.FC<EmptyDatabaseMessageProps> = ({ 
     allowedFeature = false,
-    featureName 
+    featureName,
+    onGoToProducts,
 }) => {
     if (allowedFeature) {
         return null;
@@ -30,12 +32,21 @@ export const EmptyDatabaseMessage: React.FC<EmptyDatabaseMessageProps> = ({
                     <p className="text-gray-600 mb-6">
                         A aba de <strong>{featureName}</strong> só ficará disponível após adicionar produtos ao catálogo.
                     </p>
-                    <Link 
-                        to="/lojinha/admin" 
-                        className="inline-block bg-[#03B04B] hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg transition duration-300"
-                    >
-                        Ir para Produtos
-                    </Link>
+                    {onGoToProducts ? (
+                        <button
+                            onClick={onGoToProducts}
+                            className="inline-block bg-[#03B04B] hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg transition duration-300"
+                        >
+                            Ir para Produtos
+                        </button>
+                    ) : (
+                        <Link 
+                            to="/lojinha/admin?tab=products" 
+                            className="inline-block bg-[#03B04B] hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg transition duration-300"
+                        >
+                            Ir para Produtos
+                        </Link>
+                    )}
                 </div>
             </div>
         </div>

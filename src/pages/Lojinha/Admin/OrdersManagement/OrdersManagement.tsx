@@ -26,7 +26,11 @@ const getFirstAndLastName = (fullName: string): string => {
     }
 };
 
-const OrdersManagement: React.FC = () => {
+interface OrdersManagementProps {
+    onGoToProducts?: () => void;
+}
+
+const OrdersManagement: React.FC<OrdersManagementProps> = ({ onGoToProducts }) => {
     const { hasProducts, isChecking } = useProductsCheck();
     const [orders, setOrders] = useState<AdminOrder[]>([]);
     const [loading, setLoading] = useState(true);
@@ -420,7 +424,7 @@ const OrdersManagement: React.FC = () => {
     }
 
     if (hasProducts === false) {
-        return <EmptyDatabaseMessage featureName="Pedidos" />;
+        return <EmptyDatabaseMessage featureName="Pedidos" onGoToProducts={onGoToProducts} />;
     }
 
     if (error) {

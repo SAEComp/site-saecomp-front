@@ -39,15 +39,15 @@ const LojinhaGerenciamento: React.FC = () => {
         try {
             switch (activeTab) {
                 case 'stats':
-                    return <StatsManagement />;
+                    return <StatsManagement onGoToProducts={hasProductsPermission ? () => setActiveTab('products') : undefined} />;
                 case 'products':
                     return <ProductsManagement />;
                 case 'orders':
-                    return <OrdersManagement />;
+                    return <OrdersManagement onGoToProducts={hasProductsPermission ? () => setActiveTab('products') : undefined} />;
                 case 'pix':
                     return <PixManagement />;
                 case 'history':
-                    return <HistoryManagement />;
+                    return <HistoryManagement onGoToProducts={hasProductsPermission ? () => setActiveTab('products') : undefined} />;
                 default:
                     return <StatsManagement />;
             }

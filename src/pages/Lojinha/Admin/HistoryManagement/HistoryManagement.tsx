@@ -8,7 +8,11 @@ import { Table, ITableColumn } from '../../../../components/Inputs';
 import { EmptyDatabaseMessage, LoadingState } from '../../componentes';
 import { useProductsCheck } from '../../hooks/useProductsCheck';
 
-const HistoryManagement: React.FC = () => {
+interface HistoryManagementProps {
+    onGoToProducts?: () => void;
+}
+
+const HistoryManagement: React.FC<HistoryManagementProps> = ({ onGoToProducts }) => {
     const { hasProducts, isChecking } = useProductsCheck();
     const [history, setHistory] = useState<HistoryEntry[]>([]);
     const [products, setProducts] = useState<Product[]>([]);
@@ -385,7 +389,7 @@ const HistoryManagement: React.FC = () => {
     }
 
     if (hasProducts === false) {
-        return <EmptyDatabaseMessage featureName="Histórico" />;
+        return <EmptyDatabaseMessage featureName="Histórico" onGoToProducts={onGoToProducts} />;
     }
 
     if (error) {

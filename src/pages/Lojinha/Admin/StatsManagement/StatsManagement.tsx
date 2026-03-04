@@ -31,7 +31,11 @@ interface StatsData {
     recentOrders: any[];
 }
 
-const StatsManagement: React.FC = () => {
+interface StatsManagementProps {
+    onGoToProducts?: () => void;
+}
+
+const StatsManagement: React.FC<StatsManagementProps> = ({ onGoToProducts }) => {
     const { user } = useAuth();
     const { hasProducts, isChecking } = useProductsCheck();
     const [stats, setStats] = useState<StatsData | null>(null);
@@ -118,7 +122,7 @@ const StatsManagement: React.FC = () => {
     }
 
     if (hasProducts === false) {
-        return <EmptyDatabaseMessage featureName="Estatísticas" />;
+        return <EmptyDatabaseMessage featureName="Estatísticas" onGoToProducts={onGoToProducts} />;
     }
 
     if (error) {

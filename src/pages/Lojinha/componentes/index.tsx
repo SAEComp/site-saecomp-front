@@ -15,3 +15,4 @@ export { AuthRequiredModal } from './AuthRequiredModal';
 // Componentes de interface reutilizáveis
 export { GenericButton } from './GenericButton';
 export { BackButton } from './BackButton';
+export { PendingOrderModal } from './PendingOrderModal';
