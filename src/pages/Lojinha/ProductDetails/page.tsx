@@ -4,6 +4,7 @@ import { Product } from '../types';
 import { useCart } from '../hooks/useCart';
 import { productService } from '../services/api';
 import { LoadingState, ErrorState, GenericButton, BackButton } from '../componentes';
+import { PendingOrderModal } from '../componentes/PendingOrderModal';
 import { 
     ProductImage, 
     ProductInfo, 
@@ -18,6 +19,7 @@ const ProductDetails: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [quantity, setQuantity] = useState(1);
+    const [showPendingModal, setShowPendingModal] = useState(false);
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -48,12 +50,15 @@ const ProductDetails: React.FC = () => {
         if (product) {
             try {
                 // No novo sistema, adicionar com a quantidade de uma vez
-                await addItem(product);
+                await addItem(product, quantity);
                 // Redirect back to main lojinha menu
                 navigate('/lojinha');
-            } catch (error) {
-                console.error('Erro ao adicionar ao carrinho:', error);
-                // Pode adicionar toast/alert aqui se desejar
+            } catch (error: any) {
+                if (error?.response?.status === 409) {
+                    setShowPendingModal(true);
+                } else {
+                    console.error('Erro ao adicionar ao carrinho:', error);
+                }
             }
         }
     };
@@ -111,6 +116,11 @@ const ProductDetails: React.FC = () => {
                     </div>
                 </div>
             </div>
+
+            <PendingOrderModal
+                isOpen={showPendingModal}
+                onClose={() => setShowPendingModal(false)}
+            />
         </div>
     );
 };

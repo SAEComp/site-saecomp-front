@@ -127,10 +127,10 @@ export const CartProvider = ({ children }: CartProviderProps) => {
   }, [hasInitialized]);
 
   // Adicionar item ao carrinho (servidor)
-  const addItem = async (product: Product) => {
+  const addItem = async (product: Product, quantity: number = 1) => {
     dispatch({ type: 'SET_LOADING', payload: true });
     try {
-      const response = await cartService.add(product.id, 1);
+      const response = await cartService.add(product.id, quantity);
       if (response.success && response.data) {
         dispatch({ type: 'SET_CART', payload: response.data });
       }

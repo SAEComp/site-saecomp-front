@@ -1,7 +1,9 @@
 import { Link } from 'react-router';
+import { useState } from 'react';
 import { Product } from '../types';
 import { useCart } from '../hooks/useCart';
 import { getProductImageUrl, FALLBACK_IMAGE } from '../utils/imageUtils';
+import { PendingOrderModal } from './PendingOrderModal';
 
 interface ProductCardProps {
   product: Product;
@@ -9,13 +11,17 @@ interface ProductCardProps {
 
 const ProductCard = ({ product }: ProductCardProps) => {
   const { addItem } = useCart();
+  const [showPendingModal, setShowPendingModal] = useState(false);
 
   const handleAddToCart = async () => {
     try {
       await addItem(product);
-    } catch (error) {
-      console.error('Erro ao adicionar ao carrinho:', error);
-      // Pode adicionar toast/alert aqui se desejar
+    } catch (error: any) {
+      if (error?.response?.status === 409) {
+        setShowPendingModal(true);
+      } else {
+        console.error('Erro ao adicionar ao carrinho:', error);
+      }
     }
   };
 
@@ -58,6 +64,11 @@ const ProductCard = ({ product }: ProductCardProps) => {
           </p>
         </div>
       )}
+
+      <PendingOrderModal
+        isOpen={showPendingModal}
+        onClose={() => setShowPendingModal(false)}
+      />
     </div>
   );
 };
