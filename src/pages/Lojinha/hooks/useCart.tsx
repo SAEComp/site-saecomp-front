@@ -78,7 +78,7 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
 
 interface CartContextType {
   state: CartState;
-  addItem: (product: Product) => Promise<void>;
+  addItem: (product: Product, quantity?: number) => Promise<void>;
   incrementItem: (productId: number) => Promise<void>;
   decrementItem: (productId: number) => Promise<void>;
   removeItem: (itemId: number) => Promise<void>;

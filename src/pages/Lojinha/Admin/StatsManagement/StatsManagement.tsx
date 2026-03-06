@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../../../auth/AuthContext';
-import { adminService } from '../../services/api';
+import { adminService, productService, orderService } from '../../services/api';
 import { Product } from '../../types';
 import erroIcon from '../../../../assets/lojinha-icons/perrys/ERRO.png';
 import { EmptyDatabaseMessage } from '../../componentes/EmptyDatabaseMessage';
@@ -66,8 +66,8 @@ const StatsManagement: React.FC<StatsManagementProps> = ({ onGoToProducts }) => 
                 Promise<any> | null
             ] = [
                 adminService.getStats(),
-                (await import('../../services/api')).productService.getAll({ pageSize: 100, includeInactive: true }),
-                hasOrdersPermission ? (await import('../../services/api')).orderService.getAll({ limit: 5, status: undefined }) : null
+                productService.getAll({ pageSize: 100, includeInactive: true }),
+                hasOrdersPermission ? orderService.getAll({ limit: 5, status: undefined }) : null
             ];
             
             const [statsResponse, productsResponse, ordersResponse] = await Promise.all(promises.filter(p => p !== null));
