@@ -1,28 +1,44 @@
-import Home from "./pages/Home";
-import Enfases from "./pages/Enfases";
-import Manual from "./pages/Manual-Bixo";
-import SAEcomp from "./pages/SAEComp";
-import Login from "./pages/Login";
-import LojinhaLayout from "./pages/Lojinha/LojinhaLayout";
-import OrderSuccess from "./pages/Lojinha/OrderSuccess/page";
-import Checkout from "./pages/Lojinha/Checkout/page";
-import ProductDetails from "./pages/Lojinha/ProductDetails/page";
-import LojinhaGerenciamento from "./pages/Lojinha/Admin/page";
-import Lojinha from "./pages/Lojinha/Home/page";
-import CartPage from "./pages/Lojinha/Cart/page";
-import Leaderboard from "./pages/Lojinha/Leaderboard/page";
-import TeacherFeedback from "./pages/TeacherFeedback";
-import TeacherFeedbackResults from "./pages/TeacherFeedbackResults";
+import { lazy, Suspense } from "react";
 import LayoutWrapper from "./components/Layout/LayoutWrapper";
-import Error from "./pages/Error";
-import TeacherEvaluationMenu from "./pages/TeacherEvaluationMenu";
-import RequireAuth from "./auth/RequireAuth";
-import UsersRoles from "./pages/UsersRoles";
-import TeacherQuestionsEdit from "./pages/TeacherQuestionsEdit";
+import Spinner from "./components/Spinner/Spinner";
 import { AuthProvider } from "./auth/AuthContext";
 import { createBrowserRouter } from "react-router";
-import TeacherFeedbackAdmin from "./pages/TeacherFeedbackAdmin";
+import RequireAuth from "./auth/RequireAuth";
 import AuthPermissions from "./auth/AuthPermissions";
+
+// Lazy imports — cada página vira chunk separado
+const Home                  = lazy(() => import("./pages/Home"));
+const Enfases               = lazy(() => import("./pages/Enfases"));
+const Manual                = lazy(() => import("./pages/Manual-Bixo"));
+const SAEcomp               = lazy(() => import("./pages/SAEComp"));
+const Login                 = lazy(() => import("./pages/Login"));
+const Error                 = lazy(() => import("./pages/Error"));
+const UsersRoles            = lazy(() => import("./pages/UsersRoles"));
+const TeacherFeedback       = lazy(() => import("./pages/TeacherFeedback"));
+const TeacherFeedbackAdmin  = lazy(() => import("./pages/TeacherFeedbackAdmin"));
+const TeacherFeedbackResults= lazy(() => import("./pages/TeacherFeedbackResults"));
+const TeacherEvaluationMenu = lazy(() => import("./pages/TeacherEvaluationMenu"));
+const TeacherQuestionsEdit  = lazy(() => import("./pages/TeacherQuestionsEdit"));
+
+// Lojinha — chunk separado
+const LojinhaLayout         = lazy(() => import("./pages/Lojinha/LojinhaLayout"));
+const Lojinha               = lazy(() => import("./pages/Lojinha/Home/page"));
+const ProductDetails        = lazy(() => import("./pages/Lojinha/ProductDetails/page"));
+const CartPage              = lazy(() => import("./pages/Lojinha/Cart/page"));
+const Checkout              = lazy(() => import("./pages/Lojinha/Checkout/page"));
+const OrderSuccess          = lazy(() => import("./pages/Lojinha/OrderSuccess/page"));
+const Leaderboard           = lazy(() => import("./pages/Lojinha/Leaderboard/page"));
+const LojinhaGerenciamento  = lazy(() => import("./pages/Lojinha/Admin/page"));
+
+const Loading = () => (
+    <div className="flex h-screen w-full items-center justify-center">
+        <Spinner />
+    </div>
+);
+
+const S = ({ children }: { children: React.ReactNode }) => (
+    <Suspense fallback={<Loading />}>{children}</Suspense>
+);
 
 const routes = createBrowserRouter([
     {
@@ -32,62 +48,62 @@ const routes = createBrowserRouter([
                 <LayoutWrapper />
             </AuthProvider>
         ),
-        errorElement: <Error />,
+        errorElement: <S><Error /></S>,
         children: [
             {
                 index: true,
-                element: <Home />,
+                element: <S><Home /></S>,
             },
             {
                 path: "saecomp",
-                element: <SAEcomp />,
+                element: <S><SAEcomp /></S>,
             },
             {
                 path: "enfases",
-                element: <Enfases />,
+                element: <S><Enfases /></S>,
             },
             {
                 path: "manual",
-                element: <Manual />,
+                element: <S><Manual /></S>,
             },
             {
                 path: "lojinha",
                 element: <RequireAuth />,
                 children: [
                     {
-                        element: <LojinhaLayout />,
+                        element: <S><LojinhaLayout /></S>,
                         children: [
                             {
                                 index: true,
-                                element: <Lojinha />,
+                                element: <S><Lojinha /></S>,
                             },
                             {
                                 path: "loja",
-                                element: <Lojinha />,
+                                element: <S><Lojinha /></S>,
                             },
                             {
                                 path: "produto/:id",
-                                element: <ProductDetails />,
+                                element: <S><ProductDetails /></S>,
                             },
                             {
                                 path: "carrinho",
-                                element: <CartPage />,
+                                element: <S><CartPage /></S>,
                             },
                             {
                                 path: "checkout",
-                                element: <Checkout />,
+                                element: <S><Checkout /></S>,
                             },
                             {
                                 path: "sucesso/:orderId",
-                                element: <OrderSuccess />,
+                                element: <S><OrderSuccess /></S>,
                             },
                             {
                                 path: "podio",
-                                element: <Leaderboard />,
+                                element: <S><Leaderboard /></S>,
                             },
                             {
                                 path: "admin",
-                                element: <LojinhaGerenciamento />,
+                                element: <S><LojinhaGerenciamento /></S>,
                             },
                         ],
                     },
@@ -95,7 +111,7 @@ const routes = createBrowserRouter([
             },
             {
                 path: "login",
-                element: <Login />,
+                element: <S><Login /></S>,
             },
             {
                 path: "avaliacoes",
@@ -103,18 +119,18 @@ const routes = createBrowserRouter([
                 children: [
                     {
                         index: true,
-                        element: <TeacherEvaluationMenu />,
+                        element: <S><TeacherEvaluationMenu /></S>,
                     },
                     {
                         path: "resultados",
                         element: <AuthPermissions permissions={['evaluation:results']}>
-                            <TeacherFeedbackResults />
+                            <S><TeacherFeedbackResults /></S>
                         </AuthPermissions>
                     },
                     {
                         path: "avaliacao",
                         element: <AuthPermissions permissions={['evaluation:create']}>
-                            <TeacherFeedback />
+                            <S><TeacherFeedback /></S>
                         </AuthPermissions>
                     },
                     {
@@ -123,18 +139,17 @@ const routes = createBrowserRouter([
                             {
                                 path: "resultados",
                                 element: <AuthPermissions permissions={['evaluation:review']}>
-                                    <TeacherFeedbackAdmin />
+                                    <S><TeacherFeedbackAdmin /></S>
                                 </AuthPermissions>,
                             },
                             {
                                 path: "questoes",
                                 element: <AuthPermissions permissions={['evaluation:edit']}>
-                                    <TeacherQuestionsEdit />
+                                    <S><TeacherQuestionsEdit /></S>
                                 </AuthPermissions>,
                             }
                         ]
                     }
-
                 ],
             },
             {
@@ -143,7 +158,7 @@ const routes = createBrowserRouter([
                 children: [
                     {
                         path: "usuarios",
-                        element: <UsersRoles />,
+                        element: <S><UsersRoles /></S>,
                     },
                 ],
             },
