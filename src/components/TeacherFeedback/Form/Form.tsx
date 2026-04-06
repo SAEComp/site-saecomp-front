@@ -16,13 +16,12 @@ import { toast } from "sonner";
 
 
 const idealYearOptions: IOption[] = [
-    { label: '1° período', id: 1 },
-    { label: '3° período', id: 3 },
-    { label: '5° período', id: 5 },
-    { label: '7° período', id: 7 },
-    { label: '9° período', id: 9 },
+    { label: '1° ano', id: 1 },
+    { label: '2° ano', id: 2 },
+    { label: '3° ano', id: 3 },
+    { label: '4° ano', id: 4 },
+    { label: '5° ano', id: 5 },
 ]
-
 
 
 const Form = () => {
@@ -164,7 +163,7 @@ const Form = () => {
                 <span
                     className="font-inter text-white"
                 >
-                    Qual o seu período ideal?
+                    Está em qual ano?
                 </span>
                 <DropDown
                     options={idealYearOptions}
