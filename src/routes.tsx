@@ -8,7 +8,7 @@ import AuthPermissions from "./auth/AuthPermissions";
 
 // Lazy imports — cada página vira chunk separado
 const Home                  = lazy(() => import("./pages/Home"));
-const Enfases               = lazy(() => import("./pages/Enfases"));
+const Enfases               = lazy(() => import("./pages/WorkInProgress"));
 const Manual                = lazy(() => import("./pages/Manual-Bixo"));
 const SAEcomp               = lazy(() => import("./pages/SAEComp"));
 const Login                 = lazy(() => import("./pages/Login"));
